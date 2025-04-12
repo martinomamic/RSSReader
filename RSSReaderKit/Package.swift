@@ -8,7 +8,7 @@ let package = Package(
         .iOS(.v16)
     ],
     products: [
-        .library(name: "RSSReaderKit", targets: ["RSSReaderKit"]),
+        .library(name: "RSSClient", targets: ["RSSClient"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
     ],
     dependencies: [
@@ -17,15 +17,15 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "RSSReaderKit",
+            name: "RSSClient",
             dependencies: [
                 "SharedModels"
             ]
         ),
         .testTarget(
-            name: "RSSReaderKitTests",
+            name: "RSSClientTests",
             dependencies: [
-                "RSSReaderKit",
+                "RSSClient",
             ]
         ),
         .target(
