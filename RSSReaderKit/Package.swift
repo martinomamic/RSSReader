@@ -9,10 +9,6 @@ let package = Package(
     ],
     products: [
         .library(name: "RSSReaderKit", targets: ["RSSReaderKit"]),
-        .library(name: "RSSFeeds", targets: ["RSSFeeds"]),
-        .library(name: "Favorites", targets: ["Favorites"]),
-        .library(name: "Notifications", targets: ["Notifications"]),
-        .library(name: "RSSClient", targets: ["RSSClient"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
         .library(name: "UIComponents", targets: ["UIComponents"]),
     ],
@@ -26,9 +22,6 @@ let package = Package(
         .target(
             name: "RSSReaderKit",
             dependencies: [
-                "RSSFeeds",
-                "Favorites",
-                "Notifications",
                 "SharedModels",
                 "UIComponents"
             ]
@@ -39,52 +32,6 @@ let package = Package(
                 "RSSReaderKit",
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
             ]
-        ),
-        .target(
-            name: "RSSFeeds",
-            dependencies: [
-                .product(name: "FeedKit", package: "FeedKit"),
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "RSSClient",
-                "SharedModels"
-            ]
-        ),
-        .testTarget(
-            name: "RSSFeedsTests",
-            dependencies: ["RSSFeeds"]
-        ),
-        .target(
-            name: "Favorites",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "SharedModels"
-            ]
-        ),
-        .testTarget(
-            name: "FavoritesTests",
-            dependencies: ["Favorites"]
-        ),
-        .target(
-            name: "Notifications",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "SharedModels"
-            ]
-        ),
-        .testTarget(
-            name: "NotificationsTests",
-            dependencies: ["Notifications"]
-        ),
-        .target(
-            name: "RSSClient",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "SharedModels"
-            ]
-        ),
-        .testTarget(
-            name: "RSSClientTests",
-            dependencies: ["RSSClient"]
         ),
         .target(
             name: "SharedModels",
