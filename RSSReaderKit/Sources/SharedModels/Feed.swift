@@ -10,14 +10,14 @@ import Foundation
 public struct Feed: Identifiable, Hashable {
     public let id: UUID
     public let url: URL
-    public var title: String
+    public var title: String?
     public var description: String?
     public var imageURL: URL?
     
     public init(
         id: UUID = UUID(),
         url: URL,
-        title: String,
+        title: String? = nil,
         description: String? = nil,
         imageURL: URL? = nil
     ) {

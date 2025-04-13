@@ -12,13 +12,13 @@ let package = Package(
         .library(name: "SharedModels", targets: ["SharedModels"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/nmdias/FeedKit.git", from: "9.1.2"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.0.0"),
     ],
     targets: [
         .target(
             name: "RSSClient",
             dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
                 "SharedModels"
             ]
         ),

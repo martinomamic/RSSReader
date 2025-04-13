@@ -22,21 +22,8 @@ public struct RSSClient : Sendable {
     }
 }
 
-
-
 extension RSSClient: DependencyKey {
-    public static var liveValue: RSSClient {
-        return RSSClient(
-            fetchFeed: { _ in
-                // TODO: RSSClientLive
-                fatalError("Live implementation not provided")
-            },
-            fetchFeedItems: { _ in
-                // TODO: RSSClientLive
-                fatalError("Live implementation not provided")
-            }
-        )
-    }
+    public static var liveValue: RSSClient { RSSClient.live() }
     
     public static var testValue: RSSClient {
         return RSSClient(

@@ -1,5 +1,5 @@
 {
-  "originHash" : "7ff886d43856c8d0d2804557fd74798d0af627e3473bb4485989502e8222bc81",
+  "originHash" : "668224849311d450feeb637c5ad5edc236f5e33c7226713b43a7f6457a4950d6",
   "pins" : [
     {
       "identity" : "combine-schedulers",
@@ -8,15 +8,6 @@
       "state" : {
         "revision" : "5928286acce13def418ec36d05a001a9641086f2",
         "version" : "1.0.3"
-      }
-    },
-    {
-      "identity" : "feedkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/nmdias/FeedKit.git",
-      "state" : {
-        "revision" : "68493a33d862c33c9a9f67ec729b3b7df1b20ade",
-        "version" : "9.1.2"
       }
     },
     {
