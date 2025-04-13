@@ -1,3 +1,10 @@
+//
+//  RSSParserDelegate.swift
+//  RSSReaderKit
+//
+//  Created by Martino Mamić on 12.04.25.
+//
+
 import Foundation
 import SharedModels
 
