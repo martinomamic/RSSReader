@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		38C352E32DABF64F008FA670 /* RSSClient in Frameworks */ = {isa = PBXBuildFile; productRef = 38C352E22DABF64F008FA670 /* RSSClient */; };
+		38C352E52DABF64F008FA670 /* SharedModels in Frameworks */ = {isa = PBXBuildFile; productRef = 38C352E42DABF64F008FA670 /* SharedModels */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		386A8D302DAA864A00BCD162 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -28,6 +33,7 @@
 		386A8D2F2DAA864A00BCD162 /* RSSReaderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RSSReaderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		386A8D392DAA864A00BCD162 /* RSSReaderUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RSSReaderUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		386A8D4C2DAA86FC00BCD162 /* RSSReaderKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RSSReaderKit; sourceTree = "<group>"; };
+		38C352CA2DABC4F1008FA670 /* RSSClient.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = RSSClient.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -53,6 +59,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				38C352E32DABF64F008FA670 /* RSSClient in Frameworks */,
+				38C352E52DABF64F008FA670 /* SharedModels in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,10 +84,12 @@
 		386A8D152DAA864900BCD162 = {
 			isa = PBXGroup;
 			children = (
+				38C352CA2DABC4F1008FA670 /* RSSClient.xctestplan */,
 				386A8D4C2DAA86FC00BCD162 /* RSSReaderKit */,
 				386A8D202DAA864900BCD162 /* RSSReader */,
 				386A8D322DAA864A00BCD162 /* RSSReaderTests */,
 				386A8D3C2DAA864A00BCD162 /* RSSReaderUITests */,
+				38C352E12DABF64F008FA670 /* Frameworks */,
 				386A8D1F2DAA864900BCD162 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -92,6 +102,13 @@
 				386A8D392DAA864A00BCD162 /* RSSReaderUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		38C352E12DABF64F008FA670 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -114,6 +131,8 @@
 			);
 			name = RSSReader;
 			packageProductDependencies = (
+				38C352E22DABF64F008FA670 /* RSSClient */,
+				38C352E42DABF64F008FA670 /* SharedModels */,
 			);
 			productName = RSSReader;
 			productReference = 386A8D1E2DAA864900BCD162 /* RSSReader.app */;
@@ -406,7 +425,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
@@ -443,7 +462,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
@@ -585,6 +604,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		38C352E22DABF64F008FA670 /* RSSClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RSSClient;
+		};
+		38C352E42DABF64F008FA670 /* SharedModels */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SharedModels;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 386A8D162DAA864900BCD162 /* Project object */;
 }
