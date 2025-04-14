@@ -54,8 +54,7 @@ import SharedModels
             let feed = try await rssClient.fetchFeed(url)
             
             let feedViewModel = FeedViewModel(url: url)
-            feedViewModel.feed = feed
-            feedViewModel.isLoading = false
+            feedViewModel.state = .loaded(feed)
             
             feeds.wrappedValue.append(feedViewModel)
             
