@@ -8,16 +8,16 @@
 import SwiftUI
 import SharedModels
 
-struct FeedRow: View {
+struct FeedView: View {
     let viewModel: FeedViewModel
     
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: Constants.UI.feedRowSpacing) {
             switch viewModel.state {
             case .loading:
-                Image(systemName: "ellipsis.circle")
+                Image(systemName: Constants.Images.loadingIcon)
                     .font(.title2)
-                    .frame(width: 50, height: 50)
+                    .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
                 
                 VStack(alignment: .leading) {
                     Text(viewModel.url.absoluteString)
@@ -33,18 +33,18 @@ struct FeedRow: View {
                     AsyncImage(url: imageURL) { image in
                         image.resizable().aspectRatio(contentMode: .fit)
                     } placeholder: {
-                        Image(systemName: "photo")
+                        Image(systemName: Constants.Images.placeholderImage)
                     }
-                    .frame(width: 50, height: 50)
-                    .cornerRadius(6)
+                    .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
+                    .cornerRadius(Constants.UI.cornerRadius)
                 } else {
-                    Image(systemName: "newspaper.fill")
+                    Image(systemName: Constants.Images.defaultFeedIcon)
                         .font(.title2)
-                        .frame(width: 50, height: 50)
+                        .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
                         .foregroundStyle(.blue)
                 }
                 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: Constants.UI.verticalPadding) {
                     Text(feed.title ?? "Unnamed Feed")
                         .font(.headline)
                     
@@ -52,14 +52,14 @@ struct FeedRow: View {
                         Text(description)
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                            .lineLimit(2)
+                            .lineLimit(Constants.UI.feedDescriptionLineLimit)
                     }
                 }
                 
             case .error(let error):
-                Image(systemName: "exclamationmark.triangle")
+                Image(systemName: Constants.Images.errorIcon)
                     .font(.title2)
-                    .frame(width: 50, height: 50)
+                    .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
                     .foregroundStyle(.red)
                 
                 VStack(alignment: .leading) {
@@ -76,6 +76,6 @@ struct FeedRow: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, Constants.UI.verticalPadding)
     }
 }
