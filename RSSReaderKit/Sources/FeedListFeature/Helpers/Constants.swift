@@ -30,10 +30,11 @@ enum Constants {
     }
     
     enum Images {
-        static let defaultFeedIcon = "newspaper.fill"
+        static let placeholderFeedIcon = "newspaper.fill"
         static let loadingIcon = "ellipsis.circle"
         static let errorIcon = "exclamationmark.triangle"
         static let placeholderImage = "photo"
         static let addIcon = "plus"
+        static let noFeedsIcon = "tray.fill"
     }
 }

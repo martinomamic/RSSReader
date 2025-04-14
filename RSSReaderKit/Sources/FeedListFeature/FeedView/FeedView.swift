@@ -38,7 +38,7 @@ struct FeedView: View {
                     .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
                     .cornerRadius(Constants.UI.cornerRadius)
                 } else {
-                    Image(systemName: Constants.Images.defaultFeedIcon)
+                    Image(systemName: Constants.Images.placeholderFeedIcon)
                         .font(.title2)
                         .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
                         .foregroundStyle(.blue)
