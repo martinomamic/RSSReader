@@ -18,6 +18,7 @@ extension RSSClient {
                 do {
                     let (data, _) = try await URLSession.shared.data(from: url)
                     let (feed, _) = try await parser.parse(data: data, feedURL: url)
+                    guard let feed else { throw RSSError.unknown }
                     return feed
                 } catch let error as RSSError {
                     throw error

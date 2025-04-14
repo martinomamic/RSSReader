@@ -2,7 +2,7 @@
 //  RSSParserDelegate.swift
 //  RSSReaderKit
 //
-//  Created by Martino Mamić on 12.04.25.
+//  Created by Martino Mamić on 13.04.25.
 //
 
 import Foundation
@@ -15,7 +15,7 @@ public struct RSSParser: Sendable {
         self.delegateFactory = delegateFactory
     }
     
-    public func parse(data: Data, feedURL: URL) async throws -> (feed: Feed, items: [FeedItem]) {
+    public func parse(data: Data, feedURL: URL) async throws -> (feed: Feed?, items: [FeedItem]) {
         let parser = XMLParser(data: data)
         let delegate = delegateFactory()
         delegate.configure(feedURL: feedURL)

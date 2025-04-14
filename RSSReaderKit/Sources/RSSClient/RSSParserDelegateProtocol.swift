@@ -9,6 +9,6 @@ import Foundation
 import SharedModels
 
 public protocol RSSParserDelegateProtocol: XMLParserDelegate {
-    var result: (feed: Feed, items: [FeedItem]) { get }
+    var result: (feed: Feed?, items: [FeedItem]) { get }
     func configure(feedURL: URL)
 }
