@@ -12,12 +12,22 @@ import SharedModels
 import Dependencies
 import Observation
 
+enum FeedListState: Equatable {
+    case idle
+    case loading
+    case error(RSSViewError)
+}
+
 @MainActor
 @Observable class FeedListViewModel {
     @ObservationIgnored
     @Dependency(\.rssClient) private var rssClient
     
     var feeds: [FeedViewModel] = []
-    var isLoading = false
-    var error: Error?
+    var state: FeedListState = .idle
+    
+    func loadFeeds() async {
+        state = .loading
+        state = .idle
+    }
 }

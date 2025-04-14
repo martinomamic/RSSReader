@@ -11,6 +11,13 @@ import SwiftUI
 import RSSClient
 import SharedModels
 
+enum AddFeedState: Equatable {
+    case idle
+    case adding
+    case error(RSSViewError)
+    case success
+}
+
 @MainActor
 @Observable class AddFeedViewModel {
     @ObservationIgnored
@@ -19,9 +26,7 @@ import SharedModels
     private var feeds: Binding<[FeedViewModel]>
     
     var urlString: String = ""
-    var isAdding: Bool = false
-    var error: Error? = nil
-    var showError: Bool = false
+    var state: AddFeedState = .idle
     
     init(feeds: Binding<[FeedViewModel]>) {
         self.feeds = feeds
@@ -34,21 +39,16 @@ import SharedModels
     
     func addFeed() async -> Bool {
         guard let url = URL(string: urlString) else {
-            showError = true
-            error = NSError(domain: "Invalid URL", code: 400,
-                           userInfo: [NSLocalizedDescriptionKey: "Please enter a valid URL"])
+            state = .error(.invalidURL)
             return false
         }
         
         if feeds.wrappedValue.contains(where: { $0.url == url }) {
-            showError = true
-            error = NSError(domain: "Duplicate Feed", code: 409,
-                           userInfo: [NSLocalizedDescriptionKey: "This feed is already in your list"])
+            state = .error(.duplicateFeed)
             return false
         }
         
-        isAdding = true
-        error = nil
+        state = .adding
         
         do {
             let feed = try await rssClient.fetchFeed(url)
@@ -58,20 +58,16 @@ import SharedModels
             
             feeds.wrappedValue.append(feedViewModel)
             
-            isAdding = false
+            state = .success
             return true
         } catch {
-            self.error = error
-            self.showError = true
-            isAdding = false
+            state = .error(RSSErrorMapper.mapToViewError(error))
             return false
         }
     }
     
     func reset() {
         urlString = ""
-        isAdding = false
-        error = nil
-        showError = false
+        state = .idle
     }
 }

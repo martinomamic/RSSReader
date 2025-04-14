@@ -43,7 +43,8 @@ struct AddFeedView: View {
                             .font(.footnote)
                         }
                     }
-                }            }
+                }
+            }
             .navigationTitle("Add Feed")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -57,18 +58,28 @@ struct AddFeedView: View {
                     Button("Add") {
                         addFeed()
                     }
-                    .disabled(!viewModel.isValidURL || viewModel.isAdding)
+                    .disabled(!viewModel.isValidURL || viewModel.state == .adding)
                 }
             }
             .overlay {
-                if viewModel.isAdding {
+                if case .adding = viewModel.state {
                     ProgressView()
                 }
             }
-            .alert("Error Adding Feed", isPresented: $viewModel.showError) {
+            .alert("Error Adding Feed", isPresented: .init(
+                get: {
+                    if case .error = viewModel.state { return true }
+                    return false
+                },
+                set: { show in
+                    if !show, case .error = viewModel.state {
+                        viewModel.state = .idle
+                    }
+                }
+            )) {
                 Button("OK") {}
             } message: {
-                if let error = viewModel.error {
+                if case .error(let error) = viewModel.state {
                     Text(error.localizedDescription)
                 }
             }

@@ -56,7 +56,7 @@ struct FeedRow: View {
                     }
                 }
                 
-            case .error:
+            case .error(let error):
                 Image(systemName: "exclamationmark.triangle")
                     .font(.title2)
                     .frame(width: 50, height: 50)
@@ -66,7 +66,7 @@ struct FeedRow: View {
                     Text(viewModel.url.absoluteString)
                         .font(.headline)
                         .lineLimit(1)
-                    Text("Failed to load feed")
+                    Text("Failed to load feed: \(error.localizedDescription)")
                         .font(.caption)
                         .foregroundStyle(.red)
                 }
