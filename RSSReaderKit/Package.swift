@@ -10,6 +10,7 @@ let package = Package(
     products: [
         .library(name: "RSSClient", targets: ["RSSClient"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
+        .library(name: "FeedListFeature", targets: ["FeedListFeature"]),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.0.0"),
@@ -31,6 +32,14 @@ let package = Package(
         .target(
             name: "SharedModels",
             dependencies: []
+        ),
+        .target(
+            name: "FeedListFeature",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "RSSClient",
+                "SharedModels"
+            ]
         ),
     ]
 )
