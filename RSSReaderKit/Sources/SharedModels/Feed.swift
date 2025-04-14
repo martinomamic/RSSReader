@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Feed: Identifiable, Hashable {
+public struct Feed: Identifiable, Hashable, Sendable {
     public let id: UUID
     public let url: URL
     public var title: String?

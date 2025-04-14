@@ -19,9 +19,9 @@ import Foundation
         
         let (feed, items) = try await parser.parse(data: sampleRSSData, feedURL: url)
         
-        #expect(feed.title == "BBC News")
-        #expect(feed.description == "BBC News - World")
-        #expect(feed.url == url)
+        #expect(feed?.title == "BBC News")
+        #expect(feed?.description == "BBC News - World")
+        #expect(feed?.url == url)
         #expect(items.count == 24)
         
         let firstItem = items.first

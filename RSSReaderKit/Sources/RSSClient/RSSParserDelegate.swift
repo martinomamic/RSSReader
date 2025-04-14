@@ -2,14 +2,14 @@
 //  RSSParserDelegate.swift
 //  RSSReaderKit
 //
-//  Created by Martino Mamić on 12.04.25.
+//  Created by Martino Mamić on 13.04.25.
 //
 
 import Foundation
 import SharedModels
 
 public class RSSParserDelegate: NSObject, RSSParserDelegateProtocol {
-    private var feed: Feed!
+    private var feed: Feed?
     private var items: [FeedItem] = []
     
     private var currentElement = ""
@@ -24,7 +24,7 @@ public class RSSParserDelegate: NSObject, RSSParserDelegateProtocol {
     
     private var textBuffer = ""
     
-    public var result: (feed: Feed, items: [FeedItem]) {
+    public var result: (feed: Feed?, items: [FeedItem]) {
         return (feed: feed, items: items)
     }
     
@@ -38,7 +38,13 @@ public class RSSParserDelegate: NSObject, RSSParserDelegateProtocol {
         self.feedID = UUID()
     }
     
-    public func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String: String] = [:]) {
+    public func parser(
+        _ parser: XMLParser,
+        didStartElement elementName: String,
+        namespaceURI: String?,
+        qualifiedName qName: String?,
+        attributes attributeDict: [String: String] = [:]
+    ) {
         currentElement = elementName
         textBuffer = ""
         
@@ -65,7 +71,12 @@ public class RSSParserDelegate: NSObject, RSSParserDelegateProtocol {
         }
     }
     
-    public func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
+    public func parser(
+        _ parser: XMLParser,
+        didEndElement elementName: String,
+        namespaceURI: String?,
+        qualifiedName qName: String?
+    ) {
         let text = textBuffer.trimmingCharacters(in: .whitespacesAndNewlines)
         
         guard let element = RSSElement(rawValue: elementName) else { return }
@@ -75,13 +86,13 @@ public class RSSParserDelegate: NSObject, RSSParserDelegateProtocol {
             if isInsideItem {
                 currentTitle = text
             } else if !isInsideImage {
-                feed.title = text
+                feed?.title = text
             }
         case .description:
             if isInsideItem {
                 currentDescription = text
             } else {
-                feed.description = text
+                feed?.description = text
             }
         case .link:
             if isInsideItem {
@@ -93,7 +104,7 @@ public class RSSParserDelegate: NSObject, RSSParserDelegateProtocol {
             }
         case .url:
             if isInsideImage {
-                feed.imageURL = URL(string: text)
+                feed?.imageURL = URL(string: text)
             }
         case .image:
             isInsideImage = false
