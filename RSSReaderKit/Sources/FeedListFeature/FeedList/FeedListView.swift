@@ -25,6 +25,9 @@ public struct FeedListView: View {
                         FeedView(viewModel: feed)
                     }
                 }
+                .onDelete { indexSet in
+                    viewModel.removeFeed(at: indexSet)
+                }
             }
             .navigationTitle("RSS Feeds")
             .navigationDestination(for: FeedViewModel.self) { feed in
@@ -41,6 +44,11 @@ public struct FeedListView: View {
                         showingAddFeed = true
                     } label: {
                         Label("Add Feed", systemImage: Constants.Images.addIcon)
+                    }
+                }
+                if !viewModel.feeds.isEmpty {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        EditButton()
                     }
                 }
             }

@@ -31,4 +31,8 @@ enum FeedListState: Equatable {
         state = .loading
         state = .idle
     }
+    
+    func removeFeed(at indexSet: IndexSet) {
+        feeds.remove(atOffsets: indexSet)
+    }
 }
