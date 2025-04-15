@@ -5,14 +5,16 @@
 //  Created by Martino Mamić on 14.04.25.
 //
 
-public enum RSSViewError: Error, Equatable {
+import Foundation
+
+public enum RSSViewError: Error, Equatable, LocalizedError {
     case invalidURL
     case duplicateFeed
     case networkError(String)
     case parsingError(String)
     case unknown(String)
     
-    var localizedDescription: String {
+    public var errorDescription: String? {
         switch self {
         case .invalidURL:
             return "Please enter a valid URL"
