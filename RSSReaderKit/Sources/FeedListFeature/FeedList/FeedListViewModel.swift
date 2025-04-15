@@ -31,25 +31,28 @@ enum FeedListState: Equatable {
     var feeds: [FeedViewModel] = []
     var state: FeedListState = .idle
     
+    private var saveTask: Task<Void, Never>?
+    private var loadTask: Task<Void, Never>?
+    
     init() {
-        Task {
-            await loadFeeds()
-        }
+        loadFeeds()
     }
     
-    func loadFeeds() async {
+    func loadFeeds() {
         state = .loading
-        
-        do {
-            let savedFeeds = try await persistenceClient.loadFeeds()
-            feeds = savedFeeds.map { feed in
-                let viewModel = FeedViewModel(url: feed.url, feed: feed)
-                viewModel.state = .loaded(feed)
-                return viewModel
+        loadTask?.cancel()
+        loadTask = Task {
+            do {
+                let savedFeeds = try await persistenceClient.loadFeeds()
+                feeds = savedFeeds.map { feed in
+                    let viewModel = FeedViewModel(url: feed.url, feed: feed)
+                    viewModel.state = .loaded(feed)
+                    return viewModel
+                }
+                state = .idle
+            } catch {
+                state = .error(RSSErrorMapper.mapToViewError(error))
             }
-            state = .idle
-        } catch {
-            state = .error(RSSErrorMapper.mapToViewError(error))
         }
     }
     
@@ -59,12 +62,13 @@ enum FeedListState: Equatable {
     }
     
     func saveFeeds() {
-        Task {
+        saveTask?.cancel()
+        saveTask = Task {
             do {
                 let feedsToSave = feeds.map { $0.feed }
                 try await persistenceClient.saveFeeds(feedsToSave)
             } catch {
-                print("Error saving feeds: \(error)")
+                state = .error(RSSErrorMapper.mapToViewError(error))
             }
         }
     }

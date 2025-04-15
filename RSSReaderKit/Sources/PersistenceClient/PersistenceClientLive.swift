@@ -9,10 +9,6 @@ import Foundation
 import SharedModels
 import SwiftData
 
-import Foundation
-import SharedModels
-import SwiftData
-
 extension PersistenceClient {
     public static func live() -> PersistenceClient {
         let modelContainer: ModelContainer
