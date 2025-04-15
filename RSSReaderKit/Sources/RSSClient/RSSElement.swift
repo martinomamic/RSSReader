@@ -8,21 +8,21 @@
 import Foundation
 
 public enum RSSElement: String {
-    case item = "item"
-    case image = "image"
-    case title = "title"
-    case description = "description"
-    case link = "link"
-    case pubDate = "pubDate"
-    case url = "url"
-    case enclosure = "enclosure"
-    case channel = "channel"
+    case item
+    case image
+    case title
+    case description
+    case link
+    case pubDate
+    case url
+    case enclosure
+    case channel
 }
 
 public enum RSSAttribute: String {
-    case url = "url"
-    case type = "type"
-    case length = "length"
+    case url
+    case type
+    case length
 }
 
 public enum MediaType: String {

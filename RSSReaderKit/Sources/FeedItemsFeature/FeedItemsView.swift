@@ -39,7 +39,7 @@ public struct FeedItemsView: View {
                 ContentUnavailableView {
                     Label("Failed to Load", systemImage: Constants.Images.failedToLoadIcon)
                 } description: {
-                    Text(error.localizedDescription)
+                    Text(error.errorDescription)
                 }
                 
             case .empty:
@@ -51,9 +51,6 @@ public struct FeedItemsView: View {
             }
         }
         .navigationTitle(viewModel.feedTitle)
-        .refreshable {
-            await viewModel.loadItems()
-        }
         .task {
             await viewModel.loadItems()
         }
