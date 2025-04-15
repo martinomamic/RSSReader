@@ -8,6 +8,7 @@
 import Common
 import Dependencies
 import Foundation
+import PersistenceClient
 import RSSClient
 import SharedModels
 import SwiftUI
@@ -21,6 +22,10 @@ enum AddFeedState: Equatable {
 
 @MainActor
 @Observable class AddFeedViewModel {
+    
+    @ObservationIgnored
+    @Dependency(\.persistenceClient) private var persistenceClient
+    
     @ObservationIgnored
     @Dependency(\.rssClient) private var rssClient
     
@@ -58,6 +63,9 @@ enum AddFeedState: Equatable {
             feedViewModel.state = .loaded(feed)
             
             feeds.wrappedValue.append(feedViewModel)
+            
+            let feedsToSave = feeds.wrappedValue.map { $0.feed }
+            try await persistenceClient.saveFeeds(feedsToSave)
             
             state = .success
             return true
