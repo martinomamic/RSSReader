@@ -57,7 +57,7 @@ struct AddFeedView: View {
                 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") {
-                        addFeed()
+                        viewModel.addFeed()
                     }
                     .disabled(!viewModel.isValidURL || viewModel.state == .adding)
                 }
@@ -84,13 +84,10 @@ struct AddFeedView: View {
                     Text(error.errorDescription)
                 }
             }
-        }
-    }
-    
-    private func addFeed() {
-        Task {
-            if await viewModel.addFeed() {
-                dismiss()
+            .onChange(of: viewModel.state) { _, newState in
+                if case .success = newState {
+                    dismiss()
+                }
             }
         }
     }
