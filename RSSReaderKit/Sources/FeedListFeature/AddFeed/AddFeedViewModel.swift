@@ -5,11 +5,13 @@
 //  Created by Martino Mamić on 13.04.25.
 //
 
+import Common
 import Dependencies
 import Foundation
-import SwiftUI
+import PersistenceClient
 import RSSClient
 import SharedModels
+import SwiftUI
 
 enum AddFeedState: Equatable {
     case idle
@@ -20,10 +22,15 @@ enum AddFeedState: Equatable {
 
 @MainActor
 @Observable class AddFeedViewModel {
+    
+    @ObservationIgnored
+    @Dependency(\.persistenceClient) private var persistenceClient
+    
     @ObservationIgnored
     @Dependency(\.rssClient) private var rssClient
     
     private var feeds: Binding<[FeedViewModel]>
+    private var addFeedTask: Task<Void, Never>?
     
     var urlString: String = ""
     var state: AddFeedState = .idle
@@ -37,37 +44,37 @@ enum AddFeedState: Equatable {
         return URL(string: urlString) != nil
     }
     
-    func addFeed() async -> Bool {
+    func addFeed() {
         guard let url = URL(string: urlString) else {
             state = .error(.invalidURL)
-            return false
+            return
         }
         
-        if feeds.wrappedValue.contains(where: { $0.url == url }) {
+        guard !feeds.wrappedValue.contains(where: { $0.url == url }) else {
             state = .error(.duplicateFeed)
-            return false
+            return
         }
+        
+        addFeedTask?.cancel()
         
         state = .adding
         
-        do {
-            let feed = try await rssClient.fetchFeed(url)
-            
-            let feedViewModel = FeedViewModel(url: url)
-            feedViewModel.state = .loaded(feed)
-            
-            feeds.wrappedValue.append(feedViewModel)
-            
-            state = .success
-            return true
-        } catch {
-            state = .error(RSSErrorMapper.mapToViewError(error))
-            return false
+        addFeedTask = Task {
+            do {
+                let feed = try await rssClient.fetchFeed(url)
+                
+                let feedViewModel = FeedViewModel(url: url, feed: feed)
+                feedViewModel.state = .loaded(feed)
+                
+                feeds.wrappedValue.insert(feedViewModel, at: 0) 
+                
+                let feedsToSave = feeds.wrappedValue.map { $0.feed }
+                try await persistenceClient.saveFeeds(feedsToSave)
+                
+                state = .success
+            } catch {
+                state = .error(RSSErrorMapper.mapToViewError(error))
+            }
         }
-    }
-    
-    func reset() {
-        urlString = ""
-        state = .idle
     }
 }

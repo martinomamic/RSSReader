@@ -5,6 +5,7 @@
 //  Created by Martino Mamić on 13.04.25.
 //
 
+import Common
 import SwiftUI
 
 struct AddFeedView: View {
@@ -56,7 +57,7 @@ struct AddFeedView: View {
                 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") {
-                        addFeed()
+                        viewModel.addFeed()
                     }
                     .disabled(!viewModel.isValidURL || viewModel.state == .adding)
                 }
@@ -80,16 +81,13 @@ struct AddFeedView: View {
                 Button("OK") {}
             } message: {
                 if case .error(let error) = viewModel.state {
-                    Text(error.localizedDescription)
+                    Text(error.errorDescription)
                 }
             }
-        }
-    }
-    
-    private func addFeed() {
-        Task {
-            if await viewModel.addFeed() {
-                dismiss()
+            .onChange(of: viewModel.state) { _, newState in
+                if case .success = newState {
+                    dismiss()
+                }
             }
         }
     }

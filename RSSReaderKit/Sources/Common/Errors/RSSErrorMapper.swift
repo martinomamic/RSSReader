@@ -7,8 +7,8 @@
 
 import RSSClient
 
-struct RSSErrorMapper {
-    static func mapToViewError(_ error: Error) -> RSSViewError {
+public struct RSSErrorMapper {
+    public static func mapToViewError(_ error: Error) -> RSSViewError {
         if let rssError = error as? RSSError {
             switch rssError {
             case .invalidURL:

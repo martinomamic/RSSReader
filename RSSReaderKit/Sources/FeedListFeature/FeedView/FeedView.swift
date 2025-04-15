@@ -5,6 +5,7 @@
 //  Created by Martino Mamić on 13.04.25.
 //
 
+import Common
 import SwiftUI
 import SharedModels
 
@@ -66,7 +67,7 @@ struct FeedView: View {
                     Text(viewModel.url.absoluteString)
                         .font(.headline)
                         .lineLimit(1)
-                    Text("Failed to load feed: \(error.localizedDescription)")
+                    Text("Failed to load feed: \(error.errorDescription)")
                         .font(.caption)
                         .foregroundStyle(.red)
                 }
