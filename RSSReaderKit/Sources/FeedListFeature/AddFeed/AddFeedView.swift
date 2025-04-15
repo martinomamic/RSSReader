@@ -81,7 +81,7 @@ struct AddFeedView: View {
                 Button("OK") {}
             } message: {
                 if case .error(let error) = viewModel.state {
-                    Text(error.localizedDescription)
+                    Text(error.errorDescription)
                 }
             }
         }

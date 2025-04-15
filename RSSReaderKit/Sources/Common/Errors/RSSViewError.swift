@@ -14,7 +14,7 @@ public enum RSSViewError: Error, Equatable, LocalizedError {
     case parsingError(String)
     case unknown(String)
     
-    public var errorDescription: String? {
+    public var errorDescription: String {
         switch self {
         case .invalidURL:
             return "Please enter a valid URL"
