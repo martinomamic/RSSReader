@@ -22,7 +22,6 @@ let package = Package(
             name: "RSSClient",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                "Common",
                 "SharedModels"
             ]
         ),
@@ -38,7 +37,9 @@ let package = Package(
         ),
         .target(
             name: "Common",
-            dependencies: []
+            dependencies: [
+                "RSSClient"
+            ]
         ),
         .target(
             name: "FeedListFeature",
