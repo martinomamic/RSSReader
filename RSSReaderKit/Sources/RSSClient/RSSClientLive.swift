@@ -5,9 +5,10 @@
 //  Created by Martino Mamić on 12.04.25.
 //
 
+import Common
+import Dependencies
 import Foundation
 import SharedModels
-import Dependencies
 
 extension RSSClient {
     public static func live() -> RSSClient {

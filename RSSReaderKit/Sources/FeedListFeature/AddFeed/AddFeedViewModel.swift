@@ -5,11 +5,12 @@
 //  Created by Martino Mamić on 13.04.25.
 //
 
+import Common
 import Dependencies
 import Foundation
-import SwiftUI
 import RSSClient
 import SharedModels
+import SwiftUI
 
 enum AddFeedState: Equatable {
     case idle
@@ -53,7 +54,7 @@ enum AddFeedState: Equatable {
         do {
             let feed = try await rssClient.fetchFeed(url)
             
-            let feedViewModel = FeedViewModel(url: url)
+            let feedViewModel = FeedViewModel(url: url, feed: feed)
             feedViewModel.state = .loaded(feed)
             
             feeds.wrappedValue.append(feedViewModel)

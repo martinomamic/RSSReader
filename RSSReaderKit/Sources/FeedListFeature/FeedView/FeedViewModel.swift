@@ -5,7 +5,7 @@
 //  Created by Martino Mamić on 13.04.25.
 //
 
-// FeedViewModel.swift
+import Common
 import Dependencies
 import Foundation
 import RSSClient
@@ -37,10 +37,12 @@ enum FeedViewState: Equatable {
     @Dependency(\.rssClient) private var rssClient
     
     let url: URL
+    let feed: Feed
     var state: FeedViewState = .loading
     
-    init(url: URL) {
+    init(url: URL, feed: Feed) {
         self.url = url
+        self.feed = feed
     }
     
     func loadFeedDetails() async {

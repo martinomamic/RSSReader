@@ -5,9 +5,11 @@
 //  Created by Martino Mamić on 13.04.25.
 //
 
-import SwiftUI
+import Common
+import FeedItemsFeature
 import RSSClient
 import SharedModels
+import SwiftUI
 
 public struct FeedListView: View {
     @State private var viewModel = FeedListViewModel()
@@ -26,7 +28,12 @@ public struct FeedListView: View {
             }
             .navigationTitle("RSS Feeds")
             .navigationDestination(for: FeedViewModel.self) { feed in
-                Text("Feed details")
+                FeedItemsView(
+                    viewModel: FeedItemsViewModel(
+                        feedURL: feed.url,
+                        feedTitle: feed.feed.title ?? "Unnamed feed"
+                    )
+                )
             }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
@@ -43,7 +50,7 @@ public struct FeedListView: View {
             .overlay {
                 if viewModel.feeds.isEmpty {
                     ContentUnavailableView {
-                        Label("No Feeds", systemImage: Constants.Images.noFeedsIcon)
+                        Label("No Feeds", systemImage: Constants.Images.noItemsIcon)
                     } description: {
                         Text("Add an RSS feed to get started")
                     } actions: {
