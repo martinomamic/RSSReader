@@ -35,7 +35,7 @@ public struct TabBarView: View {
             case .feeds:
                 FeedListView()
             case .favorites:
-                Text("Favorites Coming Soon")
+                FeedListView(showOnlyFavorites: true)
             }
         }
     }
