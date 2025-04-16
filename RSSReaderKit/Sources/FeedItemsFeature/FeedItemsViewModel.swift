@@ -1,16 +1,8 @@
-//
-//  FeedItemsViewModel.swift
-//  RSSReaderKit
-//
-//  Created by Martino Mamić on 14.04.25.
-//
-
 import Common
 import Dependencies
 import Foundation
 import RSSClient
 import SharedModels
-import UIKit
 
 @Observable @MainActor
 public class FeedItemsViewModel: Identifiable {
@@ -21,6 +13,8 @@ public class FeedItemsViewModel: Identifiable {
     let feedTitle: String
     
     var state: FeedItemsState = .loading
+    var selectedItem: FeedItem?
+    var showItemDetail = false
     
     private var loadTask: Task<Void, Never>?
     
@@ -48,7 +42,8 @@ public class FeedItemsViewModel: Identifiable {
         }
     }
     
-    func openLink(for item: FeedItem) {
-        UIApplication.shared.open(item.link)
+    func selectItem(_ item: FeedItem) {
+        selectedItem = item
+        showItemDetail = true
     }
 }

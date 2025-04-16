@@ -14,7 +14,7 @@ let package = Package(
         .library(name: "PersistenceClient", targets: ["PersistenceClient"]),
         .library(name: "RSSClient", targets: ["RSSClient"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
-        .library(name: "WebAppFeature", targets: ["WebAppFeature"]),
+        .library(name: "WebViewFeature", targets: ["WebViewFeature"]),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-concurrency-extras", from: "1.3.1"),
@@ -45,6 +45,12 @@ let package = Package(
             ]
         ),
         .target(
+            name: "WebViewFeature",
+            dependencies: [
+                "SharedModels"
+            ]
+        ),
+        .target(
             name: "FeedListFeature",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
@@ -61,7 +67,8 @@ let package = Package(
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 "Common",
                 "RSSClient",
-                "SharedModels"
+                "SharedModels",
+                "WebViewFeature"
             ]
         ),
         .target(
@@ -78,14 +85,5 @@ let package = Package(
                 "PersistenceClient"
             ]
         ),
-        .target(
-            name: "WebAppFeature",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "Common",
-                "SharedModels"
-            ]
-        ),
-        
     ]
 )

@@ -9,6 +9,7 @@ import Common
 import RSSClient
 import SharedModels
 import SwiftUI
+import WebViewFeature
 
 public struct FeedItemsView: View {
     @State var viewModel: FeedItemsViewModel
@@ -27,11 +28,16 @@ public struct FeedItemsView: View {
                 List {
                     ForEach(items) { item in
                         Button {
-                            viewModel.openLink(for: item)
+                            viewModel.selectItem(item)
                         } label: {
                             FeedItemRow(item: item)
                         }
                         .buttonStyle(.plain)
+                    }
+                }
+                .sheet(isPresented: $viewModel.showItemDetail) {
+                    if let selectedItem = viewModel.selectedItem {
+                        WebContentView(url: selectedItem.link, title: selectedItem.title)
                     }
                 }
                 
