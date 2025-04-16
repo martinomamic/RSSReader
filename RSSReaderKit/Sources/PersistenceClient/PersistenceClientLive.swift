@@ -25,13 +25,6 @@ extension PersistenceClient {
             saveFeeds: { feeds async throws in
                 let context = ModelContext(modelContainer)
                 
-                let fetchDescriptor = FetchDescriptor<PersistableFeed>()
-                let existingFeeds = try context.fetch(fetchDescriptor)
-                
-                for feed in existingFeeds {
-                    context.delete(feed)
-                }
-                
                 for feed in feeds {
                     let persistableFeed = PersistableFeed(from: feed)
                     context.insert(persistableFeed)
