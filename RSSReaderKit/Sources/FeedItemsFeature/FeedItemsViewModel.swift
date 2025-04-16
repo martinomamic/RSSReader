@@ -16,6 +16,8 @@ import UIKit
 public class FeedItemsViewModel: Identifiable {
     @ObservationIgnored
     @Dependency(\.rssClient) private var rssClient
+    @ObservationIgnored
+    @Dependency(\.openURL) private var openURL
     
     let feedURL: URL
     let feedTitle: String
@@ -49,6 +51,8 @@ public class FeedItemsViewModel: Identifiable {
     }
     
     func openLink(for item: FeedItem) {
-        UIApplication.shared.open(item.link)
+        Task {
+            await openURL(item.link)
+        }
     }
 }
