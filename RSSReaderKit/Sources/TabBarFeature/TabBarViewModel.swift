@@ -13,9 +13,6 @@ import Observation
 public class TabBarViewModel {
     public var selectedTab: TabItem = .feeds
     
-    private var resetFeedsTrigger = false
-    private var resetFavoritesTrigger = false
-    
     public var feedsPath = NavigationPath()
     public var favoritesPath = NavigationPath()
     
@@ -30,11 +27,8 @@ public class TabBarViewModel {
     
     public func resetTab(_ tab: TabItem) {
         var path = navigationPath(for: tab)
-        if !path.isEmpty {
-            path.removeLast(path.count)
-        } else {
-            toggleResetTrigger(for: tab)
-        }
+        guard path.isEmpty else { return }
+        path.removeLast(path.count)
     }
     
     public func resetAllTabs() {
@@ -48,24 +42,6 @@ public class TabBarViewModel {
             return feedsPath
         case .favorites:
             return favoritesPath
-        }
-    }
-    
-    public func resetTrigger(for tab: TabItem) -> Bool {
-        switch tab {
-        case .feeds:
-            return resetFeedsTrigger
-        case .favorites:
-            return resetFavoritesTrigger
-        }
-    }
-    
-    private func toggleResetTrigger(for tab: TabItem) {
-        switch tab {
-        case .feeds:
-            resetFeedsTrigger.toggle()
-        case .favorites:
-            resetFavoritesTrigger.toggle()
         }
     }
 }

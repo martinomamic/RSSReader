@@ -50,12 +50,10 @@ public struct TabBarView: View {
         TabView(selection: selection) {
             createTabView(for: .feeds) {
                 FeedListView()
-                    .environment(\.resetTriggerValue, viewModel.resetTrigger(for: .feeds))
             }
             
             createTabView(for: .favorites) {
                 Text("Favorites Coming Soon")
-                    .environment(\.resetTriggerValue, viewModel.resetTrigger(for: .favorites))
             }
         }
         .environment(\.tabBarViewModel, viewModel)
