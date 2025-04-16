@@ -8,6 +8,7 @@
 import Common
 import Dependencies
 import Foundation
+import PersistenceClient
 import RSSClient
 import SharedModels
 
@@ -35,24 +36,45 @@ enum FeedViewState: Equatable {
 @Observable class FeedViewModel: Identifiable {
     @ObservationIgnored
     @Dependency(\.rssClient) private var rssClient
+    @ObservationIgnored
+    @Dependency(\.persistenceClient.saveFeeds) private var saveFeeds
     
     let url: URL
-    let feed: Feed
+    var feed: Feed
     var state: FeedViewState = .loading
+    
+    private var toggleFavoriteTask: Task<Void, Never>?
+    private var loadTask: Task<Void, Never>?
     
     init(url: URL, feed: Feed) {
         self.url = url
         self.feed = feed
     }
     
-    func loadFeedDetails() async {
+    func loadFeedDetails() {
+        loadTask?.cancel()
         state = .loading
         
-        do {
-            let fetchedFeed = try await rssClient.fetchFeed(url)
-            state = .loaded(fetchedFeed)
-        } catch let error {
-            state = .error(RSSErrorMapper.mapToViewError(error))
+        loadTask = Task {
+            do {
+                let fetchedFeed = try await rssClient.fetchFeed(url)
+                state = .loaded(fetchedFeed)
+            } catch let error {
+                state = .error(RSSErrorMapper.mapToViewError(error))
+            }
+        }
+    }
+    
+    func toggleFavorite() {
+        toggleFavoriteTask?.cancel()
+        feed.isFavorite.toggle()
+        
+        toggleFavoriteTask = Task {
+            do {
+                try await saveFeeds([feed])
+            } catch {
+                state = .error(RSSErrorMapper.mapToViewError(error))
+            }
         }
     }
 }

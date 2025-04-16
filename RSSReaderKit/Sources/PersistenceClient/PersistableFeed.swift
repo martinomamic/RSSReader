@@ -16,6 +16,7 @@ public final class PersistableFeed {
     public var title: String?
     public var feedDescription: String?
     public var imageURLString: String?
+    public var isFavorite: Bool
     
     public init(from feed: Feed) {
         self.id = feed.id
@@ -23,6 +24,7 @@ public final class PersistableFeed {
         self.title = feed.title
         self.feedDescription = feed.description
         self.imageURLString = feed.imageURL?.absoluteString
+        self.isFavorite = feed.isFavorite
     }
     
     public func toFeed() -> Feed {
@@ -31,7 +33,8 @@ public final class PersistableFeed {
             url: url,
             title: title,
             description: feedDescription,
-            imageURL: imageURLString.flatMap { URL(string: $0) }
+            imageURL: imageURLString.flatMap { URL(string: $0) },
+            isFavorite: isFavorite
         )
     }
 }

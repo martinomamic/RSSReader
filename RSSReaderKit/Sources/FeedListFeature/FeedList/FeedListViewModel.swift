@@ -31,6 +31,10 @@ enum FeedListState: Equatable {
     var feeds: [FeedViewModel] = []
     var state: FeedListState = .idle
     
+    var favoriteFeeds: [FeedViewModel] {
+        feeds.filter { $0.feed.isFavorite }
+    }
+    
     private var saveTask: Task<Void, Never>?
     private var loadTask: Task<Void, Never>?
     
@@ -39,6 +43,7 @@ enum FeedListState: Equatable {
     }
     
     func loadFeeds() {
+        feeds.removeAll()
         state = .loading
         loadTask?.cancel()
         loadTask = Task {
@@ -56,8 +61,17 @@ enum FeedListState: Equatable {
         }
     }
     
-    func removeFeed(at indexSet: IndexSet) {
-        feeds.remove(atOffsets: indexSet)
+    func removeFeed(at indexSet: IndexSet, fromFavorites: Bool = false) {
+        if fromFavorites {
+            let feedsToRemoveFromFavorites = indexSet.map { favoriteFeeds[$0] }
+            for feed in feedsToRemoveFromFavorites {
+                if let index = feeds.firstIndex(where: { $0.url == feed.url }) {
+                    feeds[index].feed.isFavorite = false
+                }
+            }
+        } else {
+            feeds.remove(atOffsets: indexSet)
+        }
         saveFeeds()
     }
     

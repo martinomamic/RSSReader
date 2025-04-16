@@ -55,6 +55,18 @@ struct FeedView: View {
                             .foregroundStyle(.secondary)
                             .lineLimit(Constants.UI.feedDescriptionLineLimit)
                     }
+                    HStack{
+                        Spacer()
+                        Button {
+                            viewModel.toggleFavorite()
+                        } label: {
+                            Image(systemName: viewModel.feed.isFavorite ? "star.fill" : "star")
+                                .font(.title2)
+                                .foregroundColor(viewModel.feed.isFavorite ? .yellow : .gray)
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
+                    }
+                    
                 }
                 
             case .error(let error):
