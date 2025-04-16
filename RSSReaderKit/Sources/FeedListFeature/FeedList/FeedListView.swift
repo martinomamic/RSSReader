@@ -30,6 +30,7 @@ public struct FeedListView: View {
                 }
             }
             .navigationTitle("RSS Feeds")
+            .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(for: FeedViewModel.self) { feed in
                 FeedItemsView(
                     viewModel: FeedItemsViewModel(
