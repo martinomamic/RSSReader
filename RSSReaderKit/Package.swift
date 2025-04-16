@@ -14,6 +14,7 @@ let package = Package(
         .library(name: "PersistenceClient", targets: ["PersistenceClient"]),
         .library(name: "RSSClient", targets: ["RSSClient"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
+        .library(name: "TabBarFeature", targets: ["TabBarFeature"]),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-concurrency-extras", from: "1.3.1"),
@@ -61,6 +62,12 @@ let package = Package(
                 "Common",
                 "RSSClient",
                 "SharedModels"
+            ]
+        ),
+        .target(
+            name: "TabBarFeature",
+            dependencies: [
+                "FeedListFeature"
             ]
         ),
         .target(

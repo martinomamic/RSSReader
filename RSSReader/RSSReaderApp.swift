@@ -5,14 +5,14 @@
 //  Created by Martino Mamić on 12.04.25.
 //
 
-import FeedListFeature
+import TabBarFeature
 import SwiftUI
 
 @main
 struct RSSReaderApp: App {
     var body: some Scene {
         WindowGroup {
-            FeedListView()
+            TabBarView()
         }
     }
 }
