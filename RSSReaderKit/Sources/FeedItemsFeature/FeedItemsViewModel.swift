@@ -22,29 +22,32 @@ public class FeedItemsViewModel: Identifiable {
     
     var state: FeedItemsState = .loading
     
+    private var loadTask: Task<Void, Never>?
+    
     public init(feedURL: URL, feedTitle: String) {
         self.feedURL = feedURL
         self.feedTitle = feedTitle
     }
     
-    @MainActor
-    func loadItems() async {
+    func loadItems() {
+        loadTask?.cancel()
         state = .loading
         
-        do {
-            let items = try await rssClient.fetchFeedItems(feedURL)
-            
-            if items.isEmpty {
-                state = .empty
-            } else {
-                state = .loaded(items)
+        loadTask = Task {
+            do {
+                let items = try await rssClient.fetchFeedItems(feedURL)
+                
+                if items.isEmpty {
+                    state = .empty
+                } else {
+                    state = .loaded(items)
+                }
+            } catch {
+                state = .error(RSSErrorMapper.mapToViewError(error))
             }
-        } catch {
-            state = .error(RSSErrorMapper.mapToViewError(error))
         }
     }
     
-    @MainActor
     func openLink(for item: FeedItem) {
         UIApplication.shared.open(item.link)
     }
