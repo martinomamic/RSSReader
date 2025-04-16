@@ -31,6 +31,10 @@ enum FeedListState: Equatable {
     var feeds: [FeedViewModel] = []
     var state: FeedListState = .idle
     
+    var favoriteFeeds: [FeedViewModel] {
+        feeds.filter { $0.feed.isFavorite }
+    }
+    
     private var saveTask: Task<Void, Never>?
     private var loadTask: Task<Void, Never>?
     

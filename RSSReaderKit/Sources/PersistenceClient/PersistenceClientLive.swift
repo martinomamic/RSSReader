@@ -15,7 +15,7 @@ extension PersistenceClient {
         
         do {
             let schema = Schema([PersistableFeed.self])
-            let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+            let modelConfiguration = ModelConfiguration(schema: schema)
             modelContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
             fatalError("Failed to create model container: \(error.localizedDescription)")

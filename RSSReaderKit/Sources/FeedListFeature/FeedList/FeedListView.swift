@@ -20,9 +20,11 @@ public struct FeedListView: View {
     public var body: some View {
         List {
             ForEach(viewModel.feeds) { feed in
-                NavigationLink(value: feed) {
-                    FeedView(viewModel: feed)
-                }
+                FeedView(viewModel: feed)
+                    .background {
+                        NavigationLink(value: feed) {}
+                            .opacity(0)
+                    }
             }
             .onDelete { indexSet in
                 viewModel.removeFeed(at: indexSet)
