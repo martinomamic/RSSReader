@@ -21,7 +21,8 @@ enum FeedListState: Equatable {
 }
 
 @MainActor
-@Observable class FeedListViewModel {
+@Observable
+public class FeedListViewModel {
     @ObservationIgnored
     @Dependency(\.rssClient) private var rssClient
     
@@ -38,9 +39,7 @@ enum FeedListState: Equatable {
     private var saveTask: Task<Void, Never>?
     private var loadTask: Task<Void, Never>?
     
-    init() {
-        loadFeeds()
-    }
+    public init() {}
     
     func loadFeeds() {
         feeds.removeAll()
