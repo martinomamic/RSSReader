@@ -18,58 +18,56 @@ public struct FeedListView: View {
     public init() {}
     
     public var body: some View {
-        NavigationStack {
-            List {
-                ForEach(viewModel.feeds) { feed in
-                    NavigationLink(value: feed) {
-                        FeedView(viewModel: feed)
-                    }
-                }
-                .onDelete { indexSet in
-                    viewModel.removeFeed(at: indexSet)
+        List {
+            ForEach(viewModel.feeds) { feed in
+                NavigationLink(value: feed) {
+                    FeedView(viewModel: feed)
                 }
             }
-            .navigationTitle("RSS Feeds")
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationDestination(for: FeedViewModel.self) { feed in
-                FeedItemsView(
-                    viewModel: FeedItemsViewModel(
-                        feedURL: feed.url,
-                        feedTitle: feed.feed.title ?? "Unnamed feed"
-                    )
+            .onDelete { indexSet in
+                viewModel.removeFeed(at: indexSet)
+            }
+        }
+        .navigationTitle("RSS Feeds")
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(for: FeedViewModel.self) { feed in
+            FeedItemsView(
+                viewModel: FeedItemsViewModel(
+                    feedURL: feed.url,
+                    feedTitle: feed.feed.title ?? "Unnamed feed"
                 )
+            )
+        }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    showingAddFeed = true
+                } label: {
+                    Label("Add Feed", systemImage: Constants.Images.addIcon)
+                }
             }
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
+            if !viewModel.feeds.isEmpty {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    EditButton()
+                }
+            }
+        }
+        .sheet(isPresented: $showingAddFeed) {
+            AddFeedView(feeds: $viewModel.feeds)
+        }
+        .overlay {
+            if viewModel.feeds.isEmpty {
+                ContentUnavailableView {
+                    Label("No Feeds", systemImage: Constants.Images.noItemsIcon)
+                } description: {
+                    Text("Add an RSS feed to get started")
+                } actions: {
                     Button {
                         showingAddFeed = true
                     } label: {
                         Label("Add Feed", systemImage: Constants.Images.addIcon)
                     }
-                }
-                if !viewModel.feeds.isEmpty {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        EditButton()
-                    }
-                }
-            }
-            .sheet(isPresented: $showingAddFeed) {
-                AddFeedView(feeds: $viewModel.feeds)
-            }
-            .overlay {
-                if viewModel.feeds.isEmpty {
-                    ContentUnavailableView {
-                        Label("No Feeds", systemImage: Constants.Images.noItemsIcon)
-                    } description: {
-                        Text("Add an RSS feed to get started")
-                    } actions: {
-                        Button {
-                            showingAddFeed = true
-                        } label: {
-                            Label("Add Feed", systemImage: Constants.Images.addIcon)
-                        }
-                        .buttonStyle(.bordered)
-                    }
+                    .buttonStyle(.bordered)
                 }
             }
         }
