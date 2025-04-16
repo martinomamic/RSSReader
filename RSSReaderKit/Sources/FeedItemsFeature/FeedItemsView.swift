@@ -40,6 +40,13 @@ public struct FeedItemsView: View {
                     Label("Failed to Load", systemImage: Constants.Images.failedToLoadIcon)
                 } description: {
                     Text(error.errorDescription)
+                } actions: {
+                    Button {
+                        viewModel.loadItems()
+                    } label: {
+                        Text("Try Again")
+                    }
+                    .buttonStyle(.bordered)
                 }
                 
             case .empty:
@@ -52,7 +59,7 @@ public struct FeedItemsView: View {
         }
         .navigationTitle(viewModel.feedTitle)
         .task {
-            await viewModel.loadItems()
+            viewModel.loadItems()
         }
     }
 }
