@@ -69,7 +69,9 @@ let package = Package(
             name: "NotificationClient",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                "SharedModels"
+                "PersistenceClient",
+                "RSSClient",
+                "SharedModels",
             ]
         ),
         .target(

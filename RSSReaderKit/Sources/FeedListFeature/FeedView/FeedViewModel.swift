@@ -8,6 +8,7 @@
 import Common
 import Dependencies
 import Foundation
+import NotificationClient
 import PersistenceClient
 import RSSClient
 import SharedModels
@@ -35,6 +36,8 @@ enum FeedViewState: Equatable {
 @MainActor
 @Observable class FeedViewModel: Identifiable {
     @ObservationIgnored
+    @Dependency(\.notificationClient) private var notificationClient
+    @ObservationIgnored
     @Dependency(\.rssClient) private var rssClient
     @ObservationIgnored
     @Dependency(\.persistenceClient.updateFeed) private var updateFeed
@@ -44,6 +47,7 @@ enum FeedViewState: Equatable {
     var state: FeedViewState = .loading
     
     private var toggleFavoriteTask: Task<Void, Never>?
+    private var toggleNotificationsTask: Task<Void, Never>?
     private var loadTask: Task<Void, Never>?
     
     init(url: URL, feed: Feed) {
@@ -73,6 +77,29 @@ enum FeedViewState: Equatable {
             do {
                 try await updateFeed(feed)
             } catch {
+                state = .error(RSSErrorMapper.mapToViewError(error))
+            }
+        }
+    }
+    
+    func toggleNotifications() {
+        toggleNotificationsTask?.cancel()
+        
+        toggleNotificationsTask = Task {
+            do {
+                if !feed.notificationsEnabled {
+                    try await notificationClient.requestPermissions()
+                }
+                
+                feed.notificationsEnabled.toggle()
+                
+                try await updateFeed(feed)
+                
+                if feed.notificationsEnabled {
+                    try await notificationClient.checkForNewItems()
+                }
+            } catch {
+                feed.notificationsEnabled = !feed.notificationsEnabled
                 state = .error(RSSErrorMapper.mapToViewError(error))
             }
         }
