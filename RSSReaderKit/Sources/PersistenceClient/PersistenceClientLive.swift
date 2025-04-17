@@ -22,14 +22,34 @@ extension PersistenceClient {
         }
         
         return PersistenceClient(
-            saveFeeds: { feeds async throws in
+            addFeed: { feed async throws in
                 let context = ModelContext(modelContainer)
+                let persistableFeed = PersistableFeed(from: feed)
+                context.insert(persistableFeed)
+                try context.save()
+            },
+            updateFeed: { feed async throws in
+                let context = ModelContext(modelContainer)
+                let feedURL = feed.url
+                let predicate = #Predicate<PersistableFeed> { $0.url == feedURL }
+                let descriptor = FetchDescriptor<PersistableFeed>(predicate: predicate)
                 
-                for feed in feeds {
-                    let persistableFeed = PersistableFeed(from: feed)
-                    context.insert(persistableFeed)
+                guard let existingFeed = try context.fetch(descriptor).first else {
+                    return
                 }
                 
+                existingFeed.isFavorite = feed.isFavorite
+                try context.save()
+            },
+            deleteFeed: { url async throws in
+                let context = ModelContext(modelContainer)
+                let predicate = #Predicate<PersistableFeed> { $0.url == url }
+                let descriptor = FetchDescriptor<PersistableFeed>(predicate: predicate)
+                
+                guard let existingFeed = try context.fetch(descriptor).first else {
+                    return
+                }
+                context.delete(existingFeed)
                 try context.save()
             },
             loadFeeds: { () async throws in
@@ -39,7 +59,6 @@ extension PersistenceClient {
                 let persistableFeeds = try context.fetch(descriptor)
                 return persistableFeeds.map { $0.toFeed() }
             }
-
         )
     }
 }

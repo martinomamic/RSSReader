@@ -37,7 +37,7 @@ enum FeedViewState: Equatable {
     @ObservationIgnored
     @Dependency(\.rssClient) private var rssClient
     @ObservationIgnored
-    @Dependency(\.persistenceClient.saveFeeds) private var saveFeeds
+    @Dependency(\.persistenceClient.updateFeed) private var updateFeed
     
     let url: URL
     var feed: Feed
@@ -71,7 +71,7 @@ enum FeedViewState: Equatable {
         
         toggleFavoriteTask = Task {
             do {
-                try await saveFeeds([feed])
+                try await updateFeed(feed)
             } catch {
                 state = .error(RSSErrorMapper.mapToViewError(error))
             }

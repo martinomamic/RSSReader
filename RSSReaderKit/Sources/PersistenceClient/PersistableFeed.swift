@@ -5,20 +5,18 @@ import SharedModels
 @Model
 final class PersistableFeed {
     @Attribute(.unique)
-    var id: UUID
-    var title: String?
     var url: URL
+    var title: String?
     var feedDescription: String?
     var imageURLString: String?
     var isFavorite: Bool
     
-    init(id: UUID,
+    init(
          title: String?,
          url: URL,
          feedDescription: String?,
          imageURLString: String?,
          isFavorite: Bool) {
-        self.id = id
         self.title = title
         self.url = url
         self.feedDescription = feedDescription
@@ -28,7 +26,6 @@ final class PersistableFeed {
     
     convenience init(from feed: Feed) {
         self.init(
-            id: feed.id,
             title: feed.title,
             url: feed.url,
             feedDescription: feed.description,
@@ -39,7 +36,6 @@ final class PersistableFeed {
     
     func toFeed() -> Feed {
         Feed(
-            id: id,
             url: url,
             title: title,
             description: feedDescription,
