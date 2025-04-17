@@ -54,7 +54,7 @@ public enum Constants {
     }
     
     public enum Notifications {
-        public static let maxStoredNotificationIDs = 1000
-        public static let pruneToCount = 500
+        public static let maxStoredNotificationIDs = 100
+        public static let pruneToCount = 50
     }
 }

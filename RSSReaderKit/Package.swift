@@ -69,9 +69,17 @@ let package = Package(
             name: "NotificationClient",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                "Common",
                 "PersistenceClient",
                 "RSSClient",
                 "SharedModels",
+            ]
+        ),
+        .testTarget(
+            name: "NotificationClientTests",
+            dependencies: [
+                .product(name: "ConcurrencyExtras", package: "swift-concurrency-extras"),
+                "NotificationClient",
             ]
         ),
         .target(

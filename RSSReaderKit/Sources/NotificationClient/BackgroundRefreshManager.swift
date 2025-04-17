@@ -30,7 +30,6 @@ public final class BackgroundRefreshManager: Sendable {
     
     public func scheduleAppRefresh() {
         let request = BGAppRefreshTaskRequest(identifier: feedRefreshTaskIdentifier)
-        // Set the earliest begin date to 15 minutes from now
         request.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60)
         
         do {
@@ -41,10 +40,8 @@ public final class BackgroundRefreshManager: Sendable {
     }
     
     private func handleAppRefresh(task: BGAppRefreshTask) {
-        // Schedule the next refresh
         scheduleAppRefresh()
-        
-        // Create a task to check for new feed items
+
         let refreshTask = Task {
             do {
                 try await notificationClient.checkForNewItems()
@@ -54,7 +51,6 @@ public final class BackgroundRefreshManager: Sendable {
             }
         }
         
-        // Set an expiration handler that cancels the refresh task if the background task expires
         task.expirationHandler = {
             refreshTask.cancel()
             task.setTaskCompleted(success: false)
