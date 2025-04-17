@@ -26,7 +26,12 @@ extension PersistenceClient {
                 let context = ModelContext(modelContainer)
                 let persistableFeed = PersistableFeed(from: feed)
                 context.insert(persistableFeed)
-                try context.save()
+                
+                do {
+                    try context.save()
+                } catch {
+                    throw PersistenceError.saveFailed(error.localizedDescription)
+                }
             },
             updateFeed: { feed async throws in
                 let context = ModelContext(modelContainer)
@@ -34,30 +39,48 @@ extension PersistenceClient {
                 let predicate = #Predicate<PersistableFeed> { $0.url == feedURL }
                 let descriptor = FetchDescriptor<PersistableFeed>(predicate: predicate)
                 
-                guard let existingFeed = try context.fetch(descriptor).first else {
-                    return
+                do {
+                    guard let existingFeed = try context.fetch(descriptor).first else {
+                        return
+                    }
+                    // I assumed only isFavorite can change, but maybe the feed content can be modified
+                    // if the URL changes it's a different feed, but maybe I should resolve that as well
+                    existingFeed.title = feed.title
+                    existingFeed.feedDescription = feed.description
+                    existingFeed.imageURLString = feed.imageURL?.absoluteString
+                    existingFeed.isFavorite = feed.isFavorite
+                    
+                    try context.save()
+                } catch {
+                    throw PersistenceError.saveFailed(error.localizedDescription)
                 }
-                
-                existingFeed.isFavorite = feed.isFavorite
-                try context.save()
             },
             deleteFeed: { url async throws in
                 let context = ModelContext(modelContainer)
                 let predicate = #Predicate<PersistableFeed> { $0.url == url }
                 let descriptor = FetchDescriptor<PersistableFeed>(predicate: predicate)
                 
-                guard let existingFeed = try context.fetch(descriptor).first else {
-                    return
+                do {
+                    guard let existingFeed = try context.fetch(descriptor).first else {
+                        return
+                    }
+                    
+                    context.delete(existingFeed)
+                    try context.save()
+                } catch {
+                    throw PersistenceError.saveFailed(error.localizedDescription)
                 }
-                context.delete(existingFeed)
-                try context.save()
             },
             loadFeeds: { () async throws in
                 let context = ModelContext(modelContainer)
                 let descriptor = FetchDescriptor<PersistableFeed>()
                 
-                let persistableFeeds = try context.fetch(descriptor)
-                return persistableFeeds.map { $0.toFeed() }
+                do {
+                    let persistableFeeds = try context.fetch(descriptor)
+                    return persistableFeeds.reversed().map { $0.toFeed() }
+                } catch {
+                    throw PersistenceError.loadFailed(error.localizedDescription)
+                }
             }
         )
     }
