@@ -42,9 +42,22 @@
 		38C352CA2DABC4F1008FA670 /* RSSClient.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = RSSClient.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		386201472DB1469800613CA2 /* Exceptions for "RSSReader" folder in "RSSReader" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 386A8D1D2DAA864900BCD162 /* RSSReader */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		386A8D202DAA864900BCD162 /* RSSReader */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				386201472DB1469800613CA2 /* Exceptions for "RSSReader" folder in "RSSReader" target */,
+			);
 			path = RSSReader;
 			sourceTree = "<group>";
 		};
@@ -433,6 +446,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"RSSReader/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RSSReader/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -470,6 +484,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"RSSReader/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RSSReader/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

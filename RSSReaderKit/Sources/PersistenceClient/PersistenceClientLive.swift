@@ -49,6 +49,7 @@ extension PersistenceClient {
                     existingFeed.feedDescription = feed.description
                     existingFeed.imageURLString = feed.imageURL?.absoluteString
                     existingFeed.isFavorite = feed.isFavorite
+                    existingFeed.notificationsEnabled = feed.notificationsEnabled
                     
                     try context.save()
                 } catch {
