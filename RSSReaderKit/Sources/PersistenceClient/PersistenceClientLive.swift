@@ -43,7 +43,8 @@ extension PersistenceClient {
                     guard let existingFeed = try context.fetch(descriptor).first else {
                         return
                     }
-                    
+                    // I assumed only isFavorite can change, but maybe the feed content can be modified
+                    // if the URL changes it's a different feed, but maybe I should resolve that as well
                     existingFeed.title = feed.title
                     existingFeed.feedDescription = feed.description
                     existingFeed.imageURLString = feed.imageURL?.absoluteString
