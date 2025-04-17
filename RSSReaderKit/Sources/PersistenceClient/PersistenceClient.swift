@@ -9,14 +9,20 @@ import Foundation
 import SharedModels
 
 public struct PersistenceClient: Sendable {
-    public var saveFeeds: @Sendable ([Feed]) async throws -> Void
+    public var addFeed: @Sendable (Feed) async throws -> Void
+    public var updateFeed: @Sendable (Feed) async throws -> Void
+    public var deleteFeed: @Sendable (URL) async throws -> Void
     public var loadFeeds: @Sendable () async throws -> [Feed]
     
     public init(
-        saveFeeds: @escaping @Sendable ([Feed]) async throws -> Void,
+        addFeed: @escaping @Sendable (Feed) async throws -> Void,
+        updateFeed: @escaping @Sendable (Feed) async throws -> Void,
+        deleteFeed: @escaping @Sendable (URL) async throws -> Void,
         loadFeeds: @escaping @Sendable () async throws -> [Feed]
     ) {
-        self.saveFeeds = saveFeeds
+        self.addFeed = addFeed
+        self.updateFeed = updateFeed
+        self.deleteFeed = deleteFeed
         self.loadFeeds = loadFeeds
     }
 }

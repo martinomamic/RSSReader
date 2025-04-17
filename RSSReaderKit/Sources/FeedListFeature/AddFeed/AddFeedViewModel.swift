@@ -20,8 +20,8 @@ enum AddFeedState: Equatable {
     case success
 }
 
-@MainActor
-@Observable class AddFeedViewModel {
+@MainActor @Observable
+class AddFeedViewModel {
     
     @ObservationIgnored
     @Dependency(\.persistenceClient) private var persistenceClient
@@ -66,10 +66,9 @@ enum AddFeedState: Equatable {
                 let feedViewModel = FeedViewModel(url: url, feed: feed)
                 feedViewModel.state = .loaded(feed)
                 
-                feeds.wrappedValue.insert(feedViewModel, at: 0) 
+                feeds.wrappedValue.insert(feedViewModel, at: 0)
                 
-                let feedsToSave = feeds.wrappedValue.map { $0.feed }
-                try await persistenceClient.saveFeeds(feedsToSave)
+                try await persistenceClient.addFeed(feed)
                 
                 state = .success
             } catch {
