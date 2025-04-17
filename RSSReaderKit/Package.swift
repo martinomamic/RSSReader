@@ -11,6 +11,7 @@ let package = Package(
         .library(name: "Common", targets: ["Common"]),
         .library(name: "FeedItemsFeature", targets: ["FeedItemsFeature"]),
         .library(name: "FeedListFeature", targets: ["FeedListFeature"]),
+        .library(name: "NotificationClient", targets: ["NotificationClient"]),
         .library(name: "PersistenceClient", targets: ["PersistenceClient"]),
         .library(name: "RSSClient", targets: ["RSSClient"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
@@ -61,6 +62,13 @@ let package = Package(
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 "Common",
                 "RSSClient",
+                "SharedModels"
+            ]
+        ),
+        .target(
+            name: "NotificationClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
                 "SharedModels"
             ]
         ),
