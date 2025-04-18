@@ -11,11 +11,11 @@ import SwiftUI
 struct AddFeedView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: AddFeedViewModel
-    
+
     init(feeds: Binding<[FeedViewModel]>) {
         _viewModel = State(initialValue: AddFeedViewModel(feeds: feeds))
     }
-    
+
     var body: some View {
         NavigationStack {
             Form {
@@ -31,13 +31,13 @@ struct AddFeedView: View {
                         Text("Examples (tap to use):")
                             .font(.footnote)
                             .foregroundColor(.secondary)
-                        
+
                         VStack(alignment: .leading, spacing: Constants.UI.exampleButtonSpacing) {
                             Button("BBC News") {
                                 viewModel.urlString = Constants.URLs.bbcNews
                             }
                             .font(.footnote)
-                            
+
                             Button("NBC News") {
                                 viewModel.urlString = Constants.URLs.nbcNews
                             }
@@ -54,7 +54,7 @@ struct AddFeedView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") {
                         viewModel.addFeed()

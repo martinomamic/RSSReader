@@ -12,7 +12,7 @@ import SwiftData
 extension PersistenceClient {
     public static func live() -> PersistenceClient {
         let modelContainer: ModelContainer
-        
+
         do {
             let schema = Schema([PersistableFeed.self])
             let modelConfiguration = ModelConfiguration(schema: schema)
@@ -20,13 +20,13 @@ extension PersistenceClient {
         } catch {
             fatalError("Failed to create model container: \(error.localizedDescription)")
         }
-        
+
         return PersistenceClient(
             addFeed: { feed async throws in
                 let context = ModelContext(modelContainer)
                 let persistableFeed = PersistableFeed(from: feed)
                 context.insert(persistableFeed)
-                
+
                 do {
                     try context.save()
                 } catch {
@@ -38,7 +38,7 @@ extension PersistenceClient {
                 let feedURL = feed.url
                 let predicate = #Predicate<PersistableFeed> { $0.url == feedURL }
                 let descriptor = FetchDescriptor<PersistableFeed>(predicate: predicate)
-                
+
                 do {
                     guard let existingFeed = try context.fetch(descriptor).first else {
                         return
@@ -50,7 +50,7 @@ extension PersistenceClient {
                     existingFeed.imageURLString = feed.imageURL?.absoluteString
                     existingFeed.isFavorite = feed.isFavorite
                     existingFeed.notificationsEnabled = feed.notificationsEnabled
-                    
+
                     try context.save()
                 } catch {
                     throw PersistenceError.saveFailed(error.localizedDescription)
@@ -60,12 +60,12 @@ extension PersistenceClient {
                 let context = ModelContext(modelContainer)
                 let predicate = #Predicate<PersistableFeed> { $0.url == url }
                 let descriptor = FetchDescriptor<PersistableFeed>(predicate: predicate)
-                
+
                 do {
                     guard let existingFeed = try context.fetch(descriptor).first else {
                         return
                     }
-                    
+
                     context.delete(existingFeed)
                     try context.save()
                 } catch {
@@ -75,7 +75,7 @@ extension PersistenceClient {
             loadFeeds: { () async throws in
                 let context = ModelContext(modelContainer)
                 let descriptor = FetchDescriptor<PersistableFeed>()
-                
+
                 do {
                     let persistableFeeds = try context.fetch(descriptor)
                     return persistableFeeds.reversed().map { $0.toFeed() }

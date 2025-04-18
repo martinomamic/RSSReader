@@ -12,10 +12,10 @@ import SharedModels
 
 extension PersistenceClient: DependencyKey {
     public static var liveValue: PersistenceClient { .live() }
-    
+
     public static var testValue: PersistenceClient {
         let feedStore = LockIsolated<[Feed]>([])
-        
+
         return PersistenceClient(
             addFeed: { feed in
                 feedStore.withValue { feeds in

@@ -11,7 +11,7 @@ import TabBarFeature
 @main
 struct RSSReaderApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
+
     var body: some Scene {
         WindowGroup {
             TabBarView()

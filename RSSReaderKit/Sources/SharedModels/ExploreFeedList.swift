@@ -7,7 +7,7 @@
 
 public struct ExploreFeedList: Codable, Sendable {
     public let feeds: [ExploreFeed]
-    
+
     public init(feeds: [ExploreFeed]) {
         self.feeds = feeds
     }

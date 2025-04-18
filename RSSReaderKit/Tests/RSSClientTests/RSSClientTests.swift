@@ -16,27 +16,27 @@ import Foundation
         let parser = RSSParser()
         let sampleRSSData = bbcXML.data(using: .utf8)!
         let url = URL(string: "https://example.com/feed.xml")!
-        
+
         let (feed, items) = try await parser.parse(data: sampleRSSData, feedURL: url)
-        
+
         #expect(feed?.title == "BBC News")
         #expect(feed?.description == "BBC News - World")
         #expect(feed?.url == url)
         #expect(items.count == 24)
-        
+
         let firstItem = items.first
         #expect(firstItem != nil)
         #expect(firstItem?.title == "Israeli air strike destroys part of last functioning hospital in Gaza City")
         #expect(firstItem?.description == "The Israel Defense Forces said the hospital contained a \"command and control center used by Hamas\".")
         #expect(firstItem?.link == URL(string: "https://www.bbc.com/news/articles/cjr7l123zy5o"))
     }
-    
+
     @Test("Parse invalid XML throws error")
     func testParseInvalidXML() async throws {
         let parser = RSSParser()
         let invalidXMLData = "blob".data(using: .utf8)!
         let url = URL(string: "blob")!
-        
+
         do {
             _ = try await parser.parse(data: invalidXMLData, feedURL: url)
             #expect(Bool(false), "Invalid XML error")

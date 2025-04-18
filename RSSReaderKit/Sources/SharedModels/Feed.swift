@@ -35,7 +35,7 @@ public struct Feed: Identifiable, Hashable, Sendable {
     public static func == (lhs: Feed, rhs: Feed) -> Bool {
         return lhs.id == rhs.id
     }
-    
+
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }

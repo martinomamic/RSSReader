@@ -24,23 +24,23 @@ enum FeedListState: Equatable {
 public class FeedListViewModel {
     @ObservationIgnored
     @Dependency(\.rssClient) private var rssClient
-    
+
     @ObservationIgnored
     @Dependency(\.persistenceClient) private var persistenceClient
-    
+
     var feeds: [FeedViewModel] = []
     var state: FeedListState = .idle
-    
+
     var favoriteFeeds: [FeedViewModel] {
         feeds.filter { $0.feed.isFavorite }
     }
-    
+
     private var loadTask: Task<Void, Never>?
     private var updateTask: Task<Void, Never>?
     private var deleteTask: Task<Void, Never>?
-    
+
     public init() {}
-    
+
     func loadFeeds() {
         feeds.removeAll()
         state = .loading
@@ -59,7 +59,7 @@ public class FeedListViewModel {
             }
         }
     }
-    
+
     func removeFeed(at indexSet: IndexSet, fromFavorites: Bool = false) {
         if fromFavorites {
             let feedsToRemoveFromFavorites = indexSet.map { favoriteFeeds[$0] }
@@ -77,7 +77,7 @@ public class FeedListViewModel {
             feeds.remove(atOffsets: indexSet)
         }
     }
-    
+
     private func toggleFavorite(_ feedViewModel: FeedViewModel) {
         updateTask?.cancel()
         updateTask = Task {
@@ -88,7 +88,7 @@ public class FeedListViewModel {
             }
         }
     }
-    
+
     private func deleteFeed(_ feedViewModel: FeedViewModel) {
         deleteTask?.cancel()
         deleteTask = Task {

@@ -11,7 +11,7 @@ import SharedModels
 
 extension ExploreClient: DependencyKey {
     public static var liveValue: ExploreClient { .live() }
-    
+
     public static var testValue: ExploreClient {
         ExploreClient(
             loadExploreFeeds: {
@@ -24,7 +24,7 @@ extension ExploreClient: DependencyKey {
                 guard let url = URL(string: exploreFeed.url) else {
                     throw ExploreError.invalidURL
                 }
-                
+
                 return Feed(
                     url: url,
                     title: exploreFeed.name,

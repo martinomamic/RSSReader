@@ -11,7 +11,7 @@ import SharedModels
 
 struct FeedView: View {
     let viewModel: FeedViewModel
-    
+
     var body: some View {
         HStack(spacing: Constants.UI.feedRowSpacing) {
             switch viewModel.state {
@@ -19,7 +19,7 @@ struct FeedView: View {
                 Image(systemName: Constants.Images.loadingIcon)
                     .font(.title2)
                     .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
-                
+
                 VStack(alignment: .leading) {
                     Text(viewModel.url.absoluteString)
                         .font(.headline)
@@ -28,7 +28,7 @@ struct FeedView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-                
+
             case .loaded(let feed):
                 if let imageURL = feed.imageURL {
                     AsyncImage(url: imageURL) { image in
@@ -44,11 +44,11 @@ struct FeedView: View {
                         .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
                         .foregroundStyle(.blue)
                 }
-                
+
                 VStack(alignment: .leading, spacing: Constants.UI.verticalPadding) {
                     Text(feed.title ?? "Unnamed Feed")
                         .font(.headline)
-                    
+
                     if let description = feed.description {
                         Text(description)
                             .font(.caption)
@@ -57,7 +57,7 @@ struct FeedView: View {
                     }
                     HStack {
                         Spacer()
-                        
+
                         Button {
                             viewModel.toggleNotifications()
                         } label: {
@@ -66,7 +66,7 @@ struct FeedView: View {
                                 .foregroundColor(viewModel.feed.notificationsEnabled ? .blue : .gray)
                         }
                         .buttonStyle(BorderlessButtonStyle())
-                        
+
                         Button {
                             viewModel.toggleFavorite()
                         } label: {
@@ -77,13 +77,13 @@ struct FeedView: View {
                         .buttonStyle(BorderlessButtonStyle())
                     }
                 }
-                
+
             case .error(let error):
                 Image(systemName: Constants.Images.errorIcon)
                     .font(.title2)
                     .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
                     .foregroundStyle(.red)
-                
+
                 VStack(alignment: .leading) {
                     Text(viewModel.url.absoluteString)
                         .font(.headline)
@@ -92,7 +92,7 @@ struct FeedView: View {
                         .font(.caption)
                         .foregroundStyle(.red)
                 }
-                
+
             case .empty:
                 Text("No feed data available")
                     .foregroundStyle(.secondary)
