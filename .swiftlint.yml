@@ -1,7 +1,14 @@
 excluded:
   - .build
+  - ./*.generated.swift
   - Package.swift
   - "**/Generated"
+  - "**/.build"
+  - "**/checkouts"
+  - "**/Package.swift"
+  - "./RSSReaderKit/.build"
+  - "./RSSReaderKit/Package.swift"
+  - "Dependencies"
 
 opt_in_rules:
   - array_init
