@@ -19,6 +19,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         NotificationDelegate.shared.setup()
         BackgroundRefreshClient.shared.registerBackgroundTasks()
         
+        // Request notification permissions at launch
         Task {
             do {
                 try await notificationClient.requestPermissions()
@@ -32,6 +33,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
+        // Schedule next background refresh when app enters background
         BackgroundRefreshClient.shared.scheduleAppRefresh()
     }
 }
