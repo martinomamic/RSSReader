@@ -42,3 +42,30 @@ struct FeedItemRow: View {
         .padding(.vertical, Constants.UI.feedItemVerticalPadding)
     }
 }
+
+#Preview("With Image") {
+    FeedItemRow(
+        item: FeedItem(
+            feedID: UUID(),
+            title: "Breaking News: Important Event",
+            link: URL(string: "https://example.com")!,
+            pubDate: Date(),
+            description: "This is a detailed description of the important event that just occurred. It contains multiple lines of text to demonstrate how the layout handles longer content.",
+            imageURL: URL(string: "https://picsum.photos/800/400")
+        )
+    )
+    .padding()
+}
+
+#Preview("Without Image") {
+    FeedItemRow(
+        item: FeedItem(
+            feedID: UUID(),
+            title: "Text Only News Item",
+            link: URL(string: "https://example.com")!,
+            pubDate: Date(),
+            description: "This is a news item without an image to show how the layout adapts."
+        )
+    )
+    .padding()
+}

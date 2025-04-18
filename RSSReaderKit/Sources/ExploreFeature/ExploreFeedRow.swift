@@ -51,3 +51,27 @@ struct ExploreFeedRow: View {
         .padding(.vertical, Constants.UI.verticalPadding)
     }
 }
+
+#Preview("Not Added") {
+    ExploreFeedRow(
+        feed: ExploreFeed(
+            name: "BBC News",
+            url: "https://feeds.bbci.co.uk/news/world/rss.xml"
+        ),
+        isAdded: false,
+        onAddTapped: {}
+    )
+    .padding()
+}
+
+#Preview("Added") {
+    ExploreFeedRow(
+        feed: ExploreFeed(
+            name: "BBC News",
+            url: "https://feeds.bbci.co.uk/news/world/rss.xml"
+        ),
+        isAdded: true,
+        onAddTapped: {}
+    )
+    .padding()
+}
