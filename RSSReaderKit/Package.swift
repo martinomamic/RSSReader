@@ -9,6 +9,7 @@ let package = Package(
     ],
     products: [
         .library(name: "Common", targets: ["Common"]),
+        .library(name: "ExploreClient", targets: ["ExploreClient"]),
         .library(name: "ExploreFeature", targets: ["ExploreFeature"]),
         .library(name: "FeedItemsFeature", targets: ["FeedItemsFeature"]),
         .library(name: "FeedListFeature", targets: ["FeedListFeature"]),
@@ -22,61 +23,6 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.9.1"),
     ],
     targets: [
-        .target(
-            name: "Common",
-            dependencies: [
-                "RSSClient"
-            ]
-        ),
-        .target(
-            name: "ExploreClient",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "SharedModels"
-            ]
-        ),
-        .target(
-            name: "ExploreFeature",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "Common",
-                "SharedModels"
-            ]
-        ),
-        .target(
-            name: "FeedItemsFeature",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "Common",
-                "RSSClient",
-                "SharedModels"
-            ]
-        ),
-        .target(
-            name: "FeedListFeature",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "Common",
-                "FeedItemsFeature",
-                "PersistenceClient",
-                "RSSClient",
-                "SharedModels"
-            ]
-        ),
-        .target(
-            name: "PersistenceClient",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "SharedModels"
-            ]
-        ),
-        .testTarget(
-            name: "PersistenceClientTests",
-            dependencies: [
-                .product(name: "ConcurrencyExtras", package: "swift-concurrency-extras"),
-                "PersistenceClient"
-            ]
-        ),
         .target(
             name: "RSSClient",
             dependencies: [
@@ -95,9 +41,68 @@ let package = Package(
             dependencies: []
         ),
         .target(
+            name: "Common",
+            dependencies: [
+                "RSSClient"
+            ]
+        ),
+        .target(
+            name: "ExploreClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "PersistenceClient",
+                "RSSClient",
+                "SharedModels"
+            ]
+        ),
+        .target(
+            name: "ExploreFeature",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "Common",
+                "ExploreClient",
+                "SharedModels"
+            ]
+        ),
+        .target(
+            name: "FeedListFeature",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "Common",
+                "FeedItemsFeature",
+                "PersistenceClient",
+                "RSSClient",
+                "SharedModels"
+            ]
+        ),
+        .target(
+            name: "FeedItemsFeature",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "Common",
+                "RSSClient",
+                "SharedModels"
+            ]
+        ),
+        .target(
             name: "TabBarFeature",
             dependencies: [
+                "ExploreFeature",
                 "FeedListFeature"
+            ]
+        ),
+        .target(
+            name: "PersistenceClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "SharedModels"
+            ]
+        ),
+        .testTarget(
+            name: "PersistenceClientTests",
+            dependencies: [
+                .product(name: "ConcurrencyExtras", package: "swift-concurrency-extras"),
+                "PersistenceClient"
             ]
         ),
     ]

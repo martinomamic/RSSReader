@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ExploreFeature
 import FeedListFeature
 
 public struct TabBarView: View {
@@ -36,6 +37,8 @@ public struct TabBarView: View {
                 FeedListView()
             case .favorites:
                 FeedListView(showOnlyFavorites: true)
+            case .explore:
+                ExploreView()
             }
         }
     }
