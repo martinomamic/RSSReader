@@ -16,15 +16,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        // Register for background tasks
-        BackgroundRefreshManager.shared.registerBackgroundTasks()
+        NotificationDelegate.shared.setup()
+        BackgroundRefreshService.shared.registerBackgroundTasks()
         
-        // Request notification permissions when the app launches
         Task {
             do {
                 try await notificationClient.requestPermissions()
+                print("Notification permissions requested successfully")
             } catch {
-                // Handle permission denied
                 print("Notification permissions denied: \(error)")
             }
         }
@@ -33,7 +32,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
-        // Schedule background refresh
-        BackgroundRefreshManager.shared.scheduleAppRefresh()
+        BackgroundRefreshService.shared.scheduleAppRefresh()
     }
 }

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import FeedListFeature
+import NotificationClient
 
 public struct TabBarView: View {
     @State private var viewModel = TabBarViewModel()
@@ -36,6 +37,8 @@ public struct TabBarView: View {
                 FeedListView()
             case .favorites:
                 FeedListView(showOnlyFavorites: true)
+            case .debug:
+                NotificationDebugView()
             }
         }
     }
