@@ -56,6 +56,7 @@ public struct ExploreView: View {
                 }
             }
         }
+        .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Explore Feeds")
         .alert(item: .init(
             get: { viewModel.feedError },
