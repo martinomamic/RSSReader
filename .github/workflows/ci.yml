@@ -30,11 +30,3 @@ jobs:
 
     - name: Run tests
       run: make test
-
-    - name: Upload test results
-      uses: actions/upload-artifact@v3
-      if: failure()
-      with:
-        name: test-results
-        path: .build/debug/releaseTest.xctest/Contents/
-        retention-days: 7
