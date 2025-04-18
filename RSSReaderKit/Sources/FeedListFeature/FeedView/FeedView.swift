@@ -23,7 +23,7 @@ struct FeedView: View {
                 VStack(alignment: .leading) {
                     Text(viewModel.url.absoluteString)
                         .font(.headline)
-                        .lineLimit(1)
+                        .lineLimit(Constants.UI.feedTitleLineLimit)
                     Text("Loading feed details...")
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -55,13 +55,13 @@ struct FeedView: View {
                             .foregroundStyle(.secondary)
                             .lineLimit(Constants.UI.feedDescriptionLineLimit)
                     }
-                    HStack{
+                    HStack {
                         Spacer()
                         
                         Button {
                             viewModel.toggleNotifications()
                         } label: {
-                            Image(systemName: viewModel.feed.notificationsEnabled ? "bell.fill" : "bell")
+                            Image(systemName: viewModel.feed.notificationsEnabled ? Constants.Images.notificationEnabledIcon : Constants.Images.notificationDisabledIcon)
                                 .font(.title2)
                                 .foregroundColor(viewModel.feed.notificationsEnabled ? .blue : .gray)
                         }
@@ -76,7 +76,6 @@ struct FeedView: View {
                         }
                         .buttonStyle(BorderlessButtonStyle())
                     }
-                    
                 }
                 
             case .error(let error):
@@ -88,7 +87,7 @@ struct FeedView: View {
                 VStack(alignment: .leading) {
                     Text(viewModel.url.absoluteString)
                         .font(.headline)
-                        .lineLimit(1)
+                        .lineLimit(Constants.UI.feedTitleLineLimit)
                     Text("Failed to load feed: \(error.errorDescription)")
                         .font(.caption)
                         .foregroundStyle(.red)

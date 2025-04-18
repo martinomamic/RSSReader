@@ -15,6 +15,7 @@ public enum Constants {
         public static let feedDescriptionLineLimit: Int = 2
         public static let cornerRadius: CGFloat = 6
         public static let verticalPadding: CGFloat = 4
+        public static let feedTitleLineLimit: Int = 1
         
         // Feed list
         public static let feedListItemSpacing: CGFloat = 8
@@ -29,6 +30,23 @@ public enum Constants {
         public static let feedItemCornerRadius: CGFloat = 8
         public static let feedItemVerticalPadding: CGFloat = 6
         public static let feedItemDescriptionLineLimit: Int = 3
+        
+        // Explore feed row
+        public static let exploreFeedRowSpacing: CGFloat = 4
+        public static let exploreFeedButtonHorizontalPadding: CGFloat = 12
+        public static let exploreFeedButtonVerticalPadding: CGFloat = 6
+        public static let exploreFeedButtonCornerRadius: CGFloat = 8
+        public static let exploreFeedUrlLineLimit: Int = 1
+        
+        // Notification debug view
+        public static let debugViewSpacing: CGFloat = 24
+        public static let debugSectionSpacing: CGFloat = 8
+        public static let debugActionSpacing: CGFloat = 16
+        public static let debugCornerRadius: CGFloat = 10
+        public static let debugIconSize: CGFloat = 30
+        public static let debugBackgroundOpacity: CGFloat = 0.1
+        public static let debugDelayedNotificationTime: TimeInterval = 5.0
+        public static let debugUIUpdateDelay: UInt64 = 500_000_000
     }
     
     public enum URLs {

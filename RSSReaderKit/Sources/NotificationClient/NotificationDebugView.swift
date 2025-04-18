@@ -24,7 +24,7 @@ public struct NotificationDebugView: View {
     
     public var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: Constants.UI.debugViewSpacing) {
                 // Header
                 Text("Notification Debug")
                     .font(.largeTitle)
@@ -55,7 +55,7 @@ public struct NotificationDebugView: View {
     // MARK: - UI Sections
     
     private var statusSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: Constants.UI.debugSectionSpacing) {
             Text("Status")
                 .font(.headline)
             
@@ -76,13 +76,13 @@ public struct NotificationDebugView: View {
                 .controlSize(.small)
             }
             .padding()
-            .background(Color.gray.opacity(0.1))
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .background(Color.gray.opacity(Constants.UI.debugBackgroundOpacity))
+            .clipShape(RoundedRectangle(cornerRadius: Constants.UI.debugCornerRadius))
         }
     }
     
     private var actionsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: Constants.UI.debugActionSpacing) {
             Text("Actions")
                 .font(.headline)
             
@@ -120,7 +120,7 @@ public struct NotificationDebugView: View {
     }
     
     private var resultsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: Constants.UI.debugSectionSpacing) {
             Text("Results")
                 .font(.headline)
             
@@ -138,8 +138,8 @@ public struct NotificationDebugView: View {
                 .multilineTextAlignment(.leading)
                 .padding()
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.gray.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .background(Color.gray.opacity(Constants.UI.debugBackgroundOpacity))
+                .clipShape(RoundedRectangle(cornerRadius: Constants.UI.debugCornerRadius))
                 .animation(.easeInOut, value: refreshResult)
         }
     }
@@ -162,7 +162,7 @@ public struct NotificationDebugView: View {
             HStack {
                 Image(systemName: icon)
                     .foregroundColor(.white)
-                    .frame(width: 30, height: 30)
+                    .frame(width: Constants.UI.debugIconSize, height: Constants.UI.debugIconSize)
                     .background(accentColor)
                     .clipShape(Circle())
                 
@@ -181,8 +181,8 @@ public struct NotificationDebugView: View {
         }
         .buttonStyle(.plain)
         .padding()
-        .background(Color.gray.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .background(Color.gray.opacity(Constants.UI.debugBackgroundOpacity))
+        .clipShape(RoundedRectangle(cornerRadius: Constants.UI.debugCornerRadius))
     }
     
     private var statusColor: Color {
@@ -197,8 +197,7 @@ public struct NotificationDebugView: View {
     }
     
     private func moveAppToBackground() {
-        // Delay for UI updates
-        Task { try? await Task.sleep(nanoseconds: 500_000_000) }
+        Task { try? await Task.sleep(nanoseconds: Constants.UI.debugUIUpdateDelay) }
         UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
     }
     
@@ -270,10 +269,13 @@ public struct NotificationDebugView: View {
             do {
                 let content = UNMutableNotificationContent()
                 content.title = "Delayed Test Notification"
-                content.body = "This notification was scheduled 5 seconds ago"
+                content.body = "This notification was scheduled \(Int(Constants.UI.debugDelayedNotificationTime)) seconds ago"
                 content.sound = .default
                 
-                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+                let trigger = UNTimeIntervalNotificationTrigger(
+                    timeInterval: Constants.UI.debugDelayedNotificationTime,
+                    repeats: false
+                )
                 
                 let request = UNNotificationRequest(
                     identifier: "delayed-test-\(UUID().uuidString)",
@@ -282,9 +284,8 @@ public struct NotificationDebugView: View {
                 )
                 
                 try await UNUserNotificationCenter.current().add(request)
-                refreshResult = "✅ Delayed notification scheduled (will appear in 5 seconds)"
+                refreshResult = "✅ Delayed notification scheduled (will appear in \(Int(Constants.UI.debugDelayedNotificationTime)) seconds)"
                 
-                // Log pending notifications after scheduling
                 listScheduledNotifications()
             } catch {
                 refreshResult = "❌ Failed to schedule delayed notification: \(error.localizedDescription)"
