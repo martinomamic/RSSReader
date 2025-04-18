@@ -25,8 +25,10 @@ public final class BackgroundRefreshClient {
         BGTaskScheduler.shared.register(
             forTaskWithIdentifier: feedRefreshTaskIdentifier,
             using: nil
-        ) { task in
-            self.handleAppRefresh(task: task as! BGAppRefreshTask)
+        ) { [weak self] task in
+            if let bgTask = task as? BGAppRefreshTask {
+                self?.handleAppRefresh(task: bgTask)
+            }
         }
     }
 
