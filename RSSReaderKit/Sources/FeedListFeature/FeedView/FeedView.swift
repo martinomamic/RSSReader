@@ -57,6 +57,16 @@ struct FeedView: View {
                     }
                     HStack{
                         Spacer()
+                        
+                        Button {
+                            viewModel.toggleNotifications()
+                        } label: {
+                            Image(systemName: viewModel.feed.notificationsEnabled ? "bell.fill" : "bell")
+                                .font(.title2)
+                                .foregroundColor(viewModel.feed.notificationsEnabled ? .blue : .gray)
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
+                        
                         Button {
                             viewModel.toggleFavorite()
                         } label: {

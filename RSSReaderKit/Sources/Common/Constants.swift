@@ -44,5 +44,17 @@ public enum Constants {
         public static let addIcon = "plus"
         public static let noItemsIcon = "tray.fill"
         public static let failedToLoadIcon = "exclamationmark.triangle"
+        public static let notificationEnabledIcon = "bell.fill"
+        public static let notificationDisabledIcon = "bell"
+    }
+    
+    public enum Storage {
+        public static let lastNotificationCheckKey = "lastNotificationCheck"
+        public static let notifiedItemsKey = "notifiedItems"
+    }
+    
+    public enum Notifications {
+        public static let maxStoredNotificationIDs = 100
+        public static let pruneToCount = 50
     }
 }

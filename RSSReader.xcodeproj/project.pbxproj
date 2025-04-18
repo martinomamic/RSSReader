@@ -10,6 +10,7 @@
 		382CFC172DAFA4F600CFBB7D /* Common in Frameworks */ = {isa = PBXBuildFile; productRef = 382CFC162DAFA4F600CFBB7D /* Common */; };
 		382CFC192DAFA4F600CFBB7D /* FeedItemsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 382CFC182DAFA4F600CFBB7D /* FeedItemsFeature */; };
 		382CFC1B2DAFA4F600CFBB7D /* PersistenceClient in Frameworks */ = {isa = PBXBuildFile; productRef = 382CFC1A2DAFA4F600CFBB7D /* PersistenceClient */; };
+		386201412DB137FF00613CA2 /* NotificationClient in Frameworks */ = {isa = PBXBuildFile; productRef = 386201402DB137FF00613CA2 /* NotificationClient */; };
 		3882B1C32DAFE47B0069A7E1 /* TabBarFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 3882B1C22DAFE47B0069A7E1 /* TabBarFeature */; };
 		388B93BF2DAD202C0096CB2E /* FeedListFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 388B93BE2DAD202C0096CB2E /* FeedListFeature */; };
 		38C352E32DABF64F008FA670 /* RSSClient in Frameworks */ = {isa = PBXBuildFile; productRef = 38C352E22DABF64F008FA670 /* RSSClient */; };
@@ -41,9 +42,22 @@
 		38C352CA2DABC4F1008FA670 /* RSSClient.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = RSSClient.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		386201472DB1469800613CA2 /* Exceptions for "RSSReader" folder in "RSSReader" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 386A8D1D2DAA864900BCD162 /* RSSReader */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		386A8D202DAA864900BCD162 /* RSSReader */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				386201472DB1469800613CA2 /* Exceptions for "RSSReader" folder in "RSSReader" target */,
+			);
 			path = RSSReader;
 			sourceTree = "<group>";
 		};
@@ -64,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				386201412DB137FF00613CA2 /* NotificationClient in Frameworks */,
 				38C352E32DABF64F008FA670 /* RSSClient in Frameworks */,
 				3882B1C32DAFE47B0069A7E1 /* TabBarFeature in Frameworks */,
 				388B93BF2DAD202C0096CB2E /* FeedListFeature in Frameworks */,
@@ -148,6 +163,7 @@
 				382CFC182DAFA4F600CFBB7D /* FeedItemsFeature */,
 				382CFC1A2DAFA4F600CFBB7D /* PersistenceClient */,
 				3882B1C22DAFE47B0069A7E1 /* TabBarFeature */,
+				386201402DB137FF00613CA2 /* NotificationClient */,
 			);
 			productName = RSSReader;
 			productReference = 386A8D1E2DAA864900BCD162 /* RSSReader.app */;
@@ -430,6 +446,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"RSSReader/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RSSReader/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -467,6 +484,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"RSSReader/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RSSReader/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -636,6 +654,10 @@
 		382CFC1A2DAFA4F600CFBB7D /* PersistenceClient */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = PersistenceClient;
+		};
+		386201402DB137FF00613CA2 /* NotificationClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NotificationClient;
 		};
 		3882B1C22DAFE47B0069A7E1 /* TabBarFeature */ = {
 			isa = XCSwiftPackageProductDependency;

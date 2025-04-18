@@ -11,6 +11,7 @@ public enum TabItem: Int, Hashable, CaseIterable {
     case feeds
     case explore
     case favorites
+    case debug
     
     public var title: String {
         switch self {
@@ -20,6 +21,8 @@ public enum TabItem: Int, Hashable, CaseIterable {
             return "Explore"
         case .favorites:
             return "Favorites"
+        case .debug:
+            return "Debug"
         }
     }
     
@@ -31,6 +34,8 @@ public enum TabItem: Int, Hashable, CaseIterable {
             return "globe"
         case .favorites:
             return "star"
+        case .debug:
+            return "ladybug"
         }
     }
     
@@ -42,11 +47,17 @@ public enum TabItem: Int, Hashable, CaseIterable {
             return "globe.fill"
         case .favorites:
             return "star.fill"
+        case .debug:
+            return "ladybug.fill"
         }
     }
     
     public static var allCases: [TabItem] {
-        return [.feeds, .explore, .favorites]
+        #if DEBUG
+        return [.feeds, .favorites, .explore, .debug]
+        #else
+        return [.feeds, .favorites, .explore]
+        #endif
     }
 }
 #Preview {

@@ -1,3 +1,10 @@
+//
+//  PersistenceClient.swift
+//  RSSReaderKit
+//
+//  Created by Martino Mamić on 15.04.25.
+//
+
 import Foundation
 import SwiftData
 import SharedModels
@@ -10,18 +17,22 @@ final class PersistableFeed {
     var feedDescription: String?
     var imageURLString: String?
     var isFavorite: Bool
-    
+    var notificationsEnabled: Bool
+
     init(
-         title: String?,
-         url: URL,
-         feedDescription: String?,
-         imageURLString: String?,
-         isFavorite: Bool) {
+        title: String?,
+        url: URL,
+        feedDescription: String?,
+        imageURLString: String?,
+        isFavorite: Bool,
+        notificationsEnabled: Bool = false
+    ) {
         self.title = title
         self.url = url
         self.feedDescription = feedDescription
         self.imageURLString = imageURLString
         self.isFavorite = isFavorite
+        self.notificationsEnabled = notificationsEnabled
     }
     
     convenience init(from feed: Feed) {
@@ -30,7 +41,8 @@ final class PersistableFeed {
             url: feed.url,
             feedDescription: feed.description,
             imageURLString: feed.imageURL?.absoluteString,
-            isFavorite: feed.isFavorite
+            isFavorite: feed.isFavorite,
+            notificationsEnabled: feed.notificationsEnabled
         )
     }
     
@@ -40,7 +52,8 @@ final class PersistableFeed {
             title: title,
             description: feedDescription,
             imageURL: imageURLString.flatMap(URL.init(string:)),
-            isFavorite: isFavorite
+            isFavorite: isFavorite,
+            notificationsEnabled: notificationsEnabled
         )
     }
 }
