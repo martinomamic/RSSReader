@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SharedModels
+import Common
 
 struct ExploreFeedRow: View {
     let feed: ExploreFeed
@@ -15,14 +16,14 @@ struct ExploreFeedRow: View {
     
     var body: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: Constants.UI.exploreFeedRowSpacing) {
                 Text(feed.name)
                     .font(.headline)
                 
                 Text(feed.url)
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                    .lineLimit(Constants.UI.exploreFeedUrlLineLimit)
             }
             
             Spacer()
@@ -30,23 +31,23 @@ struct ExploreFeedRow: View {
             if isAdded {
                 Text("Added")
                     .font(.caption)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
+                    .padding(.horizontal, Constants.UI.exploreFeedButtonHorizontalPadding)
+                    .padding(.vertical, Constants.UI.exploreFeedButtonVerticalPadding)
                     .background(Color.green)
                     .foregroundColor(.white)
-                    .cornerRadius(8)
+                    .cornerRadius(Constants.UI.exploreFeedButtonCornerRadius)
             } else {
                 Button(action: onAddTapped) {
                     Text("Add")
                         .font(.caption)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
+                        .padding(.horizontal, Constants.UI.exploreFeedButtonHorizontalPadding)
+                        .padding(.vertical, Constants.UI.exploreFeedButtonVerticalPadding)
                         .background(Color.blue)
                         .foregroundColor(.white)
-                        .cornerRadius(8)
+                        .cornerRadius(Constants.UI.exploreFeedButtonCornerRadius)
                 }
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, Constants.UI.verticalPadding)
     }
 }
