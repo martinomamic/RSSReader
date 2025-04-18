@@ -9,6 +9,8 @@ let package = Package(
     ],
     products: [
         .library(name: "Common", targets: ["Common"]),
+        .library(name: "ExploreClient", targets: ["ExploreClient"]),
+        .library(name: "ExploreFeature", targets: ["ExploreFeature"]),
         .library(name: "FeedItemsFeature", targets: ["FeedItemsFeature"]),
         .library(name: "FeedListFeature", targets: ["FeedListFeature"]),
         .library(name: "PersistenceClient", targets: ["PersistenceClient"]),
@@ -45,6 +47,24 @@ let package = Package(
             ]
         ),
         .target(
+            name: "ExploreClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "PersistenceClient",
+                "RSSClient",
+                "SharedModels"
+            ]
+        ),
+        .target(
+            name: "ExploreFeature",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "Common",
+                "ExploreClient",
+                "SharedModels"
+            ]
+        ),
+        .target(
             name: "FeedListFeature",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
@@ -67,6 +87,7 @@ let package = Package(
         .target(
             name: "TabBarFeature",
             dependencies: [
+                "ExploreFeature",
                 "FeedListFeature"
             ]
         ),

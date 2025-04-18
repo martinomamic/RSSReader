@@ -7,7 +7,9 @@
 
 import Foundation
 
-public enum RSSViewError: Error, Equatable, LocalizedError {
+public enum RSSViewError: Error, Equatable, LocalizedError, Identifiable {
+    public var id: String { errorDescription }
+    
     case invalidURL
     case duplicateFeed
     case networkError(String)
