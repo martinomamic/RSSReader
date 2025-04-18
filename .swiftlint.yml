@@ -1,0 +1,69 @@
+excluded:
+  - .build
+  - ./*.generated.swift
+  - Package.swift
+  - "**/Generated"
+  - "**/.build"
+  - "**/checkouts"
+  - "**/Package.swift"
+  - "./RSSReaderKit/.build"
+  - "./RSSReaderKit/Package.swift"
+  - "Dependencies"
+
+opt_in_rules:
+  - array_init
+  - attributes
+  - closure_end_indentation
+  - closure_spacing
+  - collection_alignment
+  - contains_over_filter_count
+  - convenience_type
+  - empty_count
+  - empty_string
+  - explicit_init
+  - fatal_error_message
+  - first_where
+  - force_unwrapping
+  - implicitly_unwrapped_optional
+  - last_where
+  - legacy_random
+  - literal_expression_end_indentation
+  - multiline_arguments
+  - multiline_function_chains
+  - multiline_literal_brackets
+  - multiline_parameters
+  - operator_usage_whitespace
+  - overridden_super_call
+  - private_action
+  - prohibited_super_call
+  - redundant_nil_coalescing
+  - redundant_type_annotation
+  - strict_fileprivate
+  - toggle_bool
+  - unowned_variable_capture
+  - vertical_parameter_alignment_on_call
+  - vertical_whitespace_closing_braces
+  - vertical_whitespace_opening_braces
+
+analyzer_rules:
+  - unused_declaration
+  - unused_import
+
+line_length:
+  warning: 120
+  error: 200
+
+type_name:
+  min_length: 3
+  max_length: 50
+
+identifier_name:
+  min_length: 2
+  excluded:
+    - id
+    - up
+    - url
+    - dx
+    - dy
+    - x
+    - y

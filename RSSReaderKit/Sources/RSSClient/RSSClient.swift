@@ -9,10 +9,10 @@ import Foundation
 import SharedModels
 import Dependencies
 
-public struct RSSClient : Sendable {
+public struct RSSClient: Sendable {
     public var fetchFeed: @Sendable (URL) async throws -> Feed
     public var fetchFeedItems: @Sendable (URL) async throws -> [FeedItem]
-    
+
     public init(
         fetchFeed: @escaping @Sendable (URL) async throws -> Feed,
         fetchFeedItems: @escaping @Sendable (URL) async throws -> [FeedItem]
@@ -24,7 +24,7 @@ public struct RSSClient : Sendable {
 
 extension RSSClient: DependencyKey {
     public static var liveValue: RSSClient { RSSClient.live() }
-    
+
     public static var testValue: RSSClient {
         return RSSClient(
             fetchFeed: { url in

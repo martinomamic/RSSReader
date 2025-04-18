@@ -15,19 +15,19 @@ public struct FeedListView: View {
     @State private var viewModel = FeedListViewModel()
     @State private var showingAddFeed = false
     private let showOnlyFavorites: Bool
-    
+
     public init(showOnlyFavorites: Bool = false) {
         self.showOnlyFavorites = showOnlyFavorites
     }
-    
+
     var displayedFeeds: [FeedViewModel] {
         showOnlyFavorites ? viewModel.favoriteFeeds : viewModel.feeds
     }
-    
+
     public var body: some View {
         List {
             let displayedFeeds = showOnlyFavorites ? viewModel.favoriteFeeds : viewModel.feeds
-            
+
             ForEach(displayedFeeds) { feed in
                 FeedView(viewModel: feed)
                     .background {
@@ -89,6 +89,6 @@ public struct FeedListView: View {
                             }
                         }
                     }
-                }
+        }
             }
         }

@@ -17,11 +17,11 @@ public struct NotificationDebugView: View {
     @State private var refreshResult = ""
     @State private var notificationStatus = "Unknown"
     @Environment(\.scenePhase) private var scenePhase
-    
+
     @Dependency(\.notificationClient) private var notificationClient
-    
+
     public init() {}
-    
+
     public var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Constants.UI.debugViewSpacing) {
@@ -30,13 +30,13 @@ public struct NotificationDebugView: View {
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .frame(maxWidth: .infinity, alignment: .center)
-                
+
                 // Status section
                 statusSection
-                
+
                 // Actions section
                 actionsSection
-                
+
                 // Results section
                 resultsSection
             }
@@ -51,24 +51,24 @@ public struct NotificationDebugView: View {
             }
         }
     }
-    
+
     // MARK: - UI Sections
-    
+
     private var statusSection: some View {
         VStack(alignment: .leading, spacing: Constants.UI.debugSectionSpacing) {
             Text("Status")
                 .font(.headline)
-            
+
             HStack {
                 Text("Notification Status:")
                     .fontWeight(.medium)
-                
+
                 Text(notificationStatus)
                     .foregroundStyle(statusColor)
                     .fontWeight(.semibold)
-                
+
                 Spacer()
-                
+
                 Button("Check") {
                     checkNotificationStatus()
                 }
@@ -80,19 +80,19 @@ public struct NotificationDebugView: View {
             .clipShape(RoundedRectangle(cornerRadius: Constants.UI.debugCornerRadius))
         }
     }
-    
+
     private var actionsSection: some View {
         VStack(alignment: .leading, spacing: Constants.UI.debugActionSpacing) {
             Text("Actions")
                 .font(.headline)
-            
+
             Group {
                 actionButton(
                     title: "Request Notification Permissions",
                     icon: "bell.badge",
                     action: requestPermissions
                 )
-                
+
                 actionButton(
                     title: "Send Delayed (5 sec) Notification",
                     icon: "clock",
@@ -100,14 +100,14 @@ public struct NotificationDebugView: View {
                     accentColor: .blue,
                     backgroundApp: true
                 )
-                
+
                 actionButton(
                     title: "Trigger Manual Background Refresh",
                     icon: "arrow.clockwise",
                     action: triggerManualRefresh,
                     accentColor: .green
                 )
-                
+
                 actionButton(
                     title: "Test Feed Parsing",
                     icon: "doc.text.magnifyingglass",
@@ -118,12 +118,12 @@ public struct NotificationDebugView: View {
             .disabled(isRefreshing)
         }
     }
-    
+
     private var resultsSection: some View {
         VStack(alignment: .leading, spacing: Constants.UI.debugSectionSpacing) {
             Text("Results")
                 .font(.headline)
-            
+
             if isRefreshing {
                 HStack {
                     ProgressView()
@@ -133,7 +133,7 @@ public struct NotificationDebugView: View {
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding()
             }
-            
+
             Text(refreshResult)
                 .multilineTextAlignment(.leading)
                 .padding()
@@ -143,9 +143,9 @@ public struct NotificationDebugView: View {
                 .animation(.easeInOut, value: refreshResult)
         }
     }
-    
+
     // MARK: - Helper Views
-    
+
     private func actionButton(
         title: String,
         icon: String,
@@ -165,12 +165,12 @@ public struct NotificationDebugView: View {
                     .frame(width: Constants.UI.debugIconSize, height: Constants.UI.debugIconSize)
                     .background(accentColor)
                     .clipShape(Circle())
-                
+
                 Text(title)
                     .foregroundColor(.primary)
-                
+
                 Spacer()
-                
+
                 if backgroundApp {
                     Image(systemName: "iphone.and.arrow.forward")
                         .foregroundColor(.secondary)
@@ -184,7 +184,7 @@ public struct NotificationDebugView: View {
         .background(Color.gray.opacity(Constants.UI.debugBackgroundOpacity))
         .clipShape(RoundedRectangle(cornerRadius: Constants.UI.debugCornerRadius))
     }
-    
+
     private var statusColor: Color {
         switch notificationStatus {
         case "Authorized":
@@ -195,17 +195,17 @@ public struct NotificationDebugView: View {
             return .orange
         }
     }
-    
+
     private func moveAppToBackground() {
         Task { try? await Task.sleep(nanoseconds: Constants.UI.debugUIUpdateDelay) }
         UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
     }
-    
+
     private func checkNotificationStatus() {
         Task {
             let center = UNUserNotificationCenter.current()
             let settings = await center.notificationSettings()
-            
+
             switch settings.authorizationStatus {
             case .authorized:
                 notificationStatus = "Authorized"
@@ -223,7 +223,7 @@ public struct NotificationDebugView: View {
             }
         }
     }
-    
+
     private func listScheduledNotifications() {
         Task {
             let center = UNUserNotificationCenter.current()
@@ -234,7 +234,7 @@ public struct NotificationDebugView: View {
             }
         }
     }
-    
+
     private func requestPermissions() {
         Task {
             do {
@@ -246,14 +246,14 @@ public struct NotificationDebugView: View {
             }
         }
     }
-    
+
     private func triggerManualRefresh() {
         Task {
             isRefreshing = true
             refreshResult = "Refreshing..."
-            
+
             let success = await BackgroundRefreshClient.shared.manuallyTriggerBackgroundRefresh()
-            
+
             isRefreshing = false
             if success {
                 refreshResult = "✅ Background refresh triggered successfully at \(Date().formatted(date: .numeric, time: .standard))"
@@ -263,7 +263,7 @@ public struct NotificationDebugView: View {
             }
         }
     }
-    
+
     private func sendDelayedNotification() {
         Task {
             do {
@@ -271,80 +271,80 @@ public struct NotificationDebugView: View {
                 content.title = "Delayed Test Notification"
                 content.body = "This notification was scheduled \(Int(Constants.UI.debugDelayedNotificationTime)) seconds ago"
                 content.sound = .default
-                
+
                 let trigger = UNTimeIntervalNotificationTrigger(
                     timeInterval: Constants.UI.debugDelayedNotificationTime,
                     repeats: false
                 )
-                
+
                 let request = UNNotificationRequest(
                     identifier: "delayed-test-\(UUID().uuidString)",
                     content: content,
                     trigger: trigger
                 )
-                
+
                 try await UNUserNotificationCenter.current().add(request)
                 refreshResult = "✅ Delayed notification scheduled (will appear in \(Int(Constants.UI.debugDelayedNotificationTime)) seconds)"
-                
+
                 listScheduledNotifications()
             } catch {
                 refreshResult = "❌ Failed to schedule delayed notification: \(error.localizedDescription)"
             }
         }
     }
-    
+
     private func sendConfirmationNotification(_ context: String) async throws {
         let content = UNMutableNotificationContent()
         content.title = "Test Notification: \(context)"
         content.body = "This is a test notification sent at \(Date().formatted(date: .numeric, time: .standard))"
         content.sound = .default
-        
+
         let request = UNNotificationRequest(
             identifier: "test-\(UUID().uuidString)",
             content: content,
             trigger: nil
         )
-        
+
         try await UNUserNotificationCenter.current().add(request)
         print("Requested notification with title: \(content.title)")
-        
+
         listScheduledNotifications()
     }
-    
-    private func testFeedParsing() {
+
+    func testFeedParsing() {
         Task {
             isRefreshing = true
             refreshResult = "Testing feed parsing..."
-            
+
             @Dependency(\.persistenceClient) var persistenceClient
             @Dependency(\.rssClient) var rssClient
-            
+
             do {
                 var results = ""
-                
+
                 let feeds = try await persistenceClient.loadFeeds()
                 results += "📊 Stored feeds: \(feeds.count)\n"
-                
+
                 if feeds.isEmpty {
                     results += "ℹ️ No stored feeds to test\n"
                 } else {
                     for (index, feed) in feeds.enumerated() {
                         do {
                             let items = try await rssClient.fetchFeedItems(feed.url)
-                            results += "\(index+1). \(feed.title ?? feed.url.absoluteString): ✅ \(items.count) items\n"
+                            results += "\(index + 1). \(feed.title ?? feed.url.absoluteString): ✅ \(items.count) items\n"
                         } catch {
-                            results += "\(index+1). \(feed.title ?? feed.url.absoluteString): ❌ Error: \(error)\n"
+                            results += "\(index + 1). \(feed.title ?? feed.url.absoluteString): ❌ Error: \(error)\n"
                             print("Error parsing feed \(feed.url): \(error)")
                         }
                     }
                 }
-                
+
                 refreshResult = results
             } catch {
                 refreshResult = "❌ Error testing feeds: \(error.localizedDescription)"
                 print("Error during feed test: \(error)")
             }
-            
+
             isRefreshing = false
         }
     }

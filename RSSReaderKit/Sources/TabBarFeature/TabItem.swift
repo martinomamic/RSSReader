@@ -12,7 +12,7 @@ public enum TabItem: Int, Hashable, CaseIterable {
     case explore
     case favorites
     case debug
-    
+
     public var title: String {
         switch self {
         case .feeds:
@@ -25,7 +25,7 @@ public enum TabItem: Int, Hashable, CaseIterable {
             return "Debug"
         }
     }
-    
+
     public var icon: String {
         switch self {
         case .feeds:
@@ -38,7 +38,7 @@ public enum TabItem: Int, Hashable, CaseIterable {
             return "ladybug"
         }
     }
-    
+
     public var selectedIcon: String {
         switch self {
         case .feeds:
@@ -51,7 +51,7 @@ public enum TabItem: Int, Hashable, CaseIterable {
             return "ladybug.fill"
         }
     }
-    
+
     public static var allCases: [TabItem] {
         #if DEBUG
         return [.feeds, .favorites, .explore, .debug]

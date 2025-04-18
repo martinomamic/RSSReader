@@ -12,9 +12,9 @@ import NotificationClient
 
 public struct TabBarView: View {
     @State private var viewModel = TabBarViewModel()
-    
+
     public init() {}
-    
+
     public var body: some View {
         TabView(selection: $viewModel.selectedTab) {
             ForEach(TabItem.allCases, id: \.self) { tab in
@@ -29,7 +29,7 @@ public struct TabBarView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func tabContent(for tab: TabItem) -> some View {
         NavigationStack {

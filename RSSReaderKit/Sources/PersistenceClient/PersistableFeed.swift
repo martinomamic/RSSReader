@@ -34,7 +34,7 @@ final class PersistableFeed {
         self.isFavorite = isFavorite
         self.notificationsEnabled = notificationsEnabled
     }
-    
+
     convenience init(from feed: Feed) {
         self.init(
             title: feed.title,
@@ -45,7 +45,7 @@ final class PersistableFeed {
             notificationsEnabled: feed.notificationsEnabled
         )
     }
-    
+
     func toFeed() -> Feed {
         Feed(
             url: url,

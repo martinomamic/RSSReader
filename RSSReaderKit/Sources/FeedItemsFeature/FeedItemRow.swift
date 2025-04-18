@@ -11,7 +11,7 @@ import Common
 
 struct FeedItemRow: View {
     let item: FeedItem
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: Constants.UI.feedItemSpacing) {
             if let imageURL = item.imageURL {
@@ -23,16 +23,16 @@ struct FeedItemRow: View {
                 .frame(height: Constants.UI.feedItemImageHeight)
                 .clipShape(RoundedRectangle(cornerRadius: Constants.UI.feedItemCornerRadius))
             }
-            
+
             Text(item.title)
                 .font(.headline)
-            
+
             if let description = item.description {
                 Text(description)
                     .font(.subheadline)
                     .lineLimit(Constants.UI.feedItemDescriptionLineLimit)
             }
-            
+
             if let pubDate = item.pubDate {
                 Text(pubDate, style: .date)
                     .font(.caption)

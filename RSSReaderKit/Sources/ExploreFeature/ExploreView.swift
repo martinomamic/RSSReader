@@ -11,15 +11,15 @@ import SharedModels
 
 public struct ExploreView: View {
     @State var viewModel = ExploreViewModel()
-    
+
     public init() {}
-    
+
     public var body: some View {
         Group {
             switch viewModel.state {
             case .loading:
                 ProgressView()
-                
+
             case .loaded(let feeds):
                 if feeds.isEmpty {
                     ContentUnavailableView {
@@ -40,7 +40,7 @@ public struct ExploreView: View {
                         }
                     }
                 }
-                
+
             case .error(let error):
                 ContentUnavailableView {
                     Label("Failed to Load", systemImage: Constants.Images.failedToLoadIcon)

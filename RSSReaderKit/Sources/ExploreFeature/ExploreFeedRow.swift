@@ -13,21 +13,21 @@ struct ExploreFeedRow: View {
     let feed: ExploreFeed
     let isAdded: Bool
     let onAddTapped: () -> Void
-    
+
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: Constants.UI.exploreFeedRowSpacing) {
                 Text(feed.name)
                     .font(.headline)
-                
+
                 Text(feed.url)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(Constants.UI.exploreFeedUrlLineLimit)
             }
-            
+
             Spacer()
-            
+
             if isAdded {
                 Text("Added")
                     .font(.caption)

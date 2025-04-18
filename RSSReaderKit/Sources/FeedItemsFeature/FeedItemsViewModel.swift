@@ -18,27 +18,27 @@ public class FeedItemsViewModel: Identifiable {
     @Dependency(\.rssClient) private var rssClient
     @ObservationIgnored
     @Dependency(\.openURL) private var openURL
-    
+
     let feedURL: URL
     let feedTitle: String
-    
+
     var state: FeedItemsState = .loading
-    
+
     private var loadTask: Task<Void, Never>?
-    
+
     public init(feedURL: URL, feedTitle: String) {
         self.feedURL = feedURL
         self.feedTitle = feedTitle
     }
-    
+
     func loadItems() {
         loadTask?.cancel()
         state = .loading
-        
+
         loadTask = Task {
             do {
                 let items = try await rssClient.fetchFeedItems(feedURL)
-                
+
                 if items.isEmpty {
                     state = .empty
                 } else {
@@ -49,7 +49,7 @@ public class FeedItemsViewModel: Identifiable {
             }
         }
     }
-    
+
     func openLink(for item: FeedItem) {
         Task {
             await openURL(item.link)

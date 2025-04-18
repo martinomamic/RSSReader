@@ -12,7 +12,7 @@ public enum ExploreError: Error, LocalizedError {
     case decodingFailed(String)
     case invalidURL
     case feedFetchFailed(String)
-    
+
     public var errorDescription: String? {
         switch self {
         case .fileNotFound:

@@ -13,7 +13,7 @@ public struct PersistenceClient: Sendable {
     public var updateFeed: @Sendable (Feed) async throws -> Void
     public var deleteFeed: @Sendable (URL) async throws -> Void
     public var loadFeeds: @Sendable () async throws -> [Feed]
-    
+
     public init(
         addFeed: @escaping @Sendable (Feed) async throws -> Void,
         updateFeed: @escaping @Sendable (Feed) async throws -> Void,

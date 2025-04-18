@@ -12,17 +12,17 @@ import SwiftUI
 
 public struct FeedItemsView: View {
     @State var viewModel: FeedItemsViewModel
-    
+
     public init(viewModel: FeedItemsViewModel) {
         self.viewModel = viewModel
     }
-    
+
     public var body: some View {
         Group {
             switch viewModel.state {
             case .loading:
                 ProgressView()
-                
+
             case .loaded(let items):
                 List {
                     ForEach(items) { item in
@@ -34,7 +34,7 @@ public struct FeedItemsView: View {
                         .buttonStyle(.plain)
                     }
                 }
-                
+
             case .error(let error):
                 ContentUnavailableView {
                     Label("Failed to Load", systemImage: Constants.Images.failedToLoadIcon)
@@ -48,7 +48,7 @@ public struct FeedItemsView: View {
                     }
                     .buttonStyle(.bordered)
                 }
-                
+
             case .empty:
                 ContentUnavailableView {
                     Label("No Items", systemImage: Constants.Images.noItemsIcon)
@@ -78,7 +78,7 @@ private extension FeedItem {
             imageURL: URL(string: Constants.URLs.bbcNews)
         )
     }
-    
+
     static var previewNoImage: FeedItem {
         FeedItem(
             feedID: UUID(),
