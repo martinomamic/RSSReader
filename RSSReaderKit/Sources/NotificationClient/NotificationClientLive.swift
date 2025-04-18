@@ -28,6 +28,7 @@ extension NotificationClient {
                 case .notDetermined:
                     let granted = try await center.requestAuthorization(options: [.alert, .sound, .badge])
                     print("Notification permissions granted: \(granted)")
+                    if !granted { throw NotificationError.permissionDenied }
                 case .denied:
                     print("Notification permissions denied")
                     throw NotificationError.permissionDenied
@@ -35,7 +36,7 @@ extension NotificationClient {
                     print("Notification permissions already authorized")
                     break
                 @unknown default:
-                    break
+                    throw NotificationError.permissionDenied
                 }
             },
             checkForNewItems: {
@@ -46,32 +47,9 @@ extension NotificationClient {
                 
                 guard settings.authorizationStatus == .authorized else {
                     print("Notifications not authorized, skipping check")
-                    return
+                    throw NotificationError.permissionDenied
                 }
                 
-                // Add a test notification to confirm background fetch execution
-                let testContent = UNMutableNotificationContent()
-                testContent.title = "Background Fetch Test"
-                testContent.body = "Background fetch was executed at \(Date().formatted(date: .numeric, time: .standard))"
-                testContent.sound = .default
-                
-                // Create a trigger for scheduled delivery (1 second delay)
-                let testTrigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-                
-                let testRequest = UNNotificationRequest(
-                    identifier: "background-fetch-test-\(UUID().uuidString)",
-                    content: testContent,
-                    trigger: testTrigger
-                )
-                
-                do {
-                    try await center.add(testRequest)
-                    print("Successfully scheduled background fetch test notification")
-                } catch {
-                    print("Failed to schedule background fetch test notification: \(error)")
-                }
-                
-                // Continue with regular functionality
                 let defaults = UserDefaults.standard
                 let lastCheck = defaults.object(forKey: Constants.Storage.lastNotificationCheckKey) as? Date ?? Date.distantPast
                 
@@ -113,8 +91,7 @@ extension NotificationClient {
                         
                         print("  Found \(newItems.count) new items after \(lastCheck)")
                         
-                        // Use different delays for multiple notifications to ensure they appear in sequence
-                        var delayOffset = 1.0
+                        var delayOffset = 0.5
                         
                         for item in newItems {
                             let content = UNMutableNotificationContent()
@@ -124,12 +101,11 @@ extension NotificationClient {
        
                             let identifier = "notification-\(item.id.uuidString)"
                             
-                            // Create a trigger with increasing delay to stagger notifications
                             let trigger = UNTimeIntervalNotificationTrigger(
                                 timeInterval: delayOffset,
                                 repeats: false
                             )
-                            delayOffset += 1.0 // Increase delay for next notification
+                            delayOffset += 0.5
                             
                             let request = UNNotificationRequest(
                                 identifier: identifier,
@@ -139,7 +115,7 @@ extension NotificationClient {
 
                             do {
                                 try await center.add(request)
-                                print("  Scheduled notification for item: \(item.title) with \(delayOffset-1.0)s delay")
+                                print("  Scheduled notification for item: \(item.title) with \(delayOffset-0.5)s delay")
                                 newNotifiedItemIDs.append(item.id.uuidString)
                             } catch {
                                 print("  Failed to schedule notification: \(error)")
@@ -149,7 +125,6 @@ extension NotificationClient {
                     } catch {
                         print("Error parsing feed \(feed.url.absoluteString): \(error)")
                         errors[feed.url.absoluteString] = error
-                        // Continue with next feed instead of throwing
                     }
                 }
                 
@@ -168,9 +143,6 @@ extension NotificationClient {
                 // Now list all pending notifications for debugging
                 let pendingRequests = await center.pendingNotificationRequests()
                 print("Pending notifications after check: \(pendingRequests.count)")
-                for (index, request) in pendingRequests.enumerated() {
-                    print("[\(index)] \(request.identifier): \(request.content.title) - \(request.content.body)")
-                }
                 
                 // If we had any errors, log them but don't throw
                 if !errors.isEmpty {
