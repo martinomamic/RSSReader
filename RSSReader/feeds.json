@@ -1,0 +1,244 @@
+{
+  "feeds": [
+    {
+      "name": "BBC World News",
+      "url": "http://feeds.bbci.co.uk/news/world/rss.xml",
+      "category": "General"
+    },
+    {
+      "name": "Reuters World News",
+      "url": "http://feeds.reuters.com/reuters/worldnews",
+      "category": "General"
+    },
+    {
+      "name": "CNN International",
+      "url": "http://rss.cnn.com/rss/edition_world.rss",
+      "category": "General"
+    },
+    {
+      "name": "The Guardian World News",
+      "url": "https://www.theguardian.com/world/rss",
+      "category": "General"
+    },
+    {
+      "name": "Al Jazeera English",
+      "url": "https://www.aljazeera.com/xml/rss/all.xml",
+      "category": "General"
+    },
+    {
+      "name": "Associated Press (AP) World News",
+      "url": "https://www.apnews.com/feeds/apf-topnews",
+      "category": "General"
+    },
+    {
+      "name": "NPR World News",
+      "url": "https://feeds.npr.org/1004/rss.xml",
+      "category": "General"
+    },
+    {
+      "name": "The New York Times International",
+      "url": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+      "category": "General"
+    },
+    {
+      "name": "Washington Post World News",
+      "url": "https://feeds.washingtonpost.com/rss/world",
+      "category": "General"
+    },
+    {
+      "name": "DW (Deutsche Welle) English",
+      "url": "https://rss.dw.com/rdf/rss-en-world",
+      "category": "Europe"
+    },
+    {
+      "name": "France 24",
+      "url": "https://www.france24.com/en/rss",
+      "category": "Europe"
+    },
+    {
+      "name": "South China Morning Post",
+      "url": "https://www.scmp.com/rss/91/feed",
+      "category": "Asia"
+    },
+    {
+      "name": "The Straits Times Asia",
+      "url": "https://www.straitstimes.com/news/asia/rss.xml",
+      "category": "Asia"
+    },
+    {
+      "name": "RT (Russia Today)",
+      "url": "https://www.rt.com/rss/news/",
+      "category": "Europe"
+    },
+    {
+      "name": "Xinhua News Agency",
+      "url": "http://www.xinhuanet.com/english/rss/worldrss.xml",
+      "category": "Asia"
+    },
+    {
+      "name": "The Economist - The World This Week",
+      "url": "https://www.economist.com/the-world-this-week/rss.xml",
+      "category": "Analysis"
+    },
+    {
+      "name": "Foreign Policy",
+      "url": "https://foreignpolicy.com/feed/",
+      "category": "Analysis"
+    },
+    {
+      "name": "Bloomberg World News",
+      "url": "https://www.bloomberg.com/feeds/podcasts/etf_report.xml",
+      "category": "Business"
+    },
+    {
+      "name": "TIME World",
+      "url": "http://feeds.feedburner.com/time/world",
+      "category": "General"
+    },
+    {
+      "name": "The Diplomat",
+      "url": "https://thediplomat.com/feed/",
+      "category": "Asia-Pacific"
+    },
+    {
+      "name": "PBS NewsHour World",
+      "url": "https://www.pbs.org/newshour/feed/",
+      "category": "General"
+    },
+    {
+      "name": "VOA News",
+      "url": "https://www.voanews.com/api/zq$omekvi_",
+      "category": "General"
+    },
+    {
+      "name": "The Japan Times",
+      "url": "https://www.japantimes.co.jp/feed/topstories/",
+      "category": "Asia"
+    },
+    {
+      "name": "The Sydney Morning Herald World",
+      "url": "https://www.smh.com.au/rss/world.xml",
+      "category": "Australia"
+    },
+    {
+      "name": "CBC World News",
+      "url": "https://www.cbc.ca/cmlink/rss-world",
+      "category": "Canada"
+    },
+    {
+      "name": "ABC News (Australia)",
+      "url": "https://www.abc.net.au/news/feed/45910/rss.xml",
+      "category": "Australia"
+    },
+    {
+      "name": "The Hindu International",
+      "url": "https://www.thehindu.com/news/international/feeder/default.rss",
+      "category": "Asia"
+    },
+    {
+      "name": "Haaretz International",
+      "url": "https://www.haaretz.com/srv/feed-rss/all",
+      "category": "Middle East"
+    },
+    {
+      "name": "The Times of India World",
+      "url": "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms",
+      "category": "Asia"
+    },
+    {
+      "name": "Der Spiegel International",
+      "url": "https://www.spiegel.de/international/index.rss",
+      "category": "Europe"
+    },
+    {
+      "name": "Le Monde International",
+      "url": "https://www.lemonde.fr/international/rss_full.xml",
+      "category": "Europe"
+    },
+    {
+      "name": "El País English",
+      "url": "https://english.elpais.com/feed/rss.html",
+      "category": "Europe"
+    },
+    {
+      "name": "The Irish Times World",
+      "url": "https://www.irishtimes.com/news/world/rss",
+      "category": "Europe"
+    },
+    {
+      "name": "The Globe and Mail World",
+      "url": "https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/world/?outputType=xml",
+      "category": "Canada"
+    },
+    {
+      "name": "The Asahi Shimbun Asia",
+      "url": "https://www.asahi.com/rss/asahi/newsheadlines.rdf",
+      "category": "Asia"
+    },
+    {
+      "name": "The Korea Herald",
+      "url": "http://www.koreaherald.com/common/rss.php?ct=1",
+      "category": "Asia"
+    },
+    {
+      "name": "The Jerusalem Post",
+      "url": "https://www.jpost.com/Rss/RssFeedsHeadlines.aspx",
+      "category": "Middle East"
+    },
+    {
+      "name": "Gulf News World",
+      "url": "https://gulfnews.com/world/rss",
+      "category": "Middle East"
+    },
+    {
+      "name": "The National (UAE)",
+      "url": "https://www.thenationalnews.com/tags/world-news/rss",
+      "category": "Middle East"
+    },
+    {
+      "name": "Radio Free Asia",
+      "url": "https://www.rfa.org/english/feed/rss2.xml",
+      "category": "Asia"
+    },
+    {
+      "name": "The South African",
+      "url": "https://www.thesouthafrican.com/feed/",
+      "category": "Africa"
+    },
+    {
+      "name": "AllAfrica",
+      "url": "http://allafrica.com/tools/headlines/rdf/latest/headlines.rdf",
+      "category": "Africa"
+    },
+    {
+      "name": "Daily Nation World",
+      "url": "https://www.nation.co.ke/rss/world/-/1090/1090/-/view/asFeed/-/13vrq9mz/-/index.xml",
+      "category": "Africa"
+    },
+    {
+      "name": "The East African",
+      "url": "https://www.theeastafrican.co.ke/rss",
+      "category": "Africa"
+    },
+    {
+      "name": "Latin America News Dispatch",
+      "url": "https://latindispatch.com/feed/",
+      "category": "Latin America"
+    },
+    {
+      "name": "Buenos Aires Herald",
+      "url": "https://buenosairesherald.com/rss",
+      "category": "Latin America"
+    },
+    {
+      "name": "Folha de S.Paulo International",
+      "url": "https://www1.folha.uol.com.br/internacional/en/rss091.xml",
+      "category": "Latin America"
+    },
+    {
+      "name": "The Tico Times",
+      "url": "https://ticotimes.net/feed",
+      "category": "Latin America"
+    }
+  ]
+}

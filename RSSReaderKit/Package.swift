@@ -29,11 +29,17 @@ let package = Package(
             ]
         ),
         .target(
+            name: "ExploreClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "SharedModels"
+            ]
+        ),
+        .target(
             name: "ExploreFeature",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 "Common",
-                "RSSClient",
                 "SharedModels"
             ]
         ),
