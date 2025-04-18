@@ -17,7 +17,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         NotificationDelegate.shared.setup()
-        BackgroundRefreshService.shared.registerBackgroundTasks()
+        BackgroundRefreshClient.shared.registerBackgroundTasks()
         
         Task {
             do {
@@ -32,6 +32,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
-        BackgroundRefreshService.shared.scheduleAppRefresh()
+        BackgroundRefreshClient.shared.scheduleAppRefresh()
     }
 }

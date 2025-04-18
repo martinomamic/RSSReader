@@ -8,6 +8,7 @@
 import Common
 import Dependencies
 import SwiftUI
+import UIKit
 @preconcurrency import UserNotifications
 
 @MainActor
@@ -15,63 +16,190 @@ public struct NotificationDebugView: View {
     @State private var isRefreshing = false
     @State private var refreshResult = ""
     @State private var notificationStatus = "Unknown"
+    @Environment(\.scenePhase) private var scenePhase
     
     @Dependency(\.notificationClient) private var notificationClient
     
     public init() {}
     
     public var body: some View {
-        VStack(spacing: 20) {
-            Text("Notification Debug")
-                .font(.title)
-                .padding(.top)
-            
-            Text("Notification Status: \(notificationStatus)")
-                .padding()
-            
-            Button("Check Notification Status") {
-                checkNotificationStatus()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                // Header
+                Text("Notification Debug")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                
+                // Status section
+                statusSection
+                
+                // Actions section
+                actionsSection
+                
+                // Results section
+                resultsSection
             }
-            .buttonStyle(.bordered)
-            
-            Button("Request Notification Permissions") {
-                requestPermissions()
-            }
-            .buttonStyle(.bordered)
-            
-            Button("Trigger Manual Background Refresh") {
-                triggerManualRefresh()
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(isRefreshing)
-            
-            Button("Send Delayed (5 sec) Notification") {
-                sendDelayedNotification()
-            }
-            .buttonStyle(.bordered)
-            .disabled(isRefreshing)
-            
-            Button("Test Feed Parsing") {
-                testFeedParsing()
-            }
-            .buttonStyle(.bordered)
-            .disabled(isRefreshing)
-            
-            if isRefreshing {
-                ProgressView()
-                    .padding()
-            }
-            
-            Text(refreshResult)
-                .padding()
-                .multilineTextAlignment(.center)
-            
-            Spacer()
+            .padding()
         }
-        .padding()
         .onAppear {
             checkNotificationStatus()
         }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                checkNotificationStatus()
+            }
+        }
+    }
+    
+    // MARK: - UI Sections
+    
+    private var statusSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Status")
+                .font(.headline)
+            
+            HStack {
+                Text("Notification Status:")
+                    .fontWeight(.medium)
+                
+                Text(notificationStatus)
+                    .foregroundStyle(statusColor)
+                    .fontWeight(.semibold)
+                
+                Spacer()
+                
+                Button("Check") {
+                    checkNotificationStatus()
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+            }
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+    }
+    
+    private var actionsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Actions")
+                .font(.headline)
+            
+            Group {
+                actionButton(
+                    title: "Request Notification Permissions",
+                    icon: "bell.badge",
+                    action: requestPermissions
+                )
+                
+                actionButton(
+                    title: "Send Delayed (5 sec) Notification",
+                    icon: "clock",
+                    action: sendDelayedNotification,
+                    accentColor: .blue,
+                    backgroundApp: true
+                )
+                
+                actionButton(
+                    title: "Trigger Manual Background Refresh",
+                    icon: "arrow.clockwise",
+                    action: triggerManualRefresh,
+                    accentColor: .green
+                )
+                
+                actionButton(
+                    title: "Test Feed Parsing",
+                    icon: "doc.text.magnifyingglass",
+                    action: testFeedParsing,
+                    accentColor: .purple
+                )
+            }
+            .disabled(isRefreshing)
+        }
+    }
+    
+    private var resultsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Results")
+                .font(.headline)
+            
+            if isRefreshing {
+                HStack {
+                    ProgressView()
+                    Text("Processing...")
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding()
+            }
+            
+            Text(refreshResult)
+                .multilineTextAlignment(.leading)
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.gray.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .animation(.easeInOut, value: refreshResult)
+        }
+    }
+    
+    // MARK: - Helper Views
+    
+    private func actionButton(
+        title: String,
+        icon: String,
+        action: @escaping () -> Void,
+        accentColor: Color = .blue,
+        backgroundApp: Bool = false
+    ) -> some View {
+        Button {
+            action()
+            if backgroundApp {
+                moveAppToBackground()
+            }
+        } label: {
+            HStack {
+                Image(systemName: icon)
+                    .foregroundColor(.white)
+                    .frame(width: 30, height: 30)
+                    .background(accentColor)
+                    .clipShape(Circle())
+                
+                Text(title)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                if backgroundApp {
+                    Image(systemName: "iphone.and.arrow.forward")
+                        .foregroundColor(.secondary)
+                        .font(.caption)
+                }
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+    
+    private var statusColor: Color {
+        switch notificationStatus {
+        case "Authorized":
+            return .green
+        case "Denied":
+            return .red
+        default:
+            return .orange
+        }
+    }
+    
+    private func moveAppToBackground() {
+        // Delay for UI updates
+        Task { try? await Task.sleep(nanoseconds: 500_000_000) }
+        UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
     }
     
     private func checkNotificationStatus() {
@@ -112,10 +240,10 @@ public struct NotificationDebugView: View {
         Task {
             do {
                 try await notificationClient.requestPermissions()
-                refreshResult = "Notification permissions granted"
+                refreshResult = "✅ Notification permissions granted"
                 checkNotificationStatus()
             } catch {
-                refreshResult = "Failed to get permissions: \(error.localizedDescription)"
+                refreshResult = "❌ Failed to get permissions: \(error.localizedDescription)"
             }
         }
     }
@@ -125,14 +253,14 @@ public struct NotificationDebugView: View {
             isRefreshing = true
             refreshResult = "Refreshing..."
             
-            let success = await BackgroundRefreshService.shared.manuallyTriggerBackgroundRefresh()
+            let success = await BackgroundRefreshClient.shared.manuallyTriggerBackgroundRefresh()
             
             isRefreshing = false
             if success {
-                refreshResult = "Background refresh triggered successfully at \(Date().formatted(date: .numeric, time: .standard))"
+                refreshResult = "✅ Background refresh triggered successfully at \(Date().formatted(date: .numeric, time: .standard))"
                 try? await sendConfirmationNotification("Background refresh executed")
             } else {
-                refreshResult = "Background refresh failed"
+                refreshResult = "❌ Background refresh failed"
             }
         }
     }
@@ -154,12 +282,12 @@ public struct NotificationDebugView: View {
                 )
                 
                 try await UNUserNotificationCenter.current().add(request)
-                refreshResult = "Delayed notification scheduled (will appear in 5 seconds)"
+                refreshResult = "✅ Delayed notification scheduled (will appear in 5 seconds)"
                 
                 // Log pending notifications after scheduling
                 listScheduledNotifications()
             } catch {
-                refreshResult = "Failed to schedule delayed notification: \(error.localizedDescription)"
+                refreshResult = "❌ Failed to schedule delayed notification: \(error.localizedDescription)"
             }
         }
     }
@@ -194,10 +322,10 @@ public struct NotificationDebugView: View {
                 var results = ""
                 
                 let feeds = try await persistenceClient.loadFeeds()
-                results += "\nStored feeds: \(feeds.count)\n"
+                results += "📊 Stored feeds: \(feeds.count)\n"
                 
                 if feeds.isEmpty {
-                    results += "No stored feeds to test\n"
+                    results += "ℹ️ No stored feeds to test\n"
                 } else {
                     for (index, feed) in feeds.enumerated() {
                         do {
@@ -212,7 +340,7 @@ public struct NotificationDebugView: View {
                 
                 refreshResult = results
             } catch {
-                refreshResult = "Error testing feeds: \(error.localizedDescription)"
+                refreshResult = "❌ Error testing feeds: \(error.localizedDescription)"
                 print("Error during feed test: \(error)")
             }
             

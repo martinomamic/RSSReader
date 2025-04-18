@@ -1,5 +1,5 @@
 //
-//  BackgroundRefreshManager.swift
+//  BackgroundRefreshClient.swift
 //  RSSReaderKit
 //
 //  Created by Martino Mamić on 17.04.25.
@@ -12,12 +12,12 @@ import Foundation
 import UserNotifications
 
 @MainActor
-public final class BackgroundRefreshService: Sendable {
+public final class BackgroundRefreshClient: Sendable {
     @Dependency(\.notificationClient) private var notificationClient
     
     private let feedRefreshTaskIdentifier = "com.rssreader.feedrefresh"
     
-    public static let shared = BackgroundRefreshService()
+    public static let shared = BackgroundRefreshClient()
     
     private init() {}
     
@@ -32,7 +32,7 @@ public final class BackgroundRefreshService: Sendable {
     
     public func scheduleAppRefresh() {
         let request = BGAppRefreshTaskRequest(identifier: feedRefreshTaskIdentifier)
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 60)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60)
         
         do {
             try BGTaskScheduler.shared.submit(request)
@@ -63,7 +63,7 @@ public final class BackgroundRefreshService: Sendable {
 
 
 #if DEBUG
-extension BackgroundRefreshService {
+extension BackgroundRefreshClient {
     public func manuallyTriggerBackgroundRefresh() async -> Bool {
         do {
             let center = UNUserNotificationCenter.current()

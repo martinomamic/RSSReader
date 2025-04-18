@@ -9,10 +9,6 @@
       "url": "https://feeds.nbcnews.com/nbcnews/public/world"
     },
     {
-      "name": "CNN International",
-      "url": "https://rss.cnn.com/rss/edition_world.rss"
-    },
-    {
       "name": "CBS News World",
       "url": "https://www.cbsnews.com/latest/rss/world"
     },
