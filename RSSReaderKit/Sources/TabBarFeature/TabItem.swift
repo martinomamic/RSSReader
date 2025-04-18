@@ -9,6 +9,7 @@ import SwiftUI
 
 public enum TabItem: Int, Hashable, CaseIterable {
     case feeds
+    case explore
     case favorites
     case debug
     
@@ -16,6 +17,8 @@ public enum TabItem: Int, Hashable, CaseIterable {
         switch self {
         case .feeds:
             return "Feeds"
+        case .explore:
+            return "Explore"
         case .favorites:
             return "Favorites"
         case .debug:
@@ -27,6 +30,8 @@ public enum TabItem: Int, Hashable, CaseIterable {
         switch self {
         case .feeds:
             return "newspaper"
+        case .explore:
+            return "globe"
         case .favorites:
             return "star"
         case .debug:
@@ -38,6 +43,8 @@ public enum TabItem: Int, Hashable, CaseIterable {
         switch self {
         case .feeds:
             return "newspaper.fill"
+        case .explore:
+            return "globe.fill"
         case .favorites:
             return "star.fill"
         case .debug:
@@ -47,9 +54,14 @@ public enum TabItem: Int, Hashable, CaseIterable {
     
     public static var allCases: [TabItem] {
         #if DEBUG
-        return [.feeds, .favorites, .debug]
+        return [.feeds, .favorites, .explore, .debug]
         #else
-        return [.feeds, .favorites]
+        return [.feeds, .favorites, .explore]
         #endif
+    }
+}
+#Preview {
+    ForEach(TabItem.allCases, id: \.self) { item in
+        Text(item.title)
     }
 }

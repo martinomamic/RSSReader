@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ExploreFeature
 import FeedListFeature
 import NotificationClient
 
@@ -37,6 +38,8 @@ public struct TabBarView: View {
                 FeedListView()
             case .favorites:
                 FeedListView(showOnlyFavorites: true)
+            case .explore:
+                ExploreView()
             case .debug:
                 NotificationDebugView()
             }
