@@ -45,7 +45,7 @@ public struct FeedListView: View {
         .onAppear {
             viewModel.loadFeeds()
         }
-        .navigationTitle(showOnlyFavorites ? 
+        .navigationTitle(showOnlyFavorites ?
             LocalizedStrings.FeedList.favoriteFeeds :
             LocalizedStrings.FeedList.rssFeeds)
         .navigationBarTitleDisplayMode(.inline)
