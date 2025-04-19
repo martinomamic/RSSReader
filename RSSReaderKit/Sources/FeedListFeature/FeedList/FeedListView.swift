@@ -20,14 +20,55 @@ public struct FeedListView: View {
         self.showOnlyFavorites = showOnlyFavorites
     }
 
-    var displayedFeeds: [FeedViewModel] {
-        showOnlyFavorites ? viewModel.favoriteFeeds : viewModel.feeds
-    }
-
     public var body: some View {
+        Group {
+            switch viewModel.state {
+            case .loading:
+                loadingView
+            case .loaded:
+                if displayedFeeds.isEmpty {
+                    emptyFavoritesView
+                } else {
+                    loadedView
+                }
+            case .empty:
+                emptyView
+            case .error(let error):
+                errorView(error: error)
+            }
+        }
+        .navigationTitle(showOnlyFavorites ? "Favorite Feeds" : "RSS Feeds")
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(for: FeedViewModel.self) { feed in
+            FeedItemsView(
+                viewModel: FeedItemsViewModel(
+                    feedURL: feed.url,
+                    feedTitle: feed.feed.title ?? "Unnamed feed"
+                )
+            )
+        }
+        .toolbar {
+            toolbarContent
+        }
+        .sheet(isPresented: $showingAddFeed) {
+            AddFeedView(feeds: .constant(viewModel.allFeeds))
+        }
+        .task {
+            viewModel.loadFeeds()
+        }
+    }
+    
+    private var displayedFeeds: [FeedViewModel] {
+        showOnlyFavorites ? viewModel.favoriteFeeds : viewModel.allFeeds
+    }
+    
+    private var loadingView: some View {
+        ProgressView()
+            .testId(AccessibilityIdentifier.FeedList.loadingView)
+    }
+    
+    private var loadedView: some View {
         List {
-            let displayedFeeds = showOnlyFavorites ? viewModel.favoriteFeeds : viewModel.feeds
-
             ForEach(displayedFeeds) { feed in
                 FeedView(viewModel: feed)
                     .background {
@@ -42,57 +83,49 @@ public struct FeedListView: View {
         .testId(showOnlyFavorites ?
             AccessibilityIdentifier.FeedList.favoritesList :
             AccessibilityIdentifier.FeedList.feedsList)
-        .onAppear {
-            viewModel.loadFeeds()
-        }
-        .navigationTitle(showOnlyFavorites ? "Favorite Feeds" : "RSS Feeds")
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationDestination(for: FeedViewModel.self) { feed in
-            FeedItemsView(
-                viewModel: FeedItemsViewModel(
-                    feedURL: feed.url,
-                    feedTitle: feed.feed.title ?? "Unnamed feed"
-                )
-            )
-        }
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    showingAddFeed = true
-                } label: {
-                    Label("Add Feed", systemImage: Constants.Images.addIcon)
-                }
-                .testId(AccessibilityIdentifier.FeedList.addFeedButton)
+    }
+    
+    private var emptyView: some View {
+        EmptyStateView(
+            title: "No Feeds",
+            message: "Add an RSS feed to get started",
+            icon: Constants.Images.noItemsIcon,
+            actionTitle: "Add Feed",
+            action: { showingAddFeed = true }
+        )
+    }
+    
+    private var emptyFavoritesView: some View {
+        EmptyStateView(
+            title: "No Favorites",
+            message: "Add feeds to favorites from the Feeds tab",
+            icon: Constants.Images.noItemsIcon
+        )
+    }
+    
+    private func errorView(error: RSSViewError) -> some View {
+        ErrorView(
+            message: error.errorDescription,
+            retryAction: viewModel.loadFeeds
+        )
+        .testId(AccessibilityIdentifier.FeedList.errorView)
+    }
+    
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .primaryAction) {
+            Button {
+                showingAddFeed = true
+            } label: {
+                Label("Add Feed", systemImage: Constants.Images.addIcon)
             }
-            if !viewModel.feeds.isEmpty {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    EditButton()
-                        .testId(AccessibilityIdentifier.FeedList.editButton)
-                }
-            }
+            .testId(AccessibilityIdentifier.FeedList.addFeedButton)
         }
-        .sheet(isPresented: $showingAddFeed) {
-            AddFeedView(feeds: $viewModel.feeds)
-        }
-        .overlay {
-            if displayedFeeds.isEmpty {
-                ContentUnavailableView {
-                    Label(showOnlyFavorites ? "No Favorites" : "No Feeds",
-                          systemImage: Constants.Images.noItemsIcon)
-                } description: {
-                    Text(showOnlyFavorites ?
-                         "Add feeds to favorites from the Feeds tab" :
-                         "Add an RSS feed to get started")
-                } actions: {
-                    if !showOnlyFavorites {
-                        Button {
-                            showingAddFeed = true
-                        } label: {
-                            Label("Add Feed", systemImage: Constants.Images.addIcon)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                }
+        
+        if case .loaded = viewModel.state, !viewModel.allFeeds.isEmpty {
+            ToolbarItem(placement: .navigationBarLeading) {
+                EditButton()
+                    .testId(AccessibilityIdentifier.FeedList.editButton)
             }
         }
     }

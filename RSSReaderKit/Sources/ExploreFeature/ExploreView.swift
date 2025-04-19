@@ -18,46 +18,15 @@ public struct ExploreView: View {
         Group {
             switch viewModel.state {
             case .loading:
-                ProgressView()
-                    .testId(AccessibilityIdentifier.Explore.loadingView)
-
+                loadingView
             case .loaded(let feeds):
                 if feeds.isEmpty {
-                    ContentUnavailableView {
-                        Label("No Feeds Found", systemImage: Constants.Images.noItemsIcon)
-                    } description: {
-                        Text("No feeds available")
-                    }
-                    .testId(AccessibilityIdentifier.Explore.emptyView)
+                    emptyView
                 } else {
-                    List {
-                        ForEach(feeds) { feed in
-                            ExploreFeedRow(
-                                feed: feed,
-                                isAdded: viewModel.isFeedAdded(feed),
-                                onAddTapped: {
-                                    viewModel.addFeed(feed)
-                                }
-                            )
-                        }
-                    }
-                    .testId(AccessibilityIdentifier.Explore.feedsList)
+                    loadedView(feeds: feeds)
                 }
-
             case .error(let error):
-                ContentUnavailableView {
-                    Label("Failed to Load", systemImage: Constants.Images.failedToLoadIcon)
-                } description: {
-                    Text(error.errorDescription)
-                } actions: {
-                    Button {
-                        viewModel.loadExploreFeeds()
-                    } label: {
-                        Text("Try Again")
-                    }
-                    .buttonStyle(.bordered)
-                }
-                .testId(AccessibilityIdentifier.Explore.errorView)
+                errorView(error: error)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -82,5 +51,42 @@ public struct ExploreView: View {
         .task {
             viewModel.loadExploreFeeds()
         }
+    }
+    
+    private var loadingView: some View {
+        ProgressView()
+            .testId(AccessibilityIdentifier.Explore.loadingView)
+    }
+    
+    private func loadedView(feeds: [ExploreFeed]) -> some View {
+        List {
+            ForEach(feeds) { feed in
+                ExploreFeedRow(
+                    feed: feed,
+                    isAdded: viewModel.isFeedAdded(feed),
+                    onAddTapped: {
+                        viewModel.addFeed(feed)
+                    }
+                )
+            }
+        }
+        .testId(AccessibilityIdentifier.Explore.feedsList)
+    }
+    
+    private var emptyView: some View {
+        EmptyStateView(
+            title: "No Feeds Found",
+            message: "No feeds available",
+            icon: Constants.Images.noItemsIcon
+        )
+        .testId(AccessibilityIdentifier.Explore.emptyView)
+    }
+    
+    private func errorView(error: RSSViewError) -> some View {
+        ErrorView(
+            message: error.errorDescription,
+            retryAction: viewModel.loadExploreFeeds
+        )
+        .testId(AccessibilityIdentifier.Explore.errorView)
     }
 }

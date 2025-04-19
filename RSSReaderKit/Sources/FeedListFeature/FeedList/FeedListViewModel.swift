@@ -15,9 +15,10 @@ import Dependencies
 import Observation
 
 enum FeedListState: Equatable {
-    case idle
     case loading
+    case loaded([Feed])
     case error(RSSViewError)
+    case empty
 }
 
 @MainActor @Observable
@@ -28,11 +29,18 @@ public class FeedListViewModel {
     @ObservationIgnored
     @Dependency(\.persistenceClient) private var persistenceClient
 
-    var feeds: [FeedViewModel] = []
-    var state: FeedListState = .idle
-
+    var state: FeedListState = .loading
+    
     var favoriteFeeds: [FeedViewModel] {
-        feeds.filter { $0.feed.isFavorite }
+        guard case .loaded(let feeds) = state else { return [] }
+        return feeds
+            .filter { $0.isFavorite }
+            .map { FeedViewModel(url: $0.url, feed: $0) }
+    }
+    
+    var allFeeds: [FeedViewModel] {
+        guard case .loaded(let feeds) = state else { return [] }
+        return feeds.map { FeedViewModel(url: $0.url, feed: $0) }
     }
 
     private var loadTask: Task<Void, Never>?
@@ -42,18 +50,16 @@ public class FeedListViewModel {
     public init() {}
 
     func loadFeeds() {
-        feeds.removeAll()
         state = .loading
         loadTask?.cancel()
         loadTask = Task {
             do {
                 let savedFeeds = try await persistenceClient.loadFeeds()
-                feeds = savedFeeds.map { feed in
-                    let viewModel = FeedViewModel(url: feed.url, feed: feed)
-                    viewModel.state = .loaded(feed)
-                    return viewModel
+                if savedFeeds.isEmpty {
+                    state = .empty
+                } else {
+                    state = .loaded(savedFeeds)
                 }
-                state = .idle
             } catch {
                 state = .error(RSSErrorMapper.map(error))
             }
@@ -61,39 +67,49 @@ public class FeedListViewModel {
     }
 
     func removeFeed(at indexSet: IndexSet, fromFavorites: Bool = false) {
+        guard case .loaded(var feeds) = state else { return }
+        
         if fromFavorites {
-            let feedsToRemoveFromFavorites = indexSet.map { favoriteFeeds[$0] }
-            for feed in feedsToRemoveFromFavorites {
-                if let index = feeds.firstIndex(where: { $0.url == feed.url }) {
-                    feeds[index].feed.isFavorite = false
-                    toggleFavorite(feeds[index])
+            let feedsToUpdate = indexSet.map { favoriteFeeds[$0] }
+            for feedVM in feedsToUpdate {
+                if let index = feeds.firstIndex(where: { $0.url == feedVM.url }) {
+                    feeds[index].isFavorite = false
+                    updateFeed(feeds[index])
                 }
             }
         } else {
-            let feedsToDelete = indexSet.map { feeds[$0] }
-            for feed in feedsToDelete {
-                deleteFeed(feed)
+            let feedsToDelete = indexSet.map { allFeeds[$0] }
+            for feedVM in feedsToDelete {
+                deleteFeed(feedVM.url)
+                if let index = feeds.firstIndex(where: { $0.url == feedVM.url }) {
+                    feeds.remove(at: index)
+                }
             }
-            feeds.remove(atOffsets: indexSet)
+        }
+        
+        if feeds.isEmpty {
+            state = .empty
+        } else {
+            state = .loaded(feeds)
         }
     }
 
-    private func toggleFavorite(_ feedViewModel: FeedViewModel) {
+    private func updateFeed(_ feed: Feed) {
         updateTask?.cancel()
         updateTask = Task {
             do {
-                try await persistenceClient.updateFeed(feedViewModel.feed)
+                try await persistenceClient.updateFeed(feed)
             } catch {
                 state = .error(RSSErrorMapper.map(error))
             }
         }
     }
 
-    private func deleteFeed(_ feedViewModel: FeedViewModel) {
+    private func deleteFeed(_ url: URL) {
         deleteTask?.cancel()
         deleteTask = Task {
             do {
-                try await persistenceClient.deleteFeed(feedViewModel.url)
+                try await persistenceClient.deleteFeed(url)
             } catch {
                 state = .error(RSSErrorMapper.map(error))
             }

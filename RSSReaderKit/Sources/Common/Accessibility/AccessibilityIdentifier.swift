@@ -14,6 +14,8 @@ public enum AccessibilityIdentifier {
         public static let editButton = "editButton"
         public static let feedsList = "feedsList"
         public static let favoritesList = "favoritesList"
+        public static let loadingView = "loadingListView"
+        public static let errorView = "errorView"
     }
     
     public enum FeedView {
