@@ -55,13 +55,6 @@ class AddFeedViewModel {
         state == .success
     }
 
-    var errorMessage: String? {
-        if case .error(let error) = state {
-            return error.errorDescription
-        }
-        return nil
-    }
-
     var errorAlertBinding: Binding<Bool> {
         .init(
             get: { if case .error = self.state { return true } else { return false } },

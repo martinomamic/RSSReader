@@ -70,13 +70,14 @@ struct AddFeedView: View {
                     ProgressView()
                 }
             }
-            .alert(LocalizedStrings.AddFeed.errorTitle, isPresented: viewModel.errorAlertBinding) {
+            .alert(Text(LocalizedStrings.AddFeed.errorTitle),
+                   isPresented: viewModel.errorAlertBinding) {
                 Button(LocalizedStrings.General.ok) {
                     viewModel.dismissError()
                 }
             } message: {
-                if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
+                if case .error(let error) = viewModel.state {
+                    Text(error.errorDescription)
                 }
             }
             .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
