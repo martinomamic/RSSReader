@@ -20,26 +20,26 @@ struct AddFeedView: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Feed URL", text: $viewModel.urlString)
+                    TextField(LocalizedStrings.AddFeed.urlPlaceholder, text: $viewModel.urlString)
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                         .keyboardType(.URL)
                         .testId(AccessibilityIdentifier.AddFeed.urlTextField)
                 } header: {
-                    Text("Enter RSS feed URL")
+                    Text(LocalizedStrings.AddFeed.urlHeader)
                 } footer: {
                     VStack(alignment: .leading, spacing: Constants.UI.footerSpacing) {
-                        Text("Examples (tap to use):")
+                        Text(LocalizedStrings.AddFeed.examplesHeader)
                             .font(.footnote)
                             .foregroundColor(.secondary)
 
                         VStack(alignment: .leading, spacing: Constants.UI.exampleButtonSpacing) {
-                            Button("BBC News") {
+                            Button(LocalizedStrings.AddFeed.bbcNews) {
                                 viewModel.urlString = Constants.URLs.bbcNews
                             }
                             .testId(AccessibilityIdentifier.AddFeed.bbcExampleButton)
 
-                            Button("NBC News") {
+                            Button(LocalizedStrings.AddFeed.nbcNews) {
                                 viewModel.urlString = Constants.URLs.nbcNews
                             }
                             .testId(AccessibilityIdentifier.AddFeed.nbcExampleButton)
@@ -47,18 +47,18 @@ struct AddFeedView: View {
                     }
                 }
             }
-            .navigationTitle("Add Feed")
+            .navigationTitle(LocalizedStrings.AddFeed.title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(LocalizedStrings.General.cancel) {
                         dismiss()
                     }
                     .testId(AccessibilityIdentifier.AddFeed.cancelButton)
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
+                    Button(LocalizedStrings.General.add) {
                         viewModel.addFeed()
                     }
                     .disabled(!viewModel.isValidURL || viewModel.state == .adding)
@@ -70,7 +70,7 @@ struct AddFeedView: View {
                     ProgressView()
                 }
             }
-            .alert("Error Adding Feed", isPresented: .init(
+            .alert(LocalizedStrings.AddFeed.errorTitle, isPresented: .init(
                 get: {
                     if case .error = viewModel.state { return true }
                     return false
@@ -81,7 +81,7 @@ struct AddFeedView: View {
                     }
                 }
             )) {
-                Button("OK") {}
+                Button(LocalizedStrings.General.ok) {}
             } message: {
                 if case .error(let error) = viewModel.state {
                     Text(error.errorDescription)

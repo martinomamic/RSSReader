@@ -60,7 +60,7 @@ public struct ExploreView: View {
             Alert(
                 title: Text(LocalizedStrings.Explore.errorAddingFeed),
                 message: Text(error.errorDescription),
-                dismissButton: .default(Text(LocalizedStrings.Explore.ok)) {
+                dismissButton: .default(Text(LocalizedStrings.General.ok)) {
                     viewModel.clearError()
                 }
             )
