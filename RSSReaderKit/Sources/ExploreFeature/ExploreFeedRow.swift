@@ -29,7 +29,7 @@ struct ExploreFeedRow: View {
             Spacer()
 
             RoundedButton(
-                title: isAdded ? "Added" : "Add",
+                title: isAdded ? LocalizedStrings.ExploreFeed.added : LocalizedStrings.ExploreFeed.add,
                 action: onAddTapped,
                 backgroundColor: isAdded ? .green : .blue,
                 isEnabled: !isAdded

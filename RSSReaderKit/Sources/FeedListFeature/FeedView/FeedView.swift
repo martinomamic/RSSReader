@@ -25,7 +25,7 @@ struct FeedView: View {
                     Text(viewModel.url.absoluteString)
                         .font(.headline)
                         .lineLimit(Constants.UI.feedTitleLineLimit)
-                    Text("Loading feed details...")
+                    Text(LocalizedStrings.Feed.loadingDetails)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -34,7 +34,7 @@ struct FeedView: View {
                 FeedImageView(url: feed.imageURL)
 
                 VStack(alignment: .leading, spacing: Constants.UI.verticalPadding) {
-                    Text(feed.title ?? "Unnamed Feed")
+                    Text(feed.title ?? LocalizedStrings.Feed.unnamedFeed)
                         .font(.headline)
                         .testId(AccessibilityIdentifier.FeedView.feedTitle)
 
@@ -75,14 +75,14 @@ struct FeedView: View {
                     Text(viewModel.url.absoluteString)
                         .font(.headline)
                         .lineLimit(Constants.UI.feedTitleLineLimit)
-                    Text("Failed to load feed: \(error.errorDescription)")
+                    Text(String(format: LocalizedStrings.Feed.failedToLoad, error.errorDescription))
                         .font(.caption)
                         .foregroundStyle(.red)
                 }
                 .testId(AccessibilityIdentifier.FeedView.errorView)
 
             case .empty:
-                Text("No feed data available")
+                Text(LocalizedStrings.Feed.noDataAvailable)
                     .foregroundStyle(.secondary)
             }
         }

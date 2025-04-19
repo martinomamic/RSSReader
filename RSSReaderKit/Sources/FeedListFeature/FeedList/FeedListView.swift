@@ -39,19 +39,21 @@ public struct FeedListView: View {
                 viewModel.removeFeed(at: indexSet, fromFavorites: showOnlyFavorites)
             }
         }
-        .testId(showOnlyFavorites ? 
+        .testId(showOnlyFavorites ?
             AccessibilityIdentifier.FeedList.favoritesList :
             AccessibilityIdentifier.FeedList.feedsList)
         .onAppear {
             viewModel.loadFeeds()
         }
-        .navigationTitle(showOnlyFavorites ? "Favorite Feeds" : "RSS Feeds")
+        .navigationTitle(showOnlyFavorites ? 
+            LocalizedStrings.FeedList.favoriteFeeds :
+            LocalizedStrings.FeedList.rssFeeds)
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: FeedViewModel.self) { feed in
             FeedItemsView(
                 viewModel: FeedItemsViewModel(
                     feedURL: feed.url,
-                    feedTitle: feed.feed.title ?? "Unnamed feed"
+                    feedTitle: feed.feed.title ?? LocalizedStrings.FeedList.unnamedFeed
                 )
             )
         }
@@ -60,7 +62,8 @@ public struct FeedListView: View {
                 Button {
                     showingAddFeed = true
                 } label: {
-                    Label("Add Feed", systemImage: Constants.Images.addIcon)
+                    Label(LocalizedStrings.FeedList.addFeed,
+                          systemImage: Constants.Images.addIcon)
                 }
                 .testId(AccessibilityIdentifier.FeedList.addFeedButton)
             }
@@ -77,13 +80,15 @@ public struct FeedListView: View {
         .overlay {
             if displayedFeeds.isEmpty {
                 EmptyStateView(
-                    title: showOnlyFavorites ? "No Favorites" : "No Feeds",
+                    title: showOnlyFavorites ?
+                        LocalizedStrings.FeedList.noFavorites :
+                        LocalizedStrings.FeedList.noFeeds,
                     systemImage: Constants.Images.noItemsIcon,
                     description: showOnlyFavorites ?
-                        "Add feeds to favorites from the Feeds tab" :
-                        "Add an RSS feed to get started",
+                        LocalizedStrings.FeedList.noFavoritesDescription :
+                        LocalizedStrings.FeedList.noFeedsDescription,
                     primaryAction: showOnlyFavorites ? nil : { showingAddFeed = true },
-                    primaryActionLabel: showOnlyFavorites ? nil : "Add Feed"
+                    primaryActionLabel: showOnlyFavorites ? nil : LocalizedStrings.FeedList.addFeed
                 )
             }
         }
