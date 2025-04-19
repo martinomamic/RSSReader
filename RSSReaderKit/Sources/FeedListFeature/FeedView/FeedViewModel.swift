@@ -89,10 +89,10 @@ enum FeedViewState: Equatable {
                 }
 
                 feed.notificationsEnabled.toggle()
-
                 try await updateFeed(feed)
 
                 if feed.notificationsEnabled {
+                    BackgroundRefreshClient.shared.scheduleAppRefresh()
                     try await notificationClient.checkForNewItems()
                 }
             } catch {
