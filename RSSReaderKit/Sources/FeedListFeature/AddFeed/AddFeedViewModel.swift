@@ -20,6 +20,7 @@ enum AddFeedState: Equatable {
     case success
 }
 
+@available(macOS 14.0, iOS 17.0, *)
 @MainActor @Observable
 class AddFeedViewModel {
     @ObservationIgnored

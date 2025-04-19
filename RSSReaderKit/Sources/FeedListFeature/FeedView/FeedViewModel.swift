@@ -33,6 +33,7 @@ enum FeedViewState: Equatable {
     }
 }
 
+@available(macOS 14.0, iOS 17.0, *)
 @MainActor
 @Observable class FeedViewModel: Identifiable {
     @ObservationIgnored @Dependency(\.notificationClient) private var notificationClient

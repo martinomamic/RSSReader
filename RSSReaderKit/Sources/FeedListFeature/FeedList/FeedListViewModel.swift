@@ -20,6 +20,7 @@ enum FeedListState: Equatable {
     case error(RSSViewError)
 }
 
+@available(macOS 14.0, iOS 17.0, *)
 @MainActor @Observable
 public class FeedListViewModel {
     @ObservationIgnored

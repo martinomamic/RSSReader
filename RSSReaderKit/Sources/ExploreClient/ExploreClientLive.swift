@@ -11,13 +11,11 @@ import Dependencies
 import RSSClient
 import PersistenceClient
 
+@available(macOS 14.0, iOS 17.0, *)
 extension ExploreClient {
     public static func live() -> ExploreClient {
-        @Dependency(\.rssClient.fetchFeed) var fetchFeed
-        @Dependency(\.persistenceClient.addFeed) var addFeed
-
-        return ExploreClient(
-            loadExploreFeeds: {
+        ExploreClient(
+            loadExploreFeeds: { () async throws -> [ExploreFeed] in
                 guard let url = Bundle.main.url(forResource: "feeds", withExtension: "json") else {
                     throw ExploreError.fileNotFound
                 }
@@ -31,8 +29,10 @@ extension ExploreClient {
                     throw ExploreError.decodingFailed(error.localizedDescription)
                 }
             },
-            addFeed: { exploreFeed in
-                guard let url = URL(string: exploreFeed.url) else {
+            addFeed: { feed in
+                @Dependency(\.persistenceClient.addFeed) var addFeed
+                @Dependency(\.rssClient.fetchFeed) var fetchFeed
+                guard let url = URL(string: feed.url) else {
                     throw ExploreError.invalidURL
                 }
 
