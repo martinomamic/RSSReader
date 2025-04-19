@@ -19,12 +19,17 @@ struct ExploreFeedRow: View {
             VStack(alignment: .leading, spacing: Constants.UI.exploreFeedRowSpacing) {
                 Text(feed.name)
                     .font(.headline)
+                    .accessibilityAddTraits(.isHeader)
 
                 Text(feed.url)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(Constants.UI.exploreFeedUrlLineLimit)
+                    .accessibilityLabel("Feed URL")
+                    .accessibilityValue(feed.url)
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("\(feed.name), Feed URL \(feed.url)")
 
             Spacer()
 
@@ -36,9 +41,11 @@ struct ExploreFeedRow: View {
                     .background(Color.green)
                     .foregroundColor(.white)
                     .cornerRadius(Constants.UI.exploreFeedButtonCornerRadius)
+                    .accessibilityLabel("Feed already added")
+                    .accessibilityAddTraits(.isButton)
             } else {
                 Button(action: onAddTapped) {
-                    Text("Add")
+                    Text("Add to feeds")
                         .font(.caption)
                         .padding(.horizontal, Constants.UI.exploreFeedButtonHorizontalPadding)
                         .padding(.vertical, Constants.UI.exploreFeedButtonVerticalPadding)
@@ -46,6 +53,8 @@ struct ExploreFeedRow: View {
                         .foregroundColor(.white)
                         .cornerRadius(Constants.UI.exploreFeedButtonCornerRadius)
                 }
+                .accessibilityLabel("Add \(feed.name) feed")
+                .accessibilityHint("Tap to add this feed to your feeds list")
             }
         }
         .padding(.vertical, Constants.UI.verticalPadding)
