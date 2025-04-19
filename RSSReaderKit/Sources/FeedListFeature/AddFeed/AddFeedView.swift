@@ -35,12 +35,12 @@ struct AddFeedView: View {
 
                         VStack(alignment: .leading, spacing: Constants.UI.exampleButtonSpacing) {
                             Button(LocalizedStrings.AddFeed.bbcNews) {
-                                viewModel.urlString = Constants.URLs.bbcNews
+                                viewModel.setExampleURL(.bbc)
                             }
                             .testId(AccessibilityIdentifier.AddFeed.bbcExampleButton)
 
                             Button(LocalizedStrings.AddFeed.nbcNews) {
-                                viewModel.urlString = Constants.URLs.nbcNews
+                                viewModel.setExampleURL(.nbc)
                             }
                             .testId(AccessibilityIdentifier.AddFeed.nbcExampleButton)
                         }
@@ -61,34 +61,26 @@ struct AddFeedView: View {
                     Button(LocalizedStrings.General.add) {
                         viewModel.addFeed()
                     }
-                    .disabled(!viewModel.isValidURL || viewModel.state == .adding)
+                    .disabled(viewModel.isAddButtonDisabled)
                     .testId(AccessibilityIdentifier.AddFeed.addButton)
                 }
             }
             .overlay {
-                if case .adding = viewModel.state {
+                if viewModel.isLoading {
                     ProgressView()
                 }
             }
-            .alert(LocalizedStrings.AddFeed.errorTitle, isPresented: .init(
-                get: {
-                    if case .error = viewModel.state { return true }
-                    return false
-                },
-                set: { show in
-                    if !show, case .error = viewModel.state {
-                        viewModel.state = .idle
-                    }
+            .alert(LocalizedStrings.AddFeed.errorTitle, isPresented: viewModel.errorAlertBinding) {
+                Button(LocalizedStrings.General.ok) {
+                    viewModel.dismissError()
                 }
-            )) {
-                Button(LocalizedStrings.General.ok) {}
             } message: {
-                if case .error(let error) = viewModel.state {
-                    Text(error.errorDescription)
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
                 }
             }
-            .onChange(of: viewModel.state) { _, newState in
-                if case .success = newState {
+            .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
+                if shouldDismiss {
                     dismiss()
                 }
             }
