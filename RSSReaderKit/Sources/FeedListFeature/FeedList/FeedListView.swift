@@ -20,15 +20,9 @@ public struct FeedListView: View {
         self.showOnlyFavorites = showOnlyFavorites
     }
 
-    var displayedFeeds: [FeedViewModel] {
-        showOnlyFavorites ? viewModel.favoriteFeeds : viewModel.feeds
-    }
-
     public var body: some View {
         List {
-            let displayedFeeds = showOnlyFavorites ? viewModel.favoriteFeeds : viewModel.feeds
-
-            ForEach(displayedFeeds) { feed in
+            ForEach(viewModel.displayedFeeds(showOnlyFavorites: showOnlyFavorites)) { feed in
                 FeedView(viewModel: feed)
                     .background {
                         NavigationLink(value: feed) {}
@@ -39,22 +33,15 @@ public struct FeedListView: View {
                 viewModel.removeFeed(at: indexSet, fromFavorites: showOnlyFavorites)
             }
         }
-        .testId(showOnlyFavorites ?
-            AccessibilityIdentifier.FeedList.favoritesList :
-            AccessibilityIdentifier.FeedList.feedsList)
+        .testId(viewModel.listAccessibilityId(showOnlyFavorites: showOnlyFavorites))
         .onAppear {
             viewModel.loadFeeds()
         }
-        .navigationTitle(showOnlyFavorites ?
-            LocalizedStrings.FeedList.favoriteFeeds :
-            LocalizedStrings.FeedList.rssFeeds)
+        .navigationTitle(viewModel.navigationTitle(showOnlyFavorites: showOnlyFavorites))
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: FeedViewModel.self) { feed in
             FeedItemsView(
-                viewModel: FeedItemsViewModel(
-                    feedURL: feed.url,
-                    feedTitle: feed.feed.title ?? LocalizedStrings.FeedList.unnamedFeed
-                )
+                viewModel: viewModel.makeFeedItemsViewModel(for: feed)
             )
         }
         .toolbar {
@@ -78,15 +65,11 @@ public struct FeedListView: View {
             AddFeedView(feeds: $viewModel.feeds)
         }
         .overlay {
-            if displayedFeeds.isEmpty {
+            if viewModel.displayedFeeds(showOnlyFavorites: showOnlyFavorites).isEmpty {
                 EmptyStateView(
-                    title: showOnlyFavorites ?
-                        LocalizedStrings.FeedList.noFavorites :
-                        LocalizedStrings.FeedList.noFeeds,
+                    title: viewModel.emptyStateTitle(showOnlyFavorites: showOnlyFavorites),
                     systemImage: Constants.Images.noItemsIcon,
-                    description: showOnlyFavorites ?
-                        LocalizedStrings.FeedList.noFavoritesDescription :
-                        LocalizedStrings.FeedList.noFeedsDescription,
+                    description: viewModel.emptyStateDescription(showOnlyFavorites: showOnlyFavorites),
                     primaryAction: showOnlyFavorites ? nil : { showingAddFeed = true },
                     primaryActionLabel: showOnlyFavorites ? nil : LocalizedStrings.FeedList.addFeed
                 )
