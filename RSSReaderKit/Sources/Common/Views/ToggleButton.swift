@@ -1,7 +1,6 @@
 import SwiftUI
-import Common
 
-public struct StatusButton: View {
+public struct ToggleButton: View {
     let action: () -> Void
     let systemImage: String
     let isActive: Bool

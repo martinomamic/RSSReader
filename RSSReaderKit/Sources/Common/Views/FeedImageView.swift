@@ -1,4 +1,5 @@
 import SwiftUI
+import Kingfisher
 import Common
 
 public struct FeedImageView: View {
@@ -11,19 +12,26 @@ public struct FeedImageView: View {
     }
     
     public var body: some View {
-        if let imageURL = url {
-            AsyncImage(url: imageURL) { image in
-                image.resizable().aspectRatio(contentMode: .fit)
-            } placeholder: {
-                Image(systemName: Constants.Images.placeholderImage)
+        KFImage(url)
+            .placeholder {
+                if url != nil {
+                    Image(systemName: Constants.Images.placeholderImage)
+                } else {
+                    Image(systemName: Constants.Images.placeholderFeedIcon)
+                        .foregroundStyle(.blue)
+                }
             }
+            .resizable()
+            .aspectRatio(contentMode: .fit)
             .frame(width: size, height: size)
             .cornerRadius(Constants.UI.cornerRadius)
-        } else {
-            Image(systemName: Constants.Images.placeholderFeedIcon)
-                .font(.title2)
-                .frame(width: size, height: size)
-                .foregroundStyle(.blue)
-        }
     }
+}
+
+#Preview {
+    VStack(spacing: 20) {
+        FeedImageView(url: URL(string: "https://example.com/image.jpg"))
+        FeedImageView(url: nil)
+    }
+    .padding()
 }
