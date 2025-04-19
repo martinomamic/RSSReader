@@ -5,7 +5,9 @@ import PackageDescription
 let package = Package(
     name: "RSSReaderKit",
     platforms: [
-        .iOS(.v17)
+        .iOS(.v17),
+        //satisfy SPM 
+        .macOS(.v10_15)
     ],
     products: [
         .library(name: "Common", targets: ["Common"]),
