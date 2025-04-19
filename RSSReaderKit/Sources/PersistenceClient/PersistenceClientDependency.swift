@@ -42,6 +42,7 @@ extension PersistenceClient: DependencyKey {
     }
 }
 
+@available(macOS 14.0, *)
 extension DependencyValues {
     public var persistenceClient: PersistenceClient {
         get { self[PersistenceClient.self] }

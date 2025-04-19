@@ -10,7 +10,6 @@ import Dependencies
 import Foundation
 import RSSClient
 import SharedModels
-import UIKit
 
 @Observable @MainActor
 public class FeedItemsViewModel: Identifiable {

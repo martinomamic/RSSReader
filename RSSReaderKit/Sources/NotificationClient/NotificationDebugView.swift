@@ -8,9 +8,13 @@
 import Common
 import Dependencies
 import SwiftUI
-import UIKit
 @preconcurrency import UserNotifications
 
+#if os(iOS)
+import UIKit
+#endif
+
+@available(iOS 17, macOS 14, *)
 @MainActor
 public struct NotificationDebugView: View {
     private enum Section {
@@ -197,9 +201,16 @@ private extension NotificationDebugView {
 
 // MARK: - Actions
 private extension NotificationDebugView {
-    func moveAppToBackground() {
+    private func moveAppToBackground() {
+        #if os(iOS)
+        // ⚠️ WARNING: This is using a private API (suspend) which should NEVER be used in production code!
+        // This is only for debugging/testing purposes. Apple will reject apps that use private APIs.
+        // In production, use proper background task handling and system-provided APIs.
         Task { try? await Task.sleep(nanoseconds: Constants.UI.debugUIUpdateDelay) }
         UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
+        #else
+        // On macOS, we don't need to move the app to background for notifications
+        #endif
     }
 
     func checkNotificationStatus() {

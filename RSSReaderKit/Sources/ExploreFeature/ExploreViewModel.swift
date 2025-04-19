@@ -5,7 +5,6 @@
 //  Created by Martino Mamić on 18.04.25.
 //
 
-import Foundation
 import Dependencies
 import SharedModels
 import Common
@@ -44,10 +43,8 @@ import Observation
 
         loadTask = Task {
             do {
-                // Load feeds from JSON
                 let feeds = try await exploreClient.loadExploreFeeds()
 
-                // Load saved feeds to check which ones are already added
                 let savedFeeds = try await persistenceClient.loadFeeds()
                 let savedURLs = Set(savedFeeds.map { $0.url.absoluteString })
 
@@ -85,7 +82,6 @@ import Observation
             do {
                 _ = try await exploreClient.addFeed(exploreFeed)
                 isAddingFeed = false
-                // Mark this feed as added
                 addedFeedURLs.insert(exploreFeed.url)
             } catch let error as RSSViewError {
                 isAddingFeed = false

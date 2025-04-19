@@ -5,8 +5,6 @@
 //  Created by Martino Mamić on 18.04.25.
 //
 
-import Foundation
-
 public struct ExploreFeed: Codable, Identifiable, Hashable, Sendable {
     public var id: String { url }
 

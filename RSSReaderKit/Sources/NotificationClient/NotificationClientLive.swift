@@ -9,7 +9,6 @@ import SharedModels
 @preconcurrency import UserNotifications
 import PersistenceClient
 import RSSClient
-import UIKit
 
 extension NotificationClient {
     public static func live() -> NotificationClient {

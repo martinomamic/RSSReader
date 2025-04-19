@@ -5,7 +5,6 @@
 //  Created by Martino Mamić on 16.04.25.
 //
 
-import SwiftUI
 import Observation
 
 @MainActor
