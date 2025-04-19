@@ -13,6 +13,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install Swift
+      uses: swift-actions/setup-swift@v1
+      with:
+        swift-version: "6.0"
+
+    - name: Check Swift version
+      run: swift --version
+
     - name: Select Xcode
       run: |
         XCODE_VERSION=$(xcodebuild -version | grep '^Xcode\s' | awk '{print $2}')
