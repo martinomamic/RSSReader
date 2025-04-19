@@ -46,9 +46,11 @@ struct ExploreFeedRow: View {
                         .foregroundColor(.white)
                         .cornerRadius(Constants.UI.exploreFeedButtonCornerRadius)
                 }
+                .testId(AccessibilityIdentifier.Explore.addButton)
             }
         }
         .padding(.vertical, Constants.UI.verticalPadding)
+        .testId(AccessibilityIdentifier.Explore.feedRow)
     }
 }
 

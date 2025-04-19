@@ -24,6 +24,7 @@ struct AddFeedView: View {
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                         .keyboardType(.URL)
+                        .testId(AccessibilityIdentifier.AddFeed.urlTextField)
                 } header: {
                     Text("Enter RSS feed URL")
                 } footer: {
@@ -36,12 +37,12 @@ struct AddFeedView: View {
                             Button("BBC News") {
                                 viewModel.urlString = Constants.URLs.bbcNews
                             }
-                            .font(.footnote)
+                            .testId(AccessibilityIdentifier.AddFeed.bbcExampleButton)
 
                             Button("NBC News") {
                                 viewModel.urlString = Constants.URLs.nbcNews
                             }
-                            .font(.footnote)
+                            .testId(AccessibilityIdentifier.AddFeed.nbcExampleButton)
                         }
                     }
                 }
@@ -53,6 +54,7 @@ struct AddFeedView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .testId(AccessibilityIdentifier.AddFeed.cancelButton)
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
@@ -60,6 +62,7 @@ struct AddFeedView: View {
                         viewModel.addFeed()
                     }
                     .disabled(!viewModel.isValidURL || viewModel.state == .adding)
+                    .testId(AccessibilityIdentifier.AddFeed.addButton)
                 }
             }
             .overlay {

@@ -19,6 +19,7 @@ struct FeedView: View {
                 Image(systemName: Constants.Images.loadingIcon)
                     .font(.title2)
                     .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
+                    .testId(AccessibilityIdentifier.FeedView.loadingView)
 
                 VStack(alignment: .leading) {
                     Text(viewModel.url.absoluteString)
@@ -48,12 +49,14 @@ struct FeedView: View {
                 VStack(alignment: .leading, spacing: Constants.UI.verticalPadding) {
                     Text(feed.title ?? "Unnamed Feed")
                         .font(.headline)
+                        .testId(AccessibilityIdentifier.FeedView.feedTitle)
 
                     if let description = feed.description {
                         Text(description)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .lineLimit(Constants.UI.feedDescriptionLineLimit)
+                            .testId(AccessibilityIdentifier.FeedView.feedDescription)
                     }
                     HStack {
                         Spacer()
@@ -64,6 +67,7 @@ struct FeedView: View {
                                 .foregroundColor(viewModel.feed.notificationsEnabled ? .blue : .gray)
                         }
                         .buttonStyle(BorderlessButtonStyle())
+                        .testId(AccessibilityIdentifier.FeedView.notificationsButton)
 
                         Button {
                             viewModel.toggleFavorite()
@@ -73,6 +77,7 @@ struct FeedView: View {
                                 .foregroundColor(viewModel.feed.isFavorite ? .yellow : .gray)
                         }
                         .buttonStyle(BorderlessButtonStyle())
+                        .testId(AccessibilityIdentifier.FeedView.favoriteButton)
                     }
                 }
 
@@ -90,6 +95,7 @@ struct FeedView: View {
                         .font(.caption)
                         .foregroundStyle(.red)
                 }
+                .testId(AccessibilityIdentifier.FeedView.errorView)
 
             case .empty:
                 Text("No feed data available")

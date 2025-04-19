@@ -26,17 +26,20 @@ struct FeedItemRow: View {
 
             Text(item.title)
                 .font(.headline)
+                .testId(AccessibilityIdentifier.FeedItems.itemTitle)
 
             if let description = item.description {
                 Text(description)
                     .font(.subheadline)
                     .lineLimit(Constants.UI.feedItemDescriptionLineLimit)
+                    .testId(AccessibilityIdentifier.FeedItems.itemDescription)
             }
 
             if let pubDate = item.pubDate {
                 Text(pubDate, style: .date)
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                    .testId(AccessibilityIdentifier.FeedItems.itemDate)
             }
         }
         .padding(.vertical, Constants.UI.feedItemVerticalPadding)
