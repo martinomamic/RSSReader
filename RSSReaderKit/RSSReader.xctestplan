@@ -1,0 +1,57 @@
+{
+  "configurations" : [
+    {
+      "id" : "1485DAD2-E71C-465A-AC36-CF89D5C717FA",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "RSSClientTests",
+        "name" : "RSSClientTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "NotificationClientTests",
+        "name" : "NotificationClientTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "PersistenceClientTests",
+        "name" : "PersistenceClientTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:RSSReader.xcodeproj",
+        "identifier" : "386A8D2E2DAA864A00BCD162",
+        "name" : "RSSReaderTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:RSSReader.xcodeproj",
+        "identifier" : "386A8D382DAA864A00BCD162",
+        "name" : "RSSReaderUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

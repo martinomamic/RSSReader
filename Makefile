@@ -4,16 +4,29 @@ SWIFT_TEST := $(SWIFT_PACKAGE) test
 SWIFT_LINT := swiftlint
 SWIFT_FORMAT := swift-format
 
+PACKAGE_DIR = RSSReaderKit
+SCHEME = RSSReader
+TEST_PLAN = RSSReader
+CONFIGURATION = Debug
+
 .PHONY: all
-all: lint build test
+all: package-build build
 
 .PHONY: build
 build:
-	$(SWIFT_BUILD)
+	xcodebuild \
+		-scheme $(SCHEME) \
+		-configuration $(CONFIGURATION) \
+		build
 
 .PHONY: test
 test:
-	$(SWIFT_TEST)
+	xcodebuild \
+		-scheme $(SCHEME) \
+		-testPlan $(TEST_PLAN) \
+		-configuration $(CONFIGURATION) \
+		-resultBundlePath TestResults/App \
+		test
 
 .PHONY: lint
 lint:
@@ -29,8 +42,9 @@ format:
 
 .PHONY: clean
 clean:
-	rm -rf .build
-	$(SWIFT_PACKAGE) clean
+	rm -rf build
+	rm -rf TestResults
+	cd $(PACKAGE_DIR) && swift package clean
 
 .PHONY: xcodeproj
 xcodeproj:
@@ -40,3 +54,28 @@ xcodeproj:
 install-tools:
 	brew install swiftlint
 	brew install swift-format
+
+.PHONY: package-build
+package-build:
+	cd $(PACKAGE_DIR) && swift build
+
+.PHONY: package-test
+package-test:
+	cd $(PACKAGE_DIR) && swift test
+
+.PHONY: test-all
+test-all:
+	@echo "Running package tests..."
+	@cd $(PACKAGE_DIR) && swift test || (echo "❌ Package tests failed" && exit 1)
+	@echo "✅ Package tests passed"
+	@echo "Running app tests..."
+	@xcodebuild \
+		-scheme $(SCHEME) \
+		-testPlan $(TEST_PLAN) \
+		-configuration $(CONFIGURATION) \
+		-resultBundlePath TestResults/App \
+		test || (echo "❌ App tests failed" && exit 1)
+	@echo "✅ App tests passed"
+
+.PHONY: ci
+ci: test-all
