@@ -49,7 +49,7 @@ public enum AccessibilityIdentifier {
         public static let emptyView = "exploreEmptyView"
         public static let errorView = "exploreErrorView"
         public static let feedsList = "exploreFeedsList"
-        public static let feedsRow = "exploreFeedRow"
+        public static let feedRow = "exploreFeedRow"
     }
     
     public enum Debug {
