@@ -5,10 +5,12 @@
 //  Created by Martino Mamić on 15.04.25.
 //
 
+import Dependencies
 import Foundation
-import SharedModels
 import SwiftData
+import SharedModels
 
+@available(iOS 17, macOS 14, *)
 extension PersistenceClient {
     public static func live() -> PersistenceClient {
         let modelContainer: ModelContainer

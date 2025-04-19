@@ -13,11 +13,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Select Xcode
-      run: |
-        XCODE_VERSION=$(xcodebuild -version | grep '^Xcode\s' | awk '{print $2}')
-        echo "Using Xcode version: $XCODE_VERSION"
-        sudo xcode-select -s /Applications/Xcode.app
+    - name: Check Swift version
+      run: swift --version
 
     - name: Install SwiftLint
       run: brew install swiftlint

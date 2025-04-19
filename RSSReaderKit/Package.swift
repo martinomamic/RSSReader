@@ -7,7 +7,7 @@ let package = Package(
     platforms: [
         .iOS(.v17),
         //satisfy SPM 
-        .macOS(.v10_14)
+        .macOS(.v10_15)
     ],
     products: [
         .library(name: "Common", targets: ["Common"]),

@@ -9,6 +9,7 @@ import Foundation
 import SwiftData
 import SharedModels
 
+@available(iOS 17, macOS 14, *)
 @Model
 final class PersistableFeed {
     @Attribute(.unique)
@@ -20,15 +21,15 @@ final class PersistableFeed {
     var notificationsEnabled: Bool
 
     init(
-        title: String?,
         url: URL,
-        feedDescription: String?,
-        imageURLString: String?,
-        isFavorite: Bool,
+        title: String? = nil,
+        feedDescription: String? = nil,
+        imageURLString: String? = nil,
+        isFavorite: Bool = false,
         notificationsEnabled: Bool = false
     ) {
-        self.title = title
         self.url = url
+        self.title = title
         self.feedDescription = feedDescription
         self.imageURLString = imageURLString
         self.isFavorite = isFavorite
@@ -37,8 +38,8 @@ final class PersistableFeed {
 
     convenience init(from feed: Feed) {
         self.init(
-            title: feed.title,
             url: feed.url,
+            title: feed.title,
             feedDescription: feed.description,
             imageURLString: feed.imageURL?.absoluteString,
             isFavorite: feed.isFavorite,
