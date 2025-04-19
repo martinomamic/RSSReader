@@ -24,9 +24,9 @@ public struct ExploreView: View {
             case .loaded(let feeds):
                 if feeds.isEmpty {
                     EmptyStateView(
-                        title: "No Feeds Found",
+                        title: LocalizedStrings.Explore.noFeedsTitle,
                         systemImage: Constants.Images.noItemsIcon,
-                        description: "No feeds available"
+                        description: LocalizedStrings.Explore.noFeedsDescription
                     )
                     .testId(AccessibilityIdentifier.Explore.emptyView)
                 } else {
@@ -52,15 +52,15 @@ public struct ExploreView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Explore Feeds")
+        .navigationTitle(LocalizedStrings.Explore.title)
         .alert(item: .init(
             get: { viewModel.feedError },
             set: { if $0 == nil { viewModel.clearError() } }
         )) { error in
             Alert(
-                title: Text("Error Adding Feed"),
+                title: Text(LocalizedStrings.Explore.errorAddingFeed),
                 message: Text(error.errorDescription),
-                dismissButton: .default(Text("OK")) {
+                dismissButton: .default(Text(LocalizedStrings.General.ok)) {
                     viewModel.clearError()
                 }
             )

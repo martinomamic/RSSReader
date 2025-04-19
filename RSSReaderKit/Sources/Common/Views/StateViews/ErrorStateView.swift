@@ -1,3 +1,10 @@
+//
+//  ErrorStateView.swift
+//  RSSReaderKit
+//
+//  Created by Martino Mamić on 19.04.25.
+//
+
 import SwiftUI
 
 public struct ErrorStateView: View {

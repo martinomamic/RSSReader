@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Common
 
 public enum TabItem: Int, Hashable, CaseIterable {
     case feeds
@@ -16,13 +17,13 @@ public enum TabItem: Int, Hashable, CaseIterable {
     public var title: String {
         switch self {
         case .feeds:
-            return "Feeds"
+            return LocalizedStrings.TabBar.feeds
         case .explore:
-            return "Explore"
+            return LocalizedStrings.TabBar.explore
         case .favorites:
-            return "Favorites"
+            return LocalizedStrings.TabBar.favorites
         case .debug:
-            return "Debug"
+            return LocalizedStrings.TabBar.debug
         }
     }
 
@@ -60,6 +61,7 @@ public enum TabItem: Int, Hashable, CaseIterable {
         #endif
     }
 }
+
 #Preview {
     ForEach(TabItem.allCases, id: \.self) { item in
         Text(item.title)

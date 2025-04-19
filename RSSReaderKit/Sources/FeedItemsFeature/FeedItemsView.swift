@@ -21,7 +21,7 @@ public struct FeedItemsView: View {
         Group {
             switch viewModel.state {
             case .loading:
-                ProgressView()
+                ProgressView(LocalizedStrings.LoadingStates.loading)
                     .testId(AccessibilityIdentifier.FeedItems.loadingView)
 
             case .loaded(let items):
@@ -45,9 +45,9 @@ public struct FeedItemsView: View {
 
             case .empty:
                 EmptyStateView(
-                    title: "No Items",
+                    title: LocalizedStrings.FeedItems.noItemsTitle,
                     systemImage: Constants.Images.noItemsIcon,
-                    description: "This feed contains no items"
+                    description: LocalizedStrings.FeedItems.noItemsDescription
                 )
                 .testId(AccessibilityIdentifier.FeedItems.emptyView)
             }
