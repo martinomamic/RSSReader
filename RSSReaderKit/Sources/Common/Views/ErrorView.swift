@@ -4,18 +4,15 @@ public struct ErrorView: View {
     let title: String
     let message: String
     let retryAction: () -> Void
-    let identifier: String
     
     public init(
         title: String = "Failed to Load",
         message: String,
-        retryAction: @escaping () -> Void,
-        identifier: String
+        retryAction: @escaping () -> Void
     ) {
         self.title = title
         self.message = message
         self.retryAction = retryAction
-        self.identifier = identifier
     }
     
     public var body: some View {
@@ -29,6 +26,5 @@ public struct ErrorView: View {
             }
             .buttonStyle(.bordered)
         }
-        .testId(identifier)
     }
 }

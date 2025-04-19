@@ -6,22 +6,19 @@ public struct EmptyStateView: View {
     let icon: String
     let actionTitle: String?
     let action: (() -> Void)?
-    let identifier: String
     
     public init(
         title: String,
         message: String,
         icon: String = Constants.Images.noItemsIcon,
         actionTitle: String? = nil,
-        action: (() -> Void)? = nil,
-        identifier: String
+        action: (() -> Void)? = nil
     ) {
         self.title = title
         self.message = message
         self.icon = icon
         self.actionTitle = actionTitle
         self.action = action
-        self.identifier = identifier
     }
     
     public var body: some View {
@@ -37,6 +34,5 @@ public struct EmptyStateView: View {
                 .buttonStyle(.bordered)
             }
         }
-        .testId(identifier)
     }
 }

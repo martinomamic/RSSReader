@@ -21,50 +21,55 @@ public struct FeedItemsView: View {
         Group {
             switch viewModel.state {
             case .loading:
-                ProgressView()
-                    .testId(AccessibilityIdentifier.FeedItems.loadingView)
-
+                loadingView
             case .loaded(let items):
-                List {
-                    ForEach(items) { item in
-                        Button {
-                            viewModel.openLink(for: item)
-                        } label: {
-                            FeedItemRow(item: item)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .testId(AccessibilityIdentifier.FeedItems.itemsList)
-
+                loadedView(items: items)
             case .error(let error):
-                ContentUnavailableView {
-                    Label("Failed to Load", systemImage: Constants.Images.failedToLoadIcon)
-                } description: {
-                    Text(error.errorDescription)
-                } actions: {
-                    Button {
-                        viewModel.loadItems()
-                    } label: {
-                        Text("Try Again")
-                    }
-                    .buttonStyle(.bordered)
-                }
-                .testId(AccessibilityIdentifier.FeedItems.errorView)
-
+                errorView(error: error)
             case .empty:
-                ContentUnavailableView {
-                    Label("No Items", systemImage: Constants.Images.noItemsIcon)
-                } description: {
-                    Text("This feed contains no items")
-                }
-                .testId(AccessibilityIdentifier.FeedItems.emptyView)
+                emptyView
             }
         }
         .navigationTitle(viewModel.feedTitle)
         .task {
             viewModel.loadItems()
         }
+    }
+    
+    private var loadingView: some View {
+        ProgressView()
+            .testId(AccessibilityIdentifier.FeedItems.loadingView)
+    }
+    
+    private func loadedView(items: [FeedItem]) -> some View {
+        List {
+            ForEach(items) { item in
+                Button {
+                    viewModel.openLink(for: item)
+                } label: {
+                    FeedItemRow(item: item)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .testId(AccessibilityIdentifier.FeedItems.itemsList)
+    }
+    
+    private func errorView(error: Error) -> some View {
+        ErrorView(
+            message: error.localizedDescription,
+            retryAction: viewModel.loadItems
+        )
+        .testId(AccessibilityIdentifier.FeedItems.errorView)
+    }
+    
+    private var emptyView: some View {
+        EmptyStateView(
+            title: "No Items",
+            message: "This feed contains no items",
+            icon: Constants.Images.noItemsIcon
+        )
+        .testId(AccessibilityIdentifier.FeedItems.emptyView)
     }
 }
 
