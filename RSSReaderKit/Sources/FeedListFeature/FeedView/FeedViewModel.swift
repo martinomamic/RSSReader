@@ -35,12 +35,9 @@ enum FeedViewState: Equatable {
 
 @MainActor
 @Observable class FeedViewModel: Identifiable {
-    @ObservationIgnored
-    @Dependency(\.notificationClient) private var notificationClient
-    @ObservationIgnored
-    @Dependency(\.rssClient) private var rssClient
-    @ObservationIgnored
-    @Dependency(\.persistenceClient.updateFeed) private var updateFeed
+    @ObservationIgnored @Dependency(\.notificationClient) private var notificationClient
+    @ObservationIgnored @Dependency(\.rssClient.fetchFeed) private var fetchFeed
+    @ObservationIgnored @Dependency(\.persistenceClient.updateFeed) private var updateFeed
 
     let url: URL
     var feed: Feed
@@ -61,10 +58,10 @@ enum FeedViewState: Equatable {
 
         loadTask = Task {
             do {
-                let fetchedFeed = try await rssClient.fetchFeed(url)
+                let fetchedFeed = try await fetchFeed(url)
                 state = .loaded(fetchedFeed)
             } catch let error {
-                state = .error(RSSErrorMapper.mapToViewError(error))
+                state = .error(RSSErrorMapper.map(error))
             }
         }
     }
@@ -77,7 +74,7 @@ enum FeedViewState: Equatable {
             do {
                 try await updateFeed(feed)
             } catch {
-                state = .error(RSSErrorMapper.mapToViewError(error))
+                state = .error(RSSErrorMapper.map(error))
             }
         }
     }
@@ -100,7 +97,7 @@ enum FeedViewState: Equatable {
                 }
             } catch {
                 feed.notificationsEnabled.toggle()
-                state = .error(RSSErrorMapper.mapToViewError(error))
+                state = .error(RSSErrorMapper.map(error))
             }
         }
     }

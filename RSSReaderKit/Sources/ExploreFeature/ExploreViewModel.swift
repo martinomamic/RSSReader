@@ -54,7 +54,7 @@ import Observation
                 self.addedFeedURLs = savedURLs
                 self.state = .loaded(feeds)
             } catch {
-                state = .error(RSSErrorMapper.mapToViewError(error))
+                state = .error(RSSErrorMapper.map(error))
             }
         }
     }

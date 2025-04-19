@@ -45,7 +45,7 @@ public class FeedItemsViewModel: Identifiable {
                     state = .loaded(items)
                 }
             } catch {
-                state = .error(RSSErrorMapper.mapToViewError(error))
+                state = .error(RSSErrorMapper.map(error))
             }
         }
     }

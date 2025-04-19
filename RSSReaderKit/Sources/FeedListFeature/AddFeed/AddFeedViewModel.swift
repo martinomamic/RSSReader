@@ -71,7 +71,7 @@ class AddFeedViewModel {
 
                 state = .success
             } catch {
-                state = .error(RSSErrorMapper.mapToViewError(error))
+                state = .error(RSSErrorMapper.map(error))
             }
         }
     }

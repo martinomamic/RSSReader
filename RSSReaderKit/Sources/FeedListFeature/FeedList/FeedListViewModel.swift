@@ -55,7 +55,7 @@ public class FeedListViewModel {
                 }
                 state = .idle
             } catch {
-                state = .error(RSSErrorMapper.mapToViewError(error))
+                state = .error(RSSErrorMapper.map(error))
             }
         }
     }
@@ -84,7 +84,7 @@ public class FeedListViewModel {
             do {
                 try await persistenceClient.updateFeed(feedViewModel.feed)
             } catch {
-                state = .error(RSSErrorMapper.mapToViewError(error))
+                state = .error(RSSErrorMapper.map(error))
             }
         }
     }
@@ -95,7 +95,7 @@ public class FeedListViewModel {
             do {
                 try await persistenceClient.deleteFeed(feedViewModel.url)
             } catch {
-                state = .error(RSSErrorMapper.mapToViewError(error))
+                state = .error(RSSErrorMapper.map(error))
             }
         }
     }

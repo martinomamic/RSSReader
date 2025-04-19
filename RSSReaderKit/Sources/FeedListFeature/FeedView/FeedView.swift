@@ -58,9 +58,7 @@ struct FeedView: View {
                     HStack {
                         Spacer()
 
-                        Button {
-                            viewModel.toggleNotifications()
-                        } label: {
+                        Button(action: viewModel.toggleNotifications) {
                             Image(systemName: viewModel.feed.notificationsEnabled ? Constants.Images.notificationEnabledIcon : Constants.Images.notificationDisabledIcon)
                                 .font(.title2)
                                 .foregroundColor(viewModel.feed.notificationsEnabled ? .blue : .gray)

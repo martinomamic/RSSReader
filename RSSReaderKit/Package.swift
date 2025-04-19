@@ -35,6 +35,9 @@ let package = Package(
             name: "RSSClientTests",
             dependencies: [
                 "RSSClient",
+            ],
+            resources: [
+                .copy("Resources/bbc.xml")
             ]
         ),
         .target(
