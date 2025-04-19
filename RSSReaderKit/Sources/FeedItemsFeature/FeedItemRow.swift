@@ -43,6 +43,8 @@ struct FeedItemRow: View {
     }
 }
 
+#if DEBUG
+// swiftlint:disable line_length force_unwrapping
 #Preview("With Image") {
     FeedItemRow(
         item: FeedItem(
@@ -69,3 +71,5 @@ struct FeedItemRow: View {
     )
     .padding()
 }
+// swiftlint:enable line_length force_unwrapping
+#endif

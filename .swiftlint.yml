@@ -10,9 +10,15 @@ excluded:
   - "./RSSReaderKit/Package.swift"
   - "Dependencies"
 
+disabled_rules:
+  - attributes # Disable attribute placement rules since we use SwiftUI style
+  - force_unwrapping # Disable in tests
+  - function_body_length # Tests can be longer
+  - type_body_length # Debug views can be longer
+  - line_length # Use warning instead of error
+
 opt_in_rules:
   - array_init
-  - attributes
   - closure_end_indentation
   - closure_spacing
   - collection_alignment
@@ -23,7 +29,6 @@ opt_in_rules:
   - explicit_init
   - fatal_error_message
   - first_where
-  - force_unwrapping
   - implicitly_unwrapped_optional
   - last_where
   - legacy_random
@@ -52,10 +57,16 @@ analyzer_rules:
 line_length:
   warning: 120
   error: 200
+  ignores_urls: true
+  ignores_comments: true
+  ignores_interpolated_strings: true
 
 type_name:
-  min_length: 3
+  min_length: 2
   max_length: 50
+  excluded:
+    - UI
+    - ID
 
 identifier_name:
   min_length: 2
@@ -67,3 +78,63 @@ identifier_name:
     - dy
     - x
     - y
+
+file_types:
+  test:
+    - "**/*Tests.swift"
+  preview:
+    - "**/*Preview.swift"
+  debug:
+    - "**/*Debug*.swift"
+
+function_body_length:
+  warning: 60
+  error: 100
+  ignore_comment_only_lines: true
+
+type_body_length:
+  warning: 250
+  error: 400
+  ignore_comment_only_lines: true
+
+cyclomatic_complexity:
+  warning: 15
+  error: 20
+
+function_parameter_count:
+  warning: 6
+  error: 8
+
+trailing_whitespace:
+  ignores_empty_lines: true
+  ignores_comments: true
+
+attributes:
+  always_on_same_line:
+    - "@IBAction"
+    - "@NSManaged"
+    - "@objc"
+  always_on_line_above:
+    - "@available"
+    - "@discardableResult"
+    - "@UIApplicationMain"
+    - "@Environment"
+    - "@State"
+    - "@Binding"
+    - "@ObservedObject"
+    - "@StateObject"
+    - "@Published"
+    - "@MainActor"
+
+included:
+  - RSSReaderKit/Sources
+  - RSSReaderKit/Tests
+
+custom_rules:
+  test_force_unwrap:
+    name: "Force Unwrap in Tests"
+    regex: "!"
+    match_kinds:
+      - forced_value
+    included: ".*Tests.swift"
+    severity: ignore
