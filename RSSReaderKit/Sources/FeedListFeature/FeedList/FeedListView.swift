@@ -76,23 +76,15 @@ public struct FeedListView: View {
         }
         .overlay {
             if displayedFeeds.isEmpty {
-                ContentUnavailableView {
-                    Label(showOnlyFavorites ? "No Favorites" : "No Feeds",
-                          systemImage: Constants.Images.noItemsIcon)
-                } description: {
-                    Text(showOnlyFavorites ?
-                         "Add feeds to favorites from the Feeds tab" :
-                         "Add an RSS feed to get started")
-                } actions: {
-                    if !showOnlyFavorites {
-                        Button {
-                            showingAddFeed = true
-                        } label: {
-                            Label("Add Feed", systemImage: Constants.Images.addIcon)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                }
+                EmptyStateView(
+                    title: showOnlyFavorites ? "No Favorites" : "No Feeds",
+                    systemImage: Constants.Images.noItemsIcon,
+                    description: showOnlyFavorites ?
+                        "Add feeds to favorites from the Feeds tab" :
+                        "Add an RSS feed to get started",
+                    primaryAction: showOnlyFavorites ? nil : { showingAddFeed = true },
+                    primaryActionLabel: showOnlyFavorites ? nil : "Add Feed"
+                )
             }
         }
     }
