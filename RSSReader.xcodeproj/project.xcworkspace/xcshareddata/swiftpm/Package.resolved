@@ -1,5 +1,5 @@
 {
-  "originHash" : "0160e15472b91a4f5e0af8d0caef2a6a49da1518417c63e1be9cf19f1e8e709f",
+  "originHash" : "0d58640c6d0f964685641a8ec0541b358ab9b5ba3821f949320a3c1d46c87ace",
   "pins" : [
     {
       "identity" : "combine-schedulers",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "5928286acce13def418ec36d05a001a9641086f2",
         "version" : "1.0.3"
+      }
+    },
+    {
+      "identity" : "kingfisher",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/onevcat/Kingfisher.git",
+      "state" : {
+        "revision" : "7deda23bbdca612076c5c315003d8638a08ed0f1",
+        "version" : "8.3.2"
       }
     },
     {

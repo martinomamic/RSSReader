@@ -48,16 +48,16 @@ struct FeedView: View {
                     HStack {
                         Spacer()
 
-                        StatusButton(
+                        ToggleButton(
                             action: viewModel.toggleNotifications,
                             systemImage: viewModel.feed.notificationsEnabled ? Constants.Images.notificationEnabledIcon : Constants.Images.notificationDisabledIcon,
                             isActive: viewModel.feed.notificationsEnabled,
                             testId: AccessibilityIdentifier.FeedView.notificationsButton
                         )
 
-                        StatusButton(
+                        ToggleButton(
                             action: viewModel.toggleFavorite,
-                            systemImage: viewModel.feed.isFavorite ? "star.fill" : "star",
+                            systemImage: viewModel.feed.isFavorite ? Constants.Images.isFavoriteIcon : Constants.Images.isNotFavoriteIcon,
                             isActive: viewModel.feed.isFavorite,
                             activeColor: .yellow,
                             testId: AccessibilityIdentifier.FeedView.favoriteButton

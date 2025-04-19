@@ -1,3 +1,10 @@
+//
+//  ToggleButton.swift
+//  RSSReaderKit
+//
+//  Created by Martino Mamić on 19.04.25.
+//
+
 import SwiftUI
 
 public struct ToggleButton: View {
