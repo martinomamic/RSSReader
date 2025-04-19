@@ -5,6 +5,7 @@
 //  Created by Martino Mamić on 16.04.25.
 //
 
+import Common
 import SwiftUI
 import ExploreFeature
 import FeedListFeature
@@ -26,7 +27,22 @@ public struct TabBarView: View {
                         )
                     }
                     .tag(tab)
+                    .testId(accessibilityIdForTab(tab))
             }
+        }
+        .testId(AccessibilityIdentifier.TabBar.navigationTabs)
+    }
+
+    private func accessibilityIdForTab(_ tab: TabItem) -> String {
+        switch tab {
+        case .feeds:
+            return AccessibilityIdentifier.TabBar.feedsTab
+        case .favorites:
+            return AccessibilityIdentifier.TabBar.favoritesTab
+        case .explore:
+            return AccessibilityIdentifier.TabBar.exploreTab
+        case .debug:
+            return AccessibilityIdentifier.TabBar.debugTab
         }
     }
 

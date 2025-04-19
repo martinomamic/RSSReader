@@ -22,6 +22,7 @@ public struct FeedItemsView: View {
             switch viewModel.state {
             case .loading:
                 ProgressView()
+                    .testId(AccessibilityIdentifier.FeedItems.loadingView)
 
             case .loaded(let items):
                 List {
@@ -34,6 +35,7 @@ public struct FeedItemsView: View {
                         .buttonStyle(.plain)
                     }
                 }
+                .testId(AccessibilityIdentifier.FeedItems.itemsList)
 
             case .error(let error):
                 ContentUnavailableView {
@@ -48,6 +50,7 @@ public struct FeedItemsView: View {
                     }
                     .buttonStyle(.bordered)
                 }
+                .testId(AccessibilityIdentifier.FeedItems.errorView)
 
             case .empty:
                 ContentUnavailableView {
@@ -55,6 +58,7 @@ public struct FeedItemsView: View {
                 } description: {
                     Text("This feed contains no items")
                 }
+                .testId(AccessibilityIdentifier.FeedItems.emptyView)
             }
         }
         .navigationTitle(viewModel.feedTitle)

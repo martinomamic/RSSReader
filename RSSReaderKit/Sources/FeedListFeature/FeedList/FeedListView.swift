@@ -39,6 +39,9 @@ public struct FeedListView: View {
                 viewModel.removeFeed(at: indexSet, fromFavorites: showOnlyFavorites)
             }
         }
+        .testId(showOnlyFavorites ? 
+            AccessibilityIdentifier.FeedList.favoritesList :
+            AccessibilityIdentifier.FeedList.feedsList)
         .onAppear {
             viewModel.loadFeeds()
         }
@@ -59,10 +62,12 @@ public struct FeedListView: View {
                 } label: {
                     Label("Add Feed", systemImage: Constants.Images.addIcon)
                 }
+                .testId(AccessibilityIdentifier.FeedList.addFeedButton)
             }
             if !viewModel.feeds.isEmpty {
                 ToolbarItem(placement: .navigationBarLeading) {
                     EditButton()
+                        .testId(AccessibilityIdentifier.FeedList.editButton)
                 }
             }
         }
@@ -70,25 +75,25 @@ public struct FeedListView: View {
             AddFeedView(feeds: $viewModel.feeds)
         }
         .overlay {
-                    if displayedFeeds.isEmpty {
-                        ContentUnavailableView {
-                            Label(showOnlyFavorites ? "No Favorites" : "No Feeds",
-                                  systemImage: Constants.Images.noItemsIcon)
-                        } description: {
-                            Text(showOnlyFavorites ?
-                                 "Add feeds to favorites from the Feeds tab" :
-                                 "Add an RSS feed to get started")
-                        } actions: {
-                            if !showOnlyFavorites {
-                                Button {
-                                    showingAddFeed = true
-                                } label: {
-                                    Label("Add Feed", systemImage: Constants.Images.addIcon)
-                                }
-                                .buttonStyle(.bordered)
-                            }
+            if displayedFeeds.isEmpty {
+                ContentUnavailableView {
+                    Label(showOnlyFavorites ? "No Favorites" : "No Feeds",
+                          systemImage: Constants.Images.noItemsIcon)
+                } description: {
+                    Text(showOnlyFavorites ?
+                         "Add feeds to favorites from the Feeds tab" :
+                         "Add an RSS feed to get started")
+                } actions: {
+                    if !showOnlyFavorites {
+                        Button {
+                            showingAddFeed = true
+                        } label: {
+                            Label("Add Feed", systemImage: Constants.Images.addIcon)
                         }
+                        .buttonStyle(.bordered)
                     }
-        }
+                }
             }
         }
+    }
+}

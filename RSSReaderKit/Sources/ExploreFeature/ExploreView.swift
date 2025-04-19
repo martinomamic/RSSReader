@@ -19,6 +19,7 @@ public struct ExploreView: View {
             switch viewModel.state {
             case .loading:
                 ProgressView()
+                    .testId(AccessibilityIdentifier.Explore.loadingView)
 
             case .loaded(let feeds):
                 if feeds.isEmpty {
@@ -27,6 +28,7 @@ public struct ExploreView: View {
                     } description: {
                         Text("No feeds available")
                     }
+                    .testId(AccessibilityIdentifier.Explore.emptyView)
                 } else {
                     List {
                         ForEach(feeds) { feed in
@@ -39,6 +41,7 @@ public struct ExploreView: View {
                             )
                         }
                     }
+                    .testId(AccessibilityIdentifier.Explore.feedsList)
                 }
 
             case .error(let error):
@@ -54,6 +57,7 @@ public struct ExploreView: View {
                     }
                     .buttonStyle(.bordered)
                 }
+                .testId(AccessibilityIdentifier.Explore.errorView)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
