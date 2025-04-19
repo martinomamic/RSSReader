@@ -31,20 +31,7 @@ struct FeedView: View {
                 }
 
             case .loaded(let feed):
-                if let imageURL = feed.imageURL {
-                    AsyncImage(url: imageURL) { image in
-                        image.resizable().aspectRatio(contentMode: .fit)
-                    } placeholder: {
-                        Image(systemName: Constants.Images.placeholderImage)
-                    }
-                    .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
-                    .cornerRadius(Constants.UI.cornerRadius)
-                } else {
-                    Image(systemName: Constants.Images.placeholderFeedIcon)
-                        .font(.title2)
-                        .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
-                        .foregroundStyle(.blue)
-                }
+                FeedImageView(url: feed.imageURL)
 
                 VStack(alignment: .leading, spacing: Constants.UI.verticalPadding) {
                     Text(feed.title ?? "Unnamed Feed")
@@ -61,23 +48,20 @@ struct FeedView: View {
                     HStack {
                         Spacer()
 
-                        Button(action: viewModel.toggleNotifications) {
-                            Image(systemName: viewModel.feed.notificationsEnabled ? Constants.Images.notificationEnabledIcon : Constants.Images.notificationDisabledIcon)
-                                .font(.title2)
-                                .foregroundColor(viewModel.feed.notificationsEnabled ? .blue : .gray)
-                        }
-                        .buttonStyle(BorderlessButtonStyle())
-                        .testId(AccessibilityIdentifier.FeedView.notificationsButton)
+                        StatusButton(
+                            action: viewModel.toggleNotifications,
+                            systemImage: viewModel.feed.notificationsEnabled ? Constants.Images.notificationEnabledIcon : Constants.Images.notificationDisabledIcon,
+                            isActive: viewModel.feed.notificationsEnabled,
+                            testId: AccessibilityIdentifier.FeedView.notificationsButton
+                        )
 
-                        Button {
-                            viewModel.toggleFavorite()
-                        } label: {
-                            Image(systemName: viewModel.feed.isFavorite ? "star.fill" : "star")
-                                .font(.title2)
-                                .foregroundColor(viewModel.feed.isFavorite ? .yellow : .gray)
-                        }
-                        .buttonStyle(BorderlessButtonStyle())
-                        .testId(AccessibilityIdentifier.FeedView.favoriteButton)
+                        StatusButton(
+                            action: viewModel.toggleFavorite,
+                            systemImage: viewModel.feed.isFavorite ? "star.fill" : "star",
+                            isActive: viewModel.feed.isFavorite,
+                            activeColor: .yellow,
+                            testId: AccessibilityIdentifier.FeedView.favoriteButton
+                        )
                     }
                 }
 
