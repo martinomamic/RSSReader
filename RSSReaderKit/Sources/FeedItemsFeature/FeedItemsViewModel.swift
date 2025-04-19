@@ -11,6 +11,7 @@ import Foundation
 import RSSClient
 import SharedModels
 
+@available(macOS 14.0, iOS 17.0, *)
 @Observable @MainActor
 public class FeedItemsViewModel: Identifiable {
     @ObservationIgnored

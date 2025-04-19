@@ -9,6 +9,7 @@ import Dependencies
 import Foundation
 import SharedModels
 
+@available(macOS 14.0, iOS 17.0, *)
 extension ExploreClient: DependencyKey {
     public static var liveValue: ExploreClient { .live() }
 
@@ -35,6 +36,7 @@ extension ExploreClient: DependencyKey {
     }
 }
 
+@available(macOS 14.0, iOS 17.0, *)
 extension DependencyValues {
     public var exploreClient: ExploreClient {
         get { self[ExploreClient.self] }

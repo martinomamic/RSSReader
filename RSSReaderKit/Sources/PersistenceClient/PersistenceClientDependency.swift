@@ -10,7 +10,7 @@ import Dependencies
 import Foundation
 import SharedModels
 
-@available(macOS 14.0, *)
+@available(macOS 14.0, iOS 17.0, *)
 extension PersistenceClient: DependencyKey {
     public static var liveValue: PersistenceClient { .live() }
 
@@ -42,7 +42,7 @@ extension PersistenceClient: DependencyKey {
     }
 }
 
-@available(macOS 14.0, *)
+@available(macOS 14.0, iOS 17.0, *)
 extension DependencyValues {
     public var persistenceClient: PersistenceClient {
         get { self[PersistenceClient.self] }

@@ -11,6 +11,7 @@ import Dependencies
 import Foundation
 import UserNotifications
 
+@available(macOS 14.0, iOS 17.0, *)
 @MainActor
 public final class BackgroundRefreshClient {
     @Dependency(\.notificationClient) private var notificationClient

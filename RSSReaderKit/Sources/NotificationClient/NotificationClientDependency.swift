@@ -9,6 +9,7 @@ import Dependencies
 import Foundation
 import SharedModels
 
+@available(macOS 14.0, iOS 17.0, *)
 extension NotificationClient: DependencyKey {
     public static var liveValue: NotificationClient { .live() }
 
@@ -20,6 +21,7 @@ extension NotificationClient: DependencyKey {
     }
 }
 
+@available(macOS 14.0, iOS 17.0, *)
 extension DependencyValues {
     public var notificationClient: NotificationClient {
         get { self[NotificationClient.self] }

@@ -22,6 +22,7 @@ public struct RSSClient: Sendable {
     }
 }
 
+@available(macOS 14.0, iOS 17.0, *)
 extension RSSClient: DependencyKey {
     public static var liveValue: RSSClient { RSSClient.live() }
 
