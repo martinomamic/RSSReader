@@ -6,79 +6,88 @@
 //
 
 import ConcurrencyExtras
+import Dependencies
 import Foundation
 import Testing
 @testable import PersistenceClient
 @testable import SharedModels
 
 @Suite struct PersistenceClientTests {
+    @Dependency(\.persistenceClient) var client
+
+    func createTestFeed(
+        url: String = "https://example.com/feed",
+        title: String = "Test Feed",
+        description: String = "Test Description",
+        isFavorite: Bool = false
+    ) -> Feed {
+        return Feed(
+            url: URL(string: url)!,
+            title: title,
+            description: description,
+            isFavorite: isFavorite
+        )
+    }
+
     @Test("Save and load feeds")
     func testSaveAndLoadFeeds() async throws {
-        let feedStore = LockIsolated<[Feed]>([])
-        
-        let testClient = PersistenceClient(
-            saveFeeds: { feeds in
-                feedStore.setValue(feeds)
-            },
-            loadFeeds: {
-                return feedStore.value
-            }
-        )
-        
-        let feed1 = Feed(
-            url: URL(string: "https://example.com/feed1")!,
-            title: "Test Feed 1",
-            description: "Description 1"
-        )
-        
-        let feed2 = Feed(
-            url: URL(string: "https://example.com/feed2")!,
-            title: "Test Feed 2",
-            description: "Description 2"
-        )
-        
-        try await testClient.saveFeeds([feed1, feed2])
-        
-        let loadedFeeds = try await testClient.loadFeeds()
-        
-        #expect(loadedFeeds.count == 2)
-        #expect(loadedFeeds[0].title == "Test Feed 1")
-        #expect(loadedFeeds[1].title == "Test Feed 2")
+        try await withDependencies { _ in
+        } operation: {
+            let feed1 = createTestFeed()
+            let feed2 = createTestFeed(url: "https://example.com/feed2", title: "Test Feed 2")
+
+            try await client.addFeed(feed1)
+            try await client.addFeed(feed2)
+
+            let loadedFeeds = try await client.loadFeeds()
+
+            #expect(loadedFeeds.count == 2)
+            #expect(loadedFeeds.contains(where: { $0.url == feed1.url }))
+            #expect(loadedFeeds.contains(where: { $0.url == feed2.url }))
+            #expect(loadedFeeds.first(where: { $0.url == feed1.url })?.title == "Test Feed")
+            #expect(loadedFeeds.first(where: { $0.url == feed2.url })?.title == "Test Feed 2")
+        }
     }
-    
+
+    @Test("Update feed")
+    func testUpdateFeed() async throws {
+        try await withDependencies { _ in }
+        operation: {
+            let feed = createTestFeed(isFavorite: false)
+            try await client.addFeed(feed)
+
+            var loadedFeeds = try await client.loadFeeds()
+            #expect(loadedFeeds.count == 1)
+            #expect(loadedFeeds[0].isFavorite == false)
+
+            var updatedFeed = feed
+            updatedFeed.isFavorite = true
+            try await client.updateFeed(updatedFeed)
+
+            loadedFeeds = try await client.loadFeeds()
+            #expect(loadedFeeds.count == 1)
+            #expect(loadedFeeds[0].isFavorite == true)
+        }
+    }
+
     @Test("Delete feed")
     func testDeleteFeed() async throws {
-        let feed1 = Feed(
-            id: UUID(),
-            url: URL(string: "https://example.com/feed1")!,
-            title: "Test Feed 1"
-        )
-        
-        let feed2 = Feed(
-            id: UUID(),
-            url: URL(string: "https://example.com/feed2")!,
-            title: "Test Feed 2"
-        )
-        
-        let feedStore = LockIsolated<[Feed]>([feed1, feed2])
-        
-        let testClient = PersistenceClient(
-            saveFeeds: { feeds in
-                feedStore.setValue(feeds)
-            },
-            loadFeeds: {
-                return feedStore.value
-            }
-        )
-        
-        var loadedFeeds = try await testClient.loadFeeds()
-        #expect(loadedFeeds.count == 2)
-        
-        loadedFeeds.removeAll(where: { $0.id == feed1.id })
-        try await testClient.saveFeeds(loadedFeeds)
-        
-        let remainingFeeds = try await testClient.loadFeeds()
-        #expect(remainingFeeds.count == 1)
-        #expect(remainingFeeds[0].id == feed2.id)
+        try await withDependencies { _ in }
+        operation: {
+            let feed1 = createTestFeed()
+            let feed2 = createTestFeed(url: "https://example.com/feed2", title: "Test Feed 2")
+
+            try await client.addFeed(feed1)
+            try await client.addFeed(feed2)
+
+            var loadedFeeds = try await client.loadFeeds()
+            #expect(loadedFeeds.count == 2)
+
+            try await client.deleteFeed(feed1.url)
+
+            loadedFeeds = try await client.loadFeeds()
+            #expect(loadedFeeds.count == 1)
+            #expect(loadedFeeds[0].url == feed2.url)
+        }
     }
 }

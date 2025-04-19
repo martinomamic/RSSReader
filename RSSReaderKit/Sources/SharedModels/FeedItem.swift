@@ -15,7 +15,7 @@ public struct FeedItem: Identifiable, Hashable, Sendable {
     public let pubDate: Date?
     public let description: String?
     public let imageURL: URL?
-    
+
     public init(
         id: UUID = UUID(),
         feedID: UUID,

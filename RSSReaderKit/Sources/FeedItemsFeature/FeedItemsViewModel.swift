@@ -16,36 +16,43 @@ import UIKit
 public class FeedItemsViewModel: Identifiable {
     @ObservationIgnored
     @Dependency(\.rssClient) private var rssClient
-    
+    @ObservationIgnored
+    @Dependency(\.openURL) private var openURL
+
     let feedURL: URL
     let feedTitle: String
-    
+
     var state: FeedItemsState = .loading
-    
+
+    private var loadTask: Task<Void, Never>?
+
     public init(feedURL: URL, feedTitle: String) {
         self.feedURL = feedURL
         self.feedTitle = feedTitle
     }
-    
-    @MainActor
-    func loadItems() async {
+
+    func loadItems() {
+        loadTask?.cancel()
         state = .loading
-        
-        do {
-            let items = try await rssClient.fetchFeedItems(feedURL)
-            
-            if items.isEmpty {
-                state = .empty
-            } else {
-                state = .loaded(items)
+
+        loadTask = Task {
+            do {
+                let items = try await rssClient.fetchFeedItems(feedURL)
+
+                if items.isEmpty {
+                    state = .empty
+                } else {
+                    state = .loaded(items)
+                }
+            } catch {
+                state = .error(RSSErrorMapper.map(error))
             }
-        } catch {
-            state = .error(RSSErrorMapper.mapToViewError(error))
         }
     }
-    
-    @MainActor
+
     func openLink(for item: FeedItem) {
-        UIApplication.shared.open(item.link)
+        Task {
+            await openURL(item.link)
+        }
     }
 }

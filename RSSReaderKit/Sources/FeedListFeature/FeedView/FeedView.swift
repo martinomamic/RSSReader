@@ -11,7 +11,7 @@ import SharedModels
 
 struct FeedView: View {
     let viewModel: FeedViewModel
-    
+
     var body: some View {
         HStack(spacing: Constants.UI.feedRowSpacing) {
             switch viewModel.state {
@@ -19,16 +19,17 @@ struct FeedView: View {
                 Image(systemName: Constants.Images.loadingIcon)
                     .font(.title2)
                     .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
-                
+                    .testId(AccessibilityIdentifier.FeedView.loadingView)
+
                 VStack(alignment: .leading) {
                     Text(viewModel.url.absoluteString)
                         .font(.headline)
-                        .lineLimit(1)
+                        .lineLimit(Constants.UI.feedTitleLineLimit)
                     Text("Loading feed details...")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-                
+
             case .loaded(let feed):
                 if let imageURL = feed.imageURL {
                     AsyncImage(url: imageURL) { image in
@@ -44,34 +45,58 @@ struct FeedView: View {
                         .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
                         .foregroundStyle(.blue)
                 }
-                
+
                 VStack(alignment: .leading, spacing: Constants.UI.verticalPadding) {
                     Text(feed.title ?? "Unnamed Feed")
                         .font(.headline)
-                    
+                        .testId(AccessibilityIdentifier.FeedView.feedTitle)
+
                     if let description = feed.description {
                         Text(description)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .lineLimit(Constants.UI.feedDescriptionLineLimit)
+                            .testId(AccessibilityIdentifier.FeedView.feedDescription)
+                    }
+                    HStack {
+                        Spacer()
+
+                        Button(action: viewModel.toggleNotifications) {
+                            Image(systemName: viewModel.feed.notificationsEnabled ? Constants.Images.notificationEnabledIcon : Constants.Images.notificationDisabledIcon)
+                                .font(.title2)
+                                .foregroundColor(viewModel.feed.notificationsEnabled ? .blue : .gray)
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
+                        .testId(AccessibilityIdentifier.FeedView.notificationsButton)
+
+                        Button {
+                            viewModel.toggleFavorite()
+                        } label: {
+                            Image(systemName: viewModel.feed.isFavorite ? "star.fill" : "star")
+                                .font(.title2)
+                                .foregroundColor(viewModel.feed.isFavorite ? .yellow : .gray)
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
+                        .testId(AccessibilityIdentifier.FeedView.favoriteButton)
                     }
                 }
-                
+
             case .error(let error):
                 Image(systemName: Constants.Images.errorIcon)
                     .font(.title2)
                     .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
                     .foregroundStyle(.red)
-                
+
                 VStack(alignment: .leading) {
                     Text(viewModel.url.absoluteString)
                         .font(.headline)
-                        .lineLimit(1)
+                        .lineLimit(Constants.UI.feedTitleLineLimit)
                     Text("Failed to load feed: \(error.errorDescription)")
                         .font(.caption)
                         .foregroundStyle(.red)
                 }
-                
+                .testId(AccessibilityIdentifier.FeedView.errorView)
+
             case .empty:
                 Text("No feed data available")
                     .foregroundStyle(.secondary)

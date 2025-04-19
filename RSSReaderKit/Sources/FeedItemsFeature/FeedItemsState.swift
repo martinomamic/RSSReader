@@ -13,7 +13,7 @@ enum FeedItemsState: Equatable {
     case loaded([FeedItem])
     case error(RSSViewError)
     case empty
-    
+
     static func == (lhs: FeedItemsState, rhs: FeedItemsState) -> Bool {
         switch (lhs, rhs) {
         case (.loading, .loading), (.empty, .empty):

@@ -11,11 +11,11 @@ import SwiftUI
 struct AddFeedView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: AddFeedViewModel
-    
+
     init(feeds: Binding<[FeedViewModel]>) {
         _viewModel = State(initialValue: AddFeedViewModel(feeds: feeds))
     }
-    
+
     var body: some View {
         NavigationStack {
             Form {
@@ -24,6 +24,7 @@ struct AddFeedView: View {
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                         .keyboardType(.URL)
+                        .testId(AccessibilityIdentifier.AddFeed.urlTextField)
                 } header: {
                     Text("Enter RSS feed URL")
                 } footer: {
@@ -31,17 +32,17 @@ struct AddFeedView: View {
                         Text("Examples (tap to use):")
                             .font(.footnote)
                             .foregroundColor(.secondary)
-                        
+
                         VStack(alignment: .leading, spacing: Constants.UI.exampleButtonSpacing) {
                             Button("BBC News") {
                                 viewModel.urlString = Constants.URLs.bbcNews
                             }
-                            .font(.footnote)
-                            
+                            .testId(AccessibilityIdentifier.AddFeed.bbcExampleButton)
+
                             Button("NBC News") {
                                 viewModel.urlString = Constants.URLs.nbcNews
                             }
-                            .font(.footnote)
+                            .testId(AccessibilityIdentifier.AddFeed.nbcExampleButton)
                         }
                     }
                 }
@@ -53,13 +54,15 @@ struct AddFeedView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .testId(AccessibilityIdentifier.AddFeed.cancelButton)
                 }
-                
+
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") {
                         viewModel.addFeed()
                     }
                     .disabled(!viewModel.isValidURL || viewModel.state == .adding)
+                    .testId(AccessibilityIdentifier.AddFeed.addButton)
                 }
             }
             .overlay {

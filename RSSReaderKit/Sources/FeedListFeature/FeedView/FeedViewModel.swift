@@ -8,6 +8,8 @@
 import Common
 import Dependencies
 import Foundation
+import NotificationClient
+import PersistenceClient
 import RSSClient
 import SharedModels
 
@@ -16,7 +18,7 @@ enum FeedViewState: Equatable {
     case loaded(Feed)
     case error(RSSViewError)
     case empty
-    
+
     static func == (lhs: FeedViewState, rhs: FeedViewState) -> Bool {
         switch (lhs, rhs) {
         case (.loading, .loading), (.empty, .empty):
@@ -33,26 +35,70 @@ enum FeedViewState: Equatable {
 
 @MainActor
 @Observable class FeedViewModel: Identifiable {
-    @ObservationIgnored
-    @Dependency(\.rssClient) private var rssClient
-    
+    @ObservationIgnored @Dependency(\.notificationClient) private var notificationClient
+    @ObservationIgnored @Dependency(\.rssClient.fetchFeed) private var fetchFeed
+    @ObservationIgnored @Dependency(\.persistenceClient.updateFeed) private var updateFeed
+
     let url: URL
-    let feed: Feed
+    var feed: Feed
     var state: FeedViewState = .loading
-    
+
+    private var toggleFavoriteTask: Task<Void, Never>?
+    private var toggleNotificationsTask: Task<Void, Never>?
+    private var loadTask: Task<Void, Never>?
+
     init(url: URL, feed: Feed) {
         self.url = url
         self.feed = feed
     }
-    
-    func loadFeedDetails() async {
+
+    func loadFeedDetails() {
+        loadTask?.cancel()
         state = .loading
-        
-        do {
-            let fetchedFeed = try await rssClient.fetchFeed(url)
-            state = .loaded(fetchedFeed)
-        } catch let error {
-            state = .error(RSSErrorMapper.mapToViewError(error))
+
+        loadTask = Task {
+            do {
+                let fetchedFeed = try await fetchFeed(url)
+                state = .loaded(fetchedFeed)
+            } catch let error {
+                state = .error(RSSErrorMapper.map(error))
+            }
+        }
+    }
+
+    func toggleFavorite() {
+        toggleFavoriteTask?.cancel()
+        feed.isFavorite.toggle()
+
+        toggleFavoriteTask = Task {
+            do {
+                try await updateFeed(feed)
+            } catch {
+                state = .error(RSSErrorMapper.map(error))
+            }
+        }
+    }
+
+    func toggleNotifications() {
+        toggleNotificationsTask?.cancel()
+
+        toggleNotificationsTask = Task {
+            do {
+                if !feed.notificationsEnabled {
+                    try await notificationClient.requestPermissions()
+                }
+
+                feed.notificationsEnabled.toggle()
+
+                try await updateFeed(feed)
+
+                if feed.notificationsEnabled {
+                    try await notificationClient.checkForNewItems()
+                }
+            } catch {
+                feed.notificationsEnabled.toggle()
+                state = .error(RSSErrorMapper.map(error))
+            }
         }
     }
 }
@@ -61,7 +107,7 @@ extension FeedViewModel: Hashable {
     nonisolated static func == (lhs: FeedViewModel, rhs: FeedViewModel) -> Bool {
         lhs.url == rhs.url
     }
-    
+
     nonisolated func hash(into hasher: inout Hasher) {
         hasher.combine(url)
     }

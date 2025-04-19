@@ -20,25 +20,29 @@ enum FeedListState: Equatable {
     case error(RSSViewError)
 }
 
-@MainActor
-@Observable class FeedListViewModel {
+@MainActor @Observable
+public class FeedListViewModel {
     @ObservationIgnored
     @Dependency(\.rssClient) private var rssClient
-    
+
     @ObservationIgnored
     @Dependency(\.persistenceClient) private var persistenceClient
-    
+
     var feeds: [FeedViewModel] = []
     var state: FeedListState = .idle
-    
-    private var saveTask: Task<Void, Never>?
-    private var loadTask: Task<Void, Never>?
-    
-    init() {
-        loadFeeds()
+
+    var favoriteFeeds: [FeedViewModel] {
+        feeds.filter { $0.feed.isFavorite }
     }
-    
+
+    private var loadTask: Task<Void, Never>?
+    private var updateTask: Task<Void, Never>?
+    private var deleteTask: Task<Void, Never>?
+
+    public init() {}
+
     func loadFeeds() {
+        feeds.removeAll()
         state = .loading
         loadTask?.cancel()
         loadTask = Task {
@@ -51,24 +55,47 @@ enum FeedListState: Equatable {
                 }
                 state = .idle
             } catch {
-                state = .error(RSSErrorMapper.mapToViewError(error))
+                state = .error(RSSErrorMapper.map(error))
             }
         }
     }
-    
-    func removeFeed(at indexSet: IndexSet) {
-        feeds.remove(atOffsets: indexSet)
-        saveFeeds()
+
+    func removeFeed(at indexSet: IndexSet, fromFavorites: Bool = false) {
+        if fromFavorites {
+            let feedsToRemoveFromFavorites = indexSet.map { favoriteFeeds[$0] }
+            for feed in feedsToRemoveFromFavorites {
+                if let index = feeds.firstIndex(where: { $0.url == feed.url }) {
+                    feeds[index].feed.isFavorite = false
+                    toggleFavorite(feeds[index])
+                }
+            }
+        } else {
+            let feedsToDelete = indexSet.map { feeds[$0] }
+            for feed in feedsToDelete {
+                deleteFeed(feed)
+            }
+            feeds.remove(atOffsets: indexSet)
+        }
     }
-    
-    func saveFeeds() {
-        saveTask?.cancel()
-        saveTask = Task {
+
+    private func toggleFavorite(_ feedViewModel: FeedViewModel) {
+        updateTask?.cancel()
+        updateTask = Task {
             do {
-                let feedsToSave = feeds.map { $0.feed }
-                try await persistenceClient.saveFeeds(feedsToSave)
+                try await persistenceClient.updateFeed(feedViewModel.feed)
             } catch {
-                state = .error(RSSErrorMapper.mapToViewError(error))
+                state = .error(RSSErrorMapper.map(error))
+            }
+        }
+    }
+
+    private func deleteFeed(_ feedViewModel: FeedViewModel) {
+        deleteTask?.cancel()
+        deleteTask = Task {
+            do {
+                try await persistenceClient.deleteFeed(feedViewModel.url)
+            } catch {
+                state = .error(RSSErrorMapper.map(error))
             }
         }
     }

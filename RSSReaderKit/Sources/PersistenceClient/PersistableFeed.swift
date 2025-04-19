@@ -1,5 +1,5 @@
 //
-//  PersistableFeed.swift
+//  PersistenceClient.swift
 //  RSSReaderKit
 //
 //  Created by Martino Mamić on 15.04.25.
@@ -10,28 +10,50 @@ import SwiftData
 import SharedModels
 
 @Model
-public final class PersistableFeed {
-    @Attribute(.unique) public var id: UUID
-    public var url: URL
-    public var title: String?
-    public var feedDescription: String?
-    public var imageURLString: String?
-    
-    public init(from feed: Feed) {
-        self.id = feed.id
-        self.url = feed.url
-        self.title = feed.title
-        self.feedDescription = feed.description
-        self.imageURLString = feed.imageURL?.absoluteString
+final class PersistableFeed {
+    @Attribute(.unique)
+    var url: URL
+    var title: String?
+    var feedDescription: String?
+    var imageURLString: String?
+    var isFavorite: Bool
+    var notificationsEnabled: Bool
+
+    init(
+        title: String?,
+        url: URL,
+        feedDescription: String?,
+        imageURLString: String?,
+        isFavorite: Bool,
+        notificationsEnabled: Bool = false
+    ) {
+        self.title = title
+        self.url = url
+        self.feedDescription = feedDescription
+        self.imageURLString = imageURLString
+        self.isFavorite = isFavorite
+        self.notificationsEnabled = notificationsEnabled
     }
-    
-    public func toFeed() -> Feed {
+
+    convenience init(from feed: Feed) {
+        self.init(
+            title: feed.title,
+            url: feed.url,
+            feedDescription: feed.description,
+            imageURLString: feed.imageURL?.absoluteString,
+            isFavorite: feed.isFavorite,
+            notificationsEnabled: feed.notificationsEnabled
+        )
+    }
+
+    func toFeed() -> Feed {
         Feed(
-            id: id,
             url: url,
             title: title,
             description: feedDescription,
-            imageURL: imageURLString.flatMap { URL(string: $0) }
+            imageURL: imageURLString.flatMap(URL.init(string:)),
+            isFavorite: isFavorite,
+            notificationsEnabled: notificationsEnabled
         )
     }
 }

@@ -9,11 +9,15 @@ let package = Package(
     ],
     products: [
         .library(name: "Common", targets: ["Common"]),
+        .library(name: "ExploreClient", targets: ["ExploreClient"]),
+        .library(name: "ExploreFeature", targets: ["ExploreFeature"]),
         .library(name: "FeedItemsFeature", targets: ["FeedItemsFeature"]),
         .library(name: "FeedListFeature", targets: ["FeedListFeature"]),
+        .library(name: "NotificationClient", targets: ["NotificationClient"]),
         .library(name: "PersistenceClient", targets: ["PersistenceClient"]),
         .library(name: "RSSClient", targets: ["RSSClient"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
+        .library(name: "TabBarFeature", targets: ["TabBarFeature"]),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-concurrency-extras", from: "1.3.1"),
@@ -31,6 +35,9 @@ let package = Package(
             name: "RSSClientTests",
             dependencies: [
                 "RSSClient",
+            ],
+            resources: [
+                .copy("Resources/bbc.xml")
             ]
         ),
         .target(
@@ -41,6 +48,24 @@ let package = Package(
             name: "Common",
             dependencies: [
                 "RSSClient"
+            ]
+        ),
+        .target(
+            name: "ExploreClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "PersistenceClient",
+                "RSSClient",
+                "SharedModels"
+            ]
+        ),
+        .target(
+            name: "ExploreFeature",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "Common",
+                "ExploreClient",
+                "SharedModels"
             ]
         ),
         .target(
@@ -61,6 +86,30 @@ let package = Package(
                 "Common",
                 "RSSClient",
                 "SharedModels"
+            ]
+        ),
+        .target(
+            name: "NotificationClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "Common",
+                "PersistenceClient",
+                "RSSClient",
+                "SharedModels",
+            ]
+        ),
+        .testTarget(
+            name: "NotificationClientTests",
+            dependencies: [
+                .product(name: "ConcurrencyExtras", package: "swift-concurrency-extras"),
+                "NotificationClient",
+            ]
+        ),
+        .target(
+            name: "TabBarFeature",
+            dependencies: [
+                "ExploreFeature",
+                "FeedListFeature"
             ]
         ),
         .target(
