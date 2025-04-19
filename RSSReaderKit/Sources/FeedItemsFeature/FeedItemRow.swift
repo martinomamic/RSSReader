@@ -22,24 +22,31 @@ struct FeedItemRow: View {
                 }
                 .frame(height: Constants.UI.feedItemImageHeight)
                 .clipShape(RoundedRectangle(cornerRadius: Constants.UI.feedItemCornerRadius))
+                .accessibilityHidden(true)
             }
 
             Text(item.title)
                 .font(.headline)
+                .accessibilityAddTraits(.isHeader)
 
             if let description = item.description {
                 Text(description)
                     .font(.subheadline)
                     .lineLimit(Constants.UI.feedItemDescriptionLineLimit)
+                    .accessibilityLabel("Article description")
             }
 
             if let pubDate = item.pubDate {
                 Text(pubDate, style: .date)
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                    .accessibilityLabel("Publish date")
             }
         }
         .padding(.vertical, Constants.UI.feedItemVerticalPadding)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(item.title)")
+        .accessibilityHint("Tap to read full article")
     }
 }
 
