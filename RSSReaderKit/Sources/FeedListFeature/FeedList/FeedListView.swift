@@ -39,7 +39,7 @@ public struct FeedListView: View {
                 viewModel.removeFeed(at: indexSet, fromFavorites: showOnlyFavorites)
             }
         }
-        .testId(showOnlyFavorites ? 
+        .testId(showOnlyFavorites ?
             AccessibilityIdentifier.FeedList.favoritesList :
             AccessibilityIdentifier.FeedList.feedsList)
         .onAppear {

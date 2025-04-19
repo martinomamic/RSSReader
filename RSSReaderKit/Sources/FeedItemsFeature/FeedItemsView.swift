@@ -55,9 +55,9 @@ public struct FeedItemsView: View {
         .testId(AccessibilityIdentifier.FeedItems.itemsList)
     }
     
-    private func errorView(error: Error) -> some View {
+    private func errorView(error: RSSViewError) -> some View {
         ErrorView(
-            message: error.localizedDescription,
+            message: error.errorDescription,
             retryAction: viewModel.loadItems
         )
         .testId(AccessibilityIdentifier.FeedItems.errorView)
