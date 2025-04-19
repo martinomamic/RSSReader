@@ -42,17 +42,12 @@ extension NotificationClient {
 
         let feeds = try await loadFeeds()
         let enabledFeeds = feeds.filter(\.notificationsEnabled)
-        print("🔔 Checking \(enabledFeeds.count) enabled feeds for updates")
 
-        // Store current check time before processing
         let currentCheck = Date()
         let lastCheck = UserDefaults.standard.object(
             forKey: Constants.Storage.lastNotificationCheckKey
         ) as? Date ?? Date.distantPast
 
-        print("🔔 Last check was at: \(lastCheck)")
-
-        // Get stored notification IDs
         let notifiedItemIDs = UserDefaults.standard.stringArray(
             forKey: Constants.Storage.notifiedItemsKey
         ) ?? []
@@ -67,15 +62,11 @@ extension NotificationClient {
             fetchFeedItems: fetchFeedItems
         )
 
-        // Update state only if we processed feeds successfully
         UserDefaults.standard.set(currentCheck, forKey: Constants.Storage.lastNotificationCheckKey)
 
-        // Manage notification IDs
         let updatedIDs = (notifiedItemIDs + newNotifiedItemIDs)
             .suffix(Constants.Notifications.pruneToCount)
         UserDefaults.standard.set(Array(updatedIDs), forKey: Constants.Storage.notifiedItemsKey)
-
-        print("🔔 Check complete. New notifications: \(newNotifiedItemIDs.count)")
     }
 
     private static func processFeeds(
@@ -90,26 +81,12 @@ extension NotificationClient {
 
         for feed in feeds {
             do {
-                print("🔔 Checking feed: \(feed.title ?? feed.url.absoluteString)")
                 let items = try await fetchFeedItems(feed.url)
 
                 let newItems = items.filter { item in
-                    guard let pubDate = item.pubDate else {
-                        print("🔔 Item has no publication date: \(item.title)")
-                        return false
-                    }
-
-                    let isNew = pubDate > lastCheck
-                    let isNotNotified = !notifiedItemIDs.contains(item.id.uuidString)
-
-                    if isNew {
-                        print("🔔 Found new item: \(item.title) published at \(pubDate)")
-                    }
-
-                    return isNew && isNotNotified
+                    guard let pubDate = item.pubDate else { return false }
+                    return pubDate > lastCheck && !notifiedItemIDs.contains(item.id.uuidString)
                 }
-
-                print("🔔 Found \(newItems.count) new items in feed")
 
                 for item in newItems {
                     try await scheduleNotification(
@@ -121,9 +98,7 @@ extension NotificationClient {
                     newNotifiedItemIDs.append(item.id.uuidString)
                     delayOffset += 0.5
                 }
-            } catch {
-                print("🔔 Error processing feed \(feed.url): \(error)")
-            }
+            } catch { }
         }
     }
 
@@ -138,6 +113,7 @@ extension NotificationClient {
             content.title = feed.title ?? "New item in feed"
             content.body = item.title
             content.sound = .default
+            content.threadIdentifier = feed.url.absoluteString
 
             let trigger = UNTimeIntervalNotificationTrigger(
                 timeInterval: delayOffset,
@@ -150,21 +126,16 @@ extension NotificationClient {
                 trigger: trigger
             )
 
-            print("🔔 Scheduling notification for: \(item.title)")
             center.add(request) { error in
                 if let error = error {
-                    print("🔔 Failed to schedule notification: \(error)")
                     continuation.resume(throwing: error)
                 } else {
-                    print("🔔 Successfully scheduled notification")
                     continuation.resume()
                 }
             }
         }
     }
 }
-
-// MARK: - Dependencies
 
 private enum NotificationCenterKey: DependencyKey {
     static let liveValue = UNUserNotificationCenter.current()

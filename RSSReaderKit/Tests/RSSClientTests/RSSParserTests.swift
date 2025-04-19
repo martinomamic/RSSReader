@@ -1,5 +1,5 @@
 //
-//  RSSClientTests.swift
+//  RSSParserTests.swift
 //  RSSReaderKit
 //
 //  Created by Martino Mamić on 12.04.25.
