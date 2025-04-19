@@ -22,6 +22,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-concurrency-extras", from: "1.3.1"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.9.1"),
+        .package(url: "https://github.com/onevcat/Kingfisher.git", from: "8.3.2"),
     ],
     targets: [
         .target(
@@ -47,7 +48,8 @@ let package = Package(
         .target(
             name: "Common",
             dependencies: [
-                "RSSClient"
+                "RSSClient",
+                "Kingfisher"
             ]
         ),
         .target(
