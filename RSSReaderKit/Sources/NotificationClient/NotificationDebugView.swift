@@ -22,6 +22,7 @@ public struct NotificationDebugView: View {
     @State private var isRefreshing = false
     @State private var refreshResult = ""
     @State private var notificationStatus = "Unknown"
+    @State private var isBGTaskNotificationDebugEnabled = BGTaskDiagnostics.isBGTaskNotificationDebugEnabled
     @Environment(\.scenePhase) private var scenePhase
     @Dependency(\.notificationClient) private var notificationClient
 
@@ -34,6 +35,7 @@ public struct NotificationDebugView: View {
                 statusSection
                 actionsSection
                 resultsSection
+                bgTaskDiagnosticsSection
             }
             .padding()
         }
@@ -353,5 +355,22 @@ private extension UNAuthorizationStatus {
         case .ephemeral: return "Ephemeral"
         @unknown default: return "Unknown"
         }
+    }
+}
+
+private extension NotificationDebugView {
+    var bgTaskDiagnosticsSection: some View {
+        VStack(alignment: .leading, spacing: Constants.UI.debugSectionSpacing) {
+            Text("Background Task Diagnostics")
+                .font(.headline)
+
+            Toggle("BGTask Fire: Show Diagnostic Notification", isOn: $isBGTaskNotificationDebugEnabled)
+                .onChange(of: isBGTaskNotificationDebugEnabled) { newValue, _ in
+                   BGTaskDiagnostics.isBGTaskNotificationDebugEnabled = newValue
+                }
+        }
+        .padding()
+        .background(Color.gray.opacity(Constants.UI.debugBackgroundOpacity))
+        .clipShape(RoundedRectangle(cornerRadius: Constants.UI.debugCornerRadius))
     }
 }

@@ -13,6 +13,7 @@ import RSSClient
 import SharedModels
 import Dependencies
 import Observation
+import NotificationClient
 
 enum FeedListState: Equatable {
     case idle
@@ -27,6 +28,9 @@ public class FeedListViewModel {
 
     @ObservationIgnored
     @Dependency(\.persistenceClient) private var persistenceClient
+
+    @ObservationIgnored
+    @Dependency(\.notificationClient) private var notificationClient
 
     var feeds: [FeedViewModel] = []
     var state: FeedListState = .idle
@@ -94,6 +98,46 @@ public class FeedListViewModel {
         deleteTask = Task {
             do {
                 try await persistenceClient.deleteFeed(feedViewModel.url)
+            } catch {
+                state = .error(RSSErrorMapper.map(error))
+            }
+        }
+    }
+
+    func toggleNotifications(for feedViewModel: FeedViewModel) async {
+        updateTask?.cancel()
+        updateTask = Task {
+            do {
+                if !feedViewModel.feed.notificationsEnabled {
+                    let authorizationStatus = await notificationClient.checkAuthorizationStatus()
+                    
+                    if authorizationStatus == .notDetermined {
+                        try await notificationClient.requestPermissions()
+                        
+                        let newAuthorizationStatus = await notificationClient.checkAuthorizationStatus()
+                        guard newAuthorizationStatus == .authorized else {
+                            state = .error(.notificationPermissionDenied)
+                            return
+                        }
+                    } else if authorizationStatus != .authorized {
+                        state = .error(.notificationPermissionDenied)
+                        return
+                    }
+                    
+                    feedViewModel.feed.lastFetchDate = Date()
+                }
+
+                feedViewModel.feed.notificationsEnabled.toggle()
+                try await persistenceClient.updateFeed(feedViewModel.feed)
+                
+                if feedViewModel.feed.notificationsEnabled {
+                    BackgroundRefreshClient.shared.scheduleAppRefresh()
+                } else {
+                    let feeds = try await persistenceClient.loadFeeds()
+                    if !feeds.contains(where: \.notificationsEnabled) {
+                        BackgroundRefreshClient.shared.cancelScheduledRefresh()
+                    }
+                }
             } catch {
                 state = .error(RSSErrorMapper.map(error))
             }

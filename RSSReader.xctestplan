@@ -4,10 +4,12 @@
       "id" : "1485DAD2-E71C-465A-AC36-CF89D5C717FA",
       "name" : "Test Scheme Action",
       "options" : {
+
       }
     }
   ],
   "defaultOptions" : {
+
   },
   "testTargets" : [
     {

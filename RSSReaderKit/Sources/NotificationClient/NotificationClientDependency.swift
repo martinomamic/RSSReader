@@ -1,5 +1,5 @@
 //
-//  NotificationClientLive.swift
+//  NotificationClientDependency.swift
 //  RSSReaderKit
 //
 //  Created by Martino Mamić on 17.04.25.
@@ -7,22 +7,20 @@
 
 import Dependencies
 import Foundation
-import SharedModels
+@preconcurrency import UserNotifications
 
-extension NotificationClient: DependencyKey {
-    public static var liveValue: NotificationClient { .live() }
-
-    public static var testValue: NotificationClient {
-        NotificationClient(
-            requestPermissions: {},
-            checkForNewItems: {}
-        )
-    }
+private enum NotificationClientKey: DependencyKey {
+    static let liveValue = NotificationClient.live()
+    static let testValue = NotificationClient(
+        requestPermissions: { },
+        checkForNewItems: { },
+        checkAuthorizationStatus: { .notDetermined }
+    )
 }
 
 extension DependencyValues {
     public var notificationClient: NotificationClient {
-        get { self[NotificationClient.self] }
-        set { self[NotificationClient.self] = newValue }
+        get { self[NotificationClientKey.self] }
+        set { self[NotificationClientKey.self] = newValue }
     }
 }

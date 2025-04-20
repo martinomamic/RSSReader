@@ -40,8 +40,8 @@ import Testing
     func testRequestPermissionsSuccess() async throws {
         let permissionsRequested = LockIsolated<Bool>(false)
 
-        try await withDependencies { deps in
-            deps.notificationClient.requestPermissions = {
+        try await withDependencies { 
+            $0.notificationClient.requestPermissions = {
                 permissionsRequested.setValue(true)
             }
         } operation: {
@@ -53,8 +53,8 @@ import Testing
 
     @Test("Request permissions denied")
     func testRequestPermissionsDenied() async throws {
-        try await withDependencies { deps in
-            deps.notificationClient.requestPermissions = {
+        try await withDependencies { 
+            $0.notificationClient.requestPermissions = {
                 throw NotificationError.permissionDenied
             }
         } operation: {
@@ -75,11 +75,11 @@ import Testing
         let item = testItem(pubDate: Date().addingTimeInterval(60))
         let notificationRequests = LockIsolated<[UNNotificationRequest]>([])
 
-        try await withDependencies { deps in
-            deps.rssClient.fetchFeedItems = { _ in [item] }
-            deps.persistenceClient.loadFeeds = { [feed] }
+        try await withDependencies {
+            $0.rssClient.fetchFeedItems = { _ in [item] }
+            $0.persistenceClient.loadFeeds = { [feed] }
             
-            deps.notificationClient = .testValue(
+            $0.notificationClient = .testValue(
                 requestPermissions: {},
                 checkForNewItems: {
                     notificationRequests.withValue { requests in
@@ -95,7 +95,8 @@ import Testing
                             trigger: nil
                         ))
                     }
-                }
+                },
+                checkAuthorizationStatus: { .authorized }
             )
         } operation: {
             @Dependency(\.notificationClient) var client
@@ -115,13 +116,14 @@ import Testing
         let item = testItem(pubDate: Date().addingTimeInterval(60))
         let notificationRequests = LockIsolated<[UNNotificationRequest]>([])
 
-        try await withDependencies { deps in
-            deps.rssClient.fetchFeedItems = { _ in [item] }
-            deps.persistenceClient.loadFeeds = { [feed] }
+        try await withDependencies { 
+            $0.rssClient.fetchFeedItems = { _ in [item] }
+            $0.persistenceClient.loadFeeds = { [feed] }
             
-            deps.notificationClient = .testValue(
+            $0.notificationClient = .testValue(
                 requestPermissions: {},
-                checkForNewItems: { }
+                checkForNewItems: {},
+                checkAuthorizationStatus: { .authorized }
             )
         } operation: {
             @Dependency(\.notificationClient) var client
@@ -137,13 +139,14 @@ import Testing
         let item = testItem(pubDate: Date().addingTimeInterval(60))
         let notificationRequests = LockIsolated<[UNNotificationRequest]>([])
 
-        try await withDependencies { deps in
-            deps.rssClient.fetchFeedItems = { _ in [item] }
-            deps.persistenceClient.loadFeeds = { [feed] }
+        try await withDependencies { 
+            $0.rssClient.fetchFeedItems = { _ in [item] }
+            $0.persistenceClient.loadFeeds = { [feed] }
             
-            deps.notificationClient = .testValue(
+            $0.notificationClient = .testValue(
                 requestPermissions: {},
-                checkForNewItems: { throw NotificationError.permissionDenied }
+                checkForNewItems: { throw NotificationError.permissionDenied },
+                checkAuthorizationStatus: { .denied }
             )
         } operation: {
             @Dependency(\.notificationClient) var client
@@ -167,20 +170,20 @@ import Testing
         let notifiedItems = LockIsolated<[String]>([])
         let lastCheckTime = LockIsolated<Date?>(nil)
 
-        try await withDependencies { deps in
-            deps.rssClient = .init(
+        try await withDependencies { 
+            $0.rssClient = .init(
                 fetchFeed: { _ in feed },
                 fetchFeedItems: { _ in [item] }
             )
 
-            deps.persistenceClient = .init(
+            $0.persistenceClient = .init(
                 addFeed: { _ in },
                 updateFeed: { _ in },
                 deleteFeed: { _ in },
                 loadFeeds: { [feed] }
             )
 
-            deps.notificationClient = .init(
+            $0.notificationClient = .init(
                 requestPermissions: {},
                 checkForNewItems: {
                     @Dependency(\.persistenceClient) var persistenceClient
@@ -216,7 +219,7 @@ import Testing
                     }
 
                     lastCheckTime.setValue(Date())
-                }
+                }, checkAuthorizationStatus: { .authorized }
             )
         } operation: {
             @Dependency(\.notificationClient) var client
@@ -234,11 +237,13 @@ import Testing
 extension NotificationClient {
     static func testValue(
         requestPermissions: @escaping @Sendable () async throws -> Void = {},
-        checkForNewItems: @escaping @Sendable () async throws -> Void = {}
+        checkForNewItems: @escaping @Sendable () async throws -> Void = {},
+        checkAuthorizationStatus: @escaping @Sendable () async -> UNAuthorizationStatus
     ) -> Self {
         Self(
             requestPermissions: requestPermissions,
-            checkForNewItems: checkForNewItems
+            checkForNewItems: checkForNewItems,
+            checkAuthorizationStatus: checkAuthorizationStatus
         )
     }
 }

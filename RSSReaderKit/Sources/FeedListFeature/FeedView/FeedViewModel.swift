@@ -12,6 +12,7 @@ import NotificationClient
 import PersistenceClient
 import RSSClient
 import SharedModels
+@preconcurrency import UserNotifications
 
 enum FeedViewState: Equatable {
     case loading
@@ -85,7 +86,20 @@ enum FeedViewState: Equatable {
         toggleNotificationsTask = Task {
             do {
                 if !feed.notificationsEnabled {
-                    try await notificationClient.requestPermissions()
+                    let authorizationStatus = await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
+                    
+                    if authorizationStatus == .notDetermined {
+                        try await notificationClient.requestPermissions()
+                        
+                        let newAuthorizationStatus = await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
+                        guard newAuthorizationStatus == .authorized else {
+                            state = .error(.notificationPermissionDenied)
+                            return
+                        }
+                    } else if authorizationStatus != .authorized {
+                        state = .error(.notificationPermissionDenied)
+                        return
+                    }
                 }
 
                 feed.notificationsEnabled.toggle()
@@ -93,7 +107,6 @@ enum FeedViewState: Equatable {
 
                 if feed.notificationsEnabled {
                     BackgroundRefreshClient.shared.scheduleAppRefresh()
-                    try await notificationClient.checkForNewItems()
                 }
             } catch {
                 feed.notificationsEnabled.toggle()

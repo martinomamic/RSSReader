@@ -15,6 +15,7 @@ public struct Feed: Identifiable, Hashable, Sendable {
     public var imageURL: URL?
     public var isFavorite: Bool
     public var notificationsEnabled: Bool
+    public var lastFetchDate: Date?
 
     public init(
         url: URL,
@@ -22,7 +23,8 @@ public struct Feed: Identifiable, Hashable, Sendable {
         description: String? = nil,
         imageURL: URL? = nil,
         isFavorite: Bool = false,
-        notificationsEnabled: Bool = false
+        notificationsEnabled: Bool = false,
+        lastFetchDate: Date? = nil
     ) {
         self.url = url
         self.title = title
@@ -30,6 +32,7 @@ public struct Feed: Identifiable, Hashable, Sendable {
         self.imageURL = imageURL
         self.isFavorite = isFavorite
         self.notificationsEnabled = notificationsEnabled
+        self.lastFetchDate = lastFetchDate
     }
 
     public static func == (lhs: Feed, rhs: Feed) -> Bool {

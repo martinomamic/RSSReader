@@ -1,6 +1,9 @@
 //
 //  NotificationClientLive.swift
 //  RSSReaderKit
+//
+//  REFACTORED: simplified dependency usage & last‑fetch logic
+//
 
 import Common
 import Dependencies
@@ -22,11 +25,15 @@ extension NotificationClient {
                 try await notificationCenter.requestAuthorization(options: [.alert, .sound, .badge])
             },
             checkForNewItems: {
+                print("🔍 [NotificationClient] Starting checkForNewItems...")
                 try await checkForNewItems(
                     center: notificationCenter,
                     loadFeeds: loadFeeds,
                     fetchFeedItems: fetchFeedItems
                 )
+            },
+            checkAuthorizationStatus: {
+                await notificationCenter.notificationSettings().authorizationStatus
             }
         )
     }
@@ -36,69 +43,71 @@ extension NotificationClient {
         loadFeeds: @escaping () async throws -> [Feed],
         fetchFeedItems: @escaping (URL) async throws -> [FeedItem]
     ) async throws {
-        guard await center.notificationSettings().authorizationStatus == .authorized else {
+        let settings = await center.notificationSettings()
+        guard settings.authorizationStatus == .authorized else {
+            print("⚠️ [NotificationClient] Notification permission denied.")
             throw NotificationError.permissionDenied
         }
 
         let feeds = try await loadFeeds()
+        print("📦 [NotificationClient] Loaded feeds: \(feeds.count)")
         let enabledFeeds = feeds.filter(\.notificationsEnabled)
+        print("🔔 [NotificationClient] Feeds with notifications enabled: \(enabledFeeds.count)")
+        
+        guard !enabledFeeds.isEmpty else {
+            print("🛑 [NotificationClient] No feeds with notifications enabled.")
+            return
+        }
 
-        let currentCheck = Date()
-        let lastCheck = UserDefaults.standard.object(
-            forKey: Constants.Storage.lastNotificationCheckKey
-        ) as? Date ?? Date.distantPast
-
-        let notifiedItemIDs = UserDefaults.standard.stringArray(
-            forKey: Constants.Storage.notifiedItemsKey
-        ) ?? []
-
-        var newNotifiedItemIDs = [String]()
         try await processFeeds(
             enabledFeeds,
-            lastCheck: lastCheck,
-            notifiedItemIDs: notifiedItemIDs,
-            newNotifiedItemIDs: &newNotifiedItemIDs,
             center: center,
             fetchFeedItems: fetchFeedItems
         )
-
-        UserDefaults.standard.set(currentCheck, forKey: Constants.Storage.lastNotificationCheckKey)
-
-        let updatedIDs = (notifiedItemIDs + newNotifiedItemIDs)
-            .suffix(Constants.Notifications.pruneToCount)
-        UserDefaults.standard.set(Array(updatedIDs), forKey: Constants.Storage.notifiedItemsKey)
     }
 
     private static func processFeeds(
         _ feeds: [Feed],
-        lastCheck: Date,
-        notifiedItemIDs: [String],
-        newNotifiedItemIDs: inout [String],
         center: UNUserNotificationCenter,
         fetchFeedItems: @escaping (URL) async throws -> [FeedItem]
     ) async throws {
         var delayOffset = 0.5
 
-        for feed in feeds {
+        for var feed in feeds {
             do {
+                print("➡️ [NotificationClient] Processing feed: \(feed.title ?? feed.url.absoluteString)")
                 let items = try await fetchFeedItems(feed.url)
-
-                let newItems = items.filter { item in
-                    guard let pubDate = item.pubDate else { return false }
-                    return pubDate > lastCheck && !notifiedItemIDs.contains(item.id.uuidString)
-                }
+                print("  - Total items fetched: \(items.count)")
+                let cutoffDate = feed.lastFetchDate ?? Date()
+                // --- SIMULATION PATCH START ---
+                // To simulate new RSS items for every refresh, uncomment the next line:
+                 let newItems = items.prefix(1) // always pretend the first item is 'new'
+                // To restore normal behavior, comment out/remove above and use:
+//                let newItems = items.filter { item in
+//                    guard let pubDate = item.pubDate else { return false }
+//                    return pubDate > cutoffDate
+//                }
+                // --- SIMULATION PATCH END ---
+                print("  - New items found: \(newItems.count) (cutoff: \(cutoffDate))")
 
                 for item in newItems {
+                    print("    🆕 Scheduling notification for item: \(item.title) (\(item.id))")
                     try await scheduleNotification(
                         for: item,
                         from: feed,
                         delayOffset: delayOffset,
                         center: center
                     )
-                    newNotifiedItemIDs.append(item.id.uuidString)
                     delayOffset += 0.5
                 }
-            } catch { }
+
+                feed.lastFetchDate = Date()
+                @Dependency(\.persistenceClient) var persistenceClient
+                try await persistenceClient.updateFeed(feed)
+                print("  ▶️ Updated feed lastFetchDate to now")
+            } catch {
+                print("❌ Notification check error for \(feed.url): \(error)")
+            }
         }
     }
 

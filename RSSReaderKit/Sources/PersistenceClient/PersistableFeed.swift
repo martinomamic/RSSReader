@@ -18,6 +18,7 @@ final class PersistableFeed {
     var imageURLString: String?
     var isFavorite: Bool
     var notificationsEnabled: Bool
+    var lastFetchDate: Date?
 
     init(
         title: String?,
@@ -25,7 +26,8 @@ final class PersistableFeed {
         feedDescription: String?,
         imageURLString: String?,
         isFavorite: Bool,
-        notificationsEnabled: Bool = false
+        notificationsEnabled: Bool = false,
+        lastFetchDate: Date? = nil
     ) {
         self.title = title
         self.url = url
@@ -33,6 +35,7 @@ final class PersistableFeed {
         self.imageURLString = imageURLString
         self.isFavorite = isFavorite
         self.notificationsEnabled = notificationsEnabled
+        self.lastFetchDate = lastFetchDate
     }
 
     convenience init(from feed: Feed) {
@@ -42,7 +45,8 @@ final class PersistableFeed {
             feedDescription: feed.description,
             imageURLString: feed.imageURL?.absoluteString,
             isFavorite: feed.isFavorite,
-            notificationsEnabled: feed.notificationsEnabled
+            notificationsEnabled: feed.notificationsEnabled,
+            lastFetchDate: feed.lastFetchDate
         )
     }
 
@@ -53,7 +57,8 @@ final class PersistableFeed {
             description: feedDescription,
             imageURL: imageURLString.flatMap(URL.init(string:)),
             isFavorite: isFavorite,
-            notificationsEnabled: notificationsEnabled
+            notificationsEnabled: notificationsEnabled,
+            lastFetchDate: lastFetchDate
         )
     }
 }

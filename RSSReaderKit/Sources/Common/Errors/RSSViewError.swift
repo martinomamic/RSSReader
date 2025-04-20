@@ -15,6 +15,7 @@ public enum RSSViewError: Error, Equatable, LocalizedError, Identifiable {
     case networkError(String)
     case parsingError(String)
     case unknown(String)
+    case notificationPermissionDenied
 
     public var errorDescription: String {
         switch self {
@@ -28,6 +29,8 @@ public enum RSSViewError: Error, Equatable, LocalizedError, Identifiable {
             return "Failed to parse feed: \(message)"
         case .unknown(let message):
             return message
+        case .notificationPermissionDenied:
+            return "Notification permissions are required to enable notifications for feeds"
         }
     }
 }
