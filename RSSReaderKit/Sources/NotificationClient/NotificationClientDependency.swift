@@ -15,7 +15,9 @@ extension NotificationClient: DependencyKey {
     public static var testValue: NotificationClient {
         NotificationClient(
             requestPermissions: {},
-            checkForNewItems: {}
+            checkForNewItems: {},
+            getAuthorizationStatus: { false },
+            scheduleNotification: { _ in }
         )
     }
 }

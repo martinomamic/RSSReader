@@ -13,30 +13,31 @@ import UIKit
 
 extension NotificationClient {
     public static func live() -> NotificationClient {
-        @Dependency(\.notificationCenter) var notificationCenter
-        @Dependency(\.persistenceClient.loadFeeds) var loadFeeds
-        @Dependency(\.rssClient.fetchFeedItems) var fetchFeedItems
-
-        return NotificationClient(
+        NotificationClient(
             requestPermissions: {
+                @Dependency(\.notificationCenter) var notificationCenter
                 try await notificationCenter.requestAuthorization(options: [.alert, .sound, .badge])
             },
             checkForNewItems: {
-                try await checkForNewItems(
-                    center: notificationCenter,
-                    loadFeeds: loadFeeds,
-                    fetchFeedItems: fetchFeedItems
-                )
+                try await checkForNewItems()
+            },
+            getAuthorizationStatus: {
+                @Dependency(\.notificationCenter) var notificationCenter
+                let settings = await notificationCenter.notificationSettings()
+                return settings.authorizationStatus == .authorized
+            },
+            scheduleNotification: { content in
+                try await scheduleNotification(content: content)
             }
         )
     }
 
-    private static func checkForNewItems(
-        center: UNUserNotificationCenter,
-        loadFeeds: @escaping () async throws -> [Feed],
-        fetchFeedItems: @escaping (URL) async throws -> [FeedItem]
-    ) async throws {
-        guard await center.notificationSettings().authorizationStatus == .authorized else {
+    private static func checkForNewItems() async throws {
+        @Dependency(\.notificationCenter) var notificationCenter
+        @Dependency(\.persistenceClient.loadFeeds) var loadFeeds
+        @Dependency(\.rssClient.fetchFeedItems) var fetchFeedItems
+        
+        guard await notificationCenter.notificationSettings().authorizationStatus == .authorized else {
             throw NotificationError.permissionDenied
         }
 
@@ -57,9 +58,7 @@ extension NotificationClient {
             enabledFeeds,
             lastCheck: lastCheck,
             notifiedItemIDs: notifiedItemIDs,
-            newNotifiedItemIDs: &newNotifiedItemIDs,
-            center: center,
-            fetchFeedItems: fetchFeedItems
+            newNotifiedItemIDs: &newNotifiedItemIDs
         )
 
         UserDefaults.standard.set(currentCheck, forKey: Constants.Storage.lastNotificationCheckKey)
@@ -73,10 +72,10 @@ extension NotificationClient {
         _ feeds: [Feed],
         lastCheck: Date,
         notifiedItemIDs: [String],
-        newNotifiedItemIDs: inout [String],
-        center: UNUserNotificationCenter,
-        fetchFeedItems: @escaping (URL) async throws -> [FeedItem]
+        newNotifiedItemIDs: inout [String]
     ) async throws {
+        @Dependency(\.rssClient.fetchFeedItems) var fetchFeedItems
+        
         var delayOffset = 0.5
 
         for feed in feeds {
@@ -89,12 +88,14 @@ extension NotificationClient {
                 }
 
                 for item in newItems {
-                    try await scheduleNotification(
-                        for: item,
-                        from: feed,
-                        delayOffset: delayOffset,
-                        center: center
+                    let content = NotificationContent(
+                        title: feed.title ?? "New item in feed",
+                        body: item.title,
+                        threadIdentifier: feed.url.absoluteString,
+                        identifier: "notification-\(item.id.uuidString)",
+                        delayInterval: delayOffset
                     )
+                    try await scheduleNotification(content: content)
                     newNotifiedItemIDs.append(item.id.uuidString)
                     delayOffset += 0.5
                 }
@@ -102,31 +103,27 @@ extension NotificationClient {
         }
     }
 
-    private static func scheduleNotification(
-        for item: FeedItem,
-        from feed: Feed,
-        delayOffset: Double,
-        center: UNUserNotificationCenter
-    ) async throws {
+    private static func scheduleNotification(content: NotificationContent) async throws {
+        @Dependency(\.notificationCenter) var notificationCenter
+        
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            let content = UNMutableNotificationContent()
-            content.title = feed.title ?? "New item in feed"
-            content.body = item.title
-            content.sound = .default
-            content.threadIdentifier = feed.url.absoluteString
+            let notificationContent = UNMutableNotificationContent()
+            notificationContent.title = content.title
+            notificationContent.body = content.body
+            notificationContent.sound = .default
+            notificationContent.threadIdentifier = content.threadIdentifier
 
-            let trigger = UNTimeIntervalNotificationTrigger(
-                timeInterval: delayOffset,
-                repeats: false
-            )
+            let trigger = content.delayInterval.map {
+                UNTimeIntervalNotificationTrigger(timeInterval: $0, repeats: false)
+            }
 
             let request = UNNotificationRequest(
-                identifier: "notification-\(item.id.uuidString)",
-                content: content,
+                identifier: content.identifier,
+                content: notificationContent,
                 trigger: trigger
             )
 
-            center.add(request) { error in
+            notificationCenter.add(request) { error in
                 if let error = error {
                     continuation.resume(throwing: error)
                 } else {

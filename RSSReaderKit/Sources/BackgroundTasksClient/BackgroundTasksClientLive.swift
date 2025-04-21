@@ -8,116 +8,109 @@ import UserNotifications
 
 extension BackgroundTasksClient {
     public static func live() -> Self {
-        let feedRefreshTaskIdentifier = "com.maminjo.feedrefresh"
-        let refreshInterval: TimeInterval = 15 * 60 // 15 minutes
+        @Dependency(\.notificationClient.checkForNewItems) var checkForNewItems
+        @Dependency(\.notificationClient.getAuthorizationStatus) var getAuthorizationStatus
+        @Dependency(\.persistenceClient.loadFeeds) var loadFeeds
         
-        actor BackgroundTaskState {
-            var isConfigured = false
-            var currentTask: BGAppRefreshTask?
-            
-            func configure() {
-                guard !isConfigured else { return }
-                BGTaskScheduler.shared.register(
-                    forTaskWithIdentifier: feedRefreshTaskIdentifier,
-                    using: nil
-                ) { task in
-                    if let bgTask = task as? BGAppRefreshTask {
-                        Task {
-                            await handleAppRefresh(task: bgTask)
-                        }
-                    }
-                }
-                isConfigured = true
-            }
+        actor State {
+            private var currentTask: BGAppRefreshTask?
+            let identifier = "com.maminjo.feedrefresh"
+            let refreshInterval: TimeInterval = 15 * 60
             
             func setCurrentTask(_ task: BGAppRefreshTask?) {
                 currentTask = task
             }
             
-            func hasScheduledTask() -> Bool {
+            func cancelCurrentTask() {
+                currentTask?.setTaskCompleted(success: false)
+                currentTask = nil
+            }
+            
+            func hasTask() -> Bool {
                 currentTask != nil
             }
         }
         
-        let state = BackgroundTaskState()
+        let state = State()
         
-        return Self(
-            configure: {
-                await state.configure()
-            },
-            scheduleAppRefresh: {
-                @Dependency(\.notificationCenter) var notificationCenter
-                @Dependency(\.persistenceClient.loadFeeds) var loadFeeds
-                
-                // Check notification authorization
-                let settings = await notificationCenter.notificationSettings()
-                guard settings.authorizationStatus == .authorized else { return }
-                
-                // Check for feeds with notifications enabled on main actor
-                let feeds = try await MainActor.run {
-                    try await loadFeeds()
-                }
+        @Sendable func handleBackgroundTask(_ task: BGAppRefreshTask) async {
+            defer { task.setTaskCompleted(success: true) }
+            
+            do {
+                let feeds = try await loadFeeds()
                 guard feeds.contains(where: \.notificationsEnabled) else { return }
                 
-                // Check if task already scheduled
-                guard !await state.hasScheduledTask() else { return }
-                
-                let request = BGAppRefreshTaskRequest(identifier: feedRefreshTaskIdentifier)
-                request.earliestBeginDate = Date(timeIntervalSinceNow: refreshInterval)
-                
-                do {
-                    try await BGTaskScheduler.shared.submit(request)
-                } catch {
-                    print("Could not schedule app refresh: \(error)")
-                }
-            },
-            cancelScheduledRefresh: {
-                BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: feedRefreshTaskIdentifier)
-                await state.setCurrentTask(nil)
-            },
-            hasScheduledTask: {
-                await state.hasScheduledTask()
+                try await checkForNewItems()
+                try await scheduleNextRefresh()
+            } catch {
+                task.setTaskCompleted(success: false)
             }
-        )
+        }
         
-        @Sendable func handleAppRefresh(task: BGAppRefreshTask) async {
-            await state.setCurrentTask(task)
+        @Sendable func scheduleNextRefresh() async throws {
+            guard await getAuthorizationStatus() else { return }
             
-            let refreshTask = Task {
+            let identifier =  state.identifier
+            let interval =  state.refreshInterval
+            
+            let request = BGAppRefreshTaskRequest(identifier: identifier)
+            request.earliestBeginDate = Date(timeIntervalSinceNow: interval)
+            
+            try await submitBackgroundTask(request)
+        }
+        
+        @Sendable func submitBackgroundTask(_ request: BGAppRefreshTaskRequest) async throws {
+            try await withCheckedThrowingContinuation { continuation in
                 do {
-                    @Dependency(\.notificationClient) var notificationClient
-                    @Dependency(\.persistenceClient.loadFeeds) var loadFeeds
-                    
-                    // Check feeds on main actor
-                    let feeds = try await MainActor.run {
-                        try await loadFeeds()
-                    }
-                    
-                    guard feeds.contains(where: \.notificationsEnabled) else {
-                        task.setTaskCompleted(success: true)
-                        await state.setCurrentTask(nil)
-                        return
-                    }
-                    
-                    try await notificationClient.checkForNewItems()
-                    task.setTaskCompleted(success: true)
-                    
-                    // Schedule next refresh if conditions still met
-                    await scheduleAppRefresh()
+                    try BGTaskScheduler.shared.submit(request)
+                    continuation.resume()
                 } catch {
-                    task.setTaskCompleted(success: false)
-                }
-                await state.setCurrentTask(nil)
-            }
-            
-            task.expirationHandler = {
-                refreshTask.cancel()
-                Task {
-                    await state.setCurrentTask(nil)
-                    // Try to schedule next refresh even if this one expired
-                    await scheduleAppRefresh()
+                    continuation.resume(throwing: error)
                 }
             }
         }
+        
+        return Self(
+            configure: {
+                let identifier =  state.identifier
+                
+                BGTaskScheduler.shared.register(
+                    forTaskWithIdentifier: identifier,
+                    using: nil
+                ) { task in
+                    guard let bgTask = task as? BGAppRefreshTask else { return }
+                    Task {
+                        await state.setCurrentTask(bgTask)
+                        await handleBackgroundTask(bgTask)
+                        await state.setCurrentTask(nil)
+                    }
+                    
+                    bgTask.expirationHandler = {
+                        Task {
+                            await state.cancelCurrentTask()
+                            try? await scheduleNextRefresh()
+                        }
+                    }
+                }
+            },
+            scheduleAppRefresh: {
+                guard await !state.hasTask(),
+                      await getAuthorizationStatus() else { return }
+                
+                let feeds = try? await loadFeeds()
+                guard let feeds = feeds,
+                      feeds.contains(where: \.notificationsEnabled) else { return }
+                
+                try? await scheduleNextRefresh()
+            },
+            cancelScheduledRefresh: {
+                let identifier =  state.identifier
+                BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: identifier)
+                await state.cancelCurrentTask()
+            },
+            hasScheduledTask: {
+                await state.hasTask()
+            }
+        )
     }
 }

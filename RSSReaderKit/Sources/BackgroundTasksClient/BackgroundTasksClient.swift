@@ -5,7 +5,7 @@ import NotificationClient
 import PersistenceClient
 import SharedModels
 
-public struct BackgroundTasksClient {
+public struct BackgroundTasksClient : Sendable {
     public var configure: @Sendable () async -> Void
     public var scheduleAppRefresh: @Sendable () async -> Void
     public var cancelScheduledRefresh: @Sendable () async -> Void
