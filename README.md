@@ -30,7 +30,6 @@ An iOS application for reading and managing RSS feeds, built with Swift and Swif
 - Use POEditor or similar for localization
 - Handle scroll to top and navigation path resetting for iOS17
 - Add crash and non fatals tracking tool
-- 
  
 
 ## Architecture
@@ -72,29 +71,5 @@ The project implements:
 
 ### Development Tools
 
-The project includes a Makefile with various commands to simplify development:
+The project includes a Makefile with various commands to simplify development, and can be used to run them locally, like swiftlint.
 
-```bash
-# Build the project
-make build
-
-# Run all tests
-make test
-
-# Run SwiftLint
-make lint
-
-# Fix linting issues where possible
-make lint-fix
-
-# Format code using swift-format
-make format
-
-# Clean build artifacts
-make clean
-
-# Generate Xcode project
-make xcodeproj
-
-# Install required development tools
-make install-tools
