@@ -5,11 +5,13 @@
 //  Created by Martino Mamić on 13.04.25.
 //
 
+import Common
 import Dependencies
 import Foundation
-import SwiftUI
+import PersistenceClient
 import RSSClient
 import SharedModels
+import SwiftUI
 
 enum AddFeedState: Equatable {
     case idle
@@ -18,56 +20,91 @@ enum AddFeedState: Equatable {
     case success
 }
 
-@MainActor
-@Observable class AddFeedViewModel {
+enum ExampleURL {
+    case bbc
+    case nbc
+}
+
+@MainActor @Observable
+class AddFeedViewModel {
+    @ObservationIgnored
+    @Dependency(\.persistenceClient) private var persistenceClient
+
     @ObservationIgnored
     @Dependency(\.rssClient) private var rssClient
-    
+
     private var feeds: Binding<[FeedViewModel]>
-    
+    private var addFeedTask: Task<Void, Never>?
+
     var urlString: String = ""
     var state: AddFeedState = .idle
-    
+
     init(feeds: Binding<[FeedViewModel]>) {
         self.feeds = feeds
     }
-    
-    var isValidURL: Bool {
+
+    var isAddButtonDisabled: Bool {
+        !isValidURL || state == .adding
+    }
+
+    var isLoading: Bool {
+        state == .adding
+    }
+
+    var shouldDismiss: Bool {
+        state == .success
+    }
+
+    var errorAlertBinding: Binding<Bool> {
+        .init(
+            get: { if case .error = self.state { return true } else { return false } },
+            set: { show in if !show { self.dismissError() } }
+        )
+    }
+
+    private var isValidURL: Bool {
         guard !urlString.isEmpty else { return false }
         return URL(string: urlString) != nil
     }
-    
-    func addFeed() async -> Bool {
-        guard let url = URL(string: urlString) else {
-            state = .error(.invalidURL)
-            return false
-        }
-        
-        if feeds.wrappedValue.contains(where: { $0.url == url }) {
-            state = .error(.duplicateFeed)
-            return false
-        }
-        
-        state = .adding
-        
-        do {
-            let feed = try await rssClient.fetchFeed(url)
-            
-            let feedViewModel = FeedViewModel(url: url)
-            feedViewModel.state = .loaded(feed)
-            
-            feeds.wrappedValue.append(feedViewModel)
-            
-            state = .success
-            return true
-        } catch {
-            state = .error(RSSErrorMapper.mapToViewError(error))
-            return false
+
+    func setExampleURL(_ example: ExampleURL) {
+        switch example {
+        case .bbc:
+            urlString = Constants.URLs.bbcNews
+        case .nbc:
+            urlString = Constants.URLs.nbcNews
         }
     }
-    
-    func reset() {
-        urlString = ""
+
+    func dismissError() {
         state = .idle
+    }
+
+    func addFeed() {
+        guard let url = URL(string: urlString) else {
+            state = .error(.invalidURL)
+            return
+        }
+
+        guard !feeds.wrappedValue.contains(where: { $0.url == url }) else {
+            state = .error(.duplicateFeed)
+            return
+        }
+
+        addFeedTask?.cancel()
+        state = .adding
+
+        addFeedTask = Task {
+            do {
+                let feed = try await rssClient.fetchFeed(url)
+                let feedViewModel = FeedViewModel(url: url, feed: feed)
+                feedViewModel.state = .loaded(feed)
+                feeds.wrappedValue.insert(feedViewModel, at: 0)
+                try await persistenceClient.addFeed(feed)
+                state = .success
+            } catch {
+                state = .error(RSSErrorMapper.map(error))
+            }
+        }
     }
 }

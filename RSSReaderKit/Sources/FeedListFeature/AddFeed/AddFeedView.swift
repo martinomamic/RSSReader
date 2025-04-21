@@ -5,91 +5,85 @@
 //  Created by Martino Mamić on 13.04.25.
 //
 
+import Common
 import SwiftUI
 
 struct AddFeedView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: AddFeedViewModel
-    
+
     init(feeds: Binding<[FeedViewModel]>) {
         _viewModel = State(initialValue: AddFeedViewModel(feeds: feeds))
     }
-    
+
     var body: some View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Feed URL", text: $viewModel.urlString)
+                    TextField(LocalizedStrings.AddFeed.urlPlaceholder, text: $viewModel.urlString)
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                         .keyboardType(.URL)
+                        .testId(AccessibilityIdentifier.AddFeed.urlTextField)
                 } header: {
-                    Text("Enter RSS feed URL")
+                    Text(LocalizedStrings.AddFeed.urlHeader)
                 } footer: {
                     VStack(alignment: .leading, spacing: Constants.UI.footerSpacing) {
-                        Text("Examples (tap to use):")
+                        Text(LocalizedStrings.AddFeed.examplesHeader)
                             .font(.footnote)
                             .foregroundColor(.secondary)
-                        
+
                         VStack(alignment: .leading, spacing: Constants.UI.exampleButtonSpacing) {
-                            Button("BBC News") {
-                                viewModel.urlString = Constants.URLs.bbcNews
+                            Button(LocalizedStrings.AddFeed.bbcNews) {
+                                viewModel.setExampleURL(.bbc)
                             }
-                            .font(.footnote)
-                            
-                            Button("NBC News") {
-                                viewModel.urlString = Constants.URLs.nbcNews
+                            .testId(AccessibilityIdentifier.AddFeed.bbcExampleButton)
+
+                            Button(LocalizedStrings.AddFeed.nbcNews) {
+                                viewModel.setExampleURL(.nbc)
                             }
-                            .font(.footnote)
+                            .testId(AccessibilityIdentifier.AddFeed.nbcExampleButton)
                         }
                     }
                 }
             }
-            .navigationTitle("Add Feed")
+            .navigationTitle(LocalizedStrings.AddFeed.title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(LocalizedStrings.General.cancel) {
                         dismiss()
                     }
+                    .testId(AccessibilityIdentifier.AddFeed.cancelButton)
                 }
-                
+
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
-                        addFeed()
+                    Button(LocalizedStrings.General.add) {
+                        viewModel.addFeed()
                     }
-                    .disabled(!viewModel.isValidURL || viewModel.state == .adding)
+                    .disabled(viewModel.isAddButtonDisabled)
+                    .testId(AccessibilityIdentifier.AddFeed.addButton)
                 }
             }
             .overlay {
-                if case .adding = viewModel.state {
+                if viewModel.isLoading {
                     ProgressView()
                 }
             }
-            .alert("Error Adding Feed", isPresented: .init(
-                get: {
-                    if case .error = viewModel.state { return true }
-                    return false
-                },
-                set: { show in
-                    if !show, case .error = viewModel.state {
-                        viewModel.state = .idle
-                    }
+            .alert(Text(LocalizedStrings.AddFeed.errorTitle),
+                   isPresented: viewModel.errorAlertBinding) {
+                Button(LocalizedStrings.General.ok) {
+                    viewModel.dismissError()
                 }
-            )) {
-                Button("OK") {}
             } message: {
                 if case .error(let error) = viewModel.state {
-                    Text(error.localizedDescription)
+                    Text(error.errorDescription)
                 }
             }
-        }
-    }
-    
-    private func addFeed() {
-        Task {
-            if await viewModel.addFeed() {
-                dismiss()
+            .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
+                if shouldDismiss {
+                    dismiss()
+                }
             }
         }
     }

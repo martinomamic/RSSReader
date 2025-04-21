@@ -5,12 +5,13 @@
 //  Created by Martino Mamić on 13.04.25.
 //
 
+import Common
 import SwiftUI
 import SharedModels
 
 struct FeedView: View {
     let viewModel: FeedViewModel
-    
+
     var body: some View {
         HStack(spacing: Constants.UI.feedRowSpacing) {
             switch viewModel.state {
@@ -18,61 +19,70 @@ struct FeedView: View {
                 Image(systemName: Constants.Images.loadingIcon)
                     .font(.title2)
                     .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
-                
+                    .testId(AccessibilityIdentifier.FeedView.loadingView)
+
                 VStack(alignment: .leading) {
                     Text(viewModel.url.absoluteString)
                         .font(.headline)
-                        .lineLimit(1)
-                    Text("Loading feed details...")
+                        .lineLimit(Constants.UI.feedTitleLineLimit)
+                    Text(LocalizedStrings.Feed.loadingDetails)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-                
+
             case .loaded(let feed):
-                if let imageURL = feed.imageURL {
-                    AsyncImage(url: imageURL) { image in
-                        image.resizable().aspectRatio(contentMode: .fit)
-                    } placeholder: {
-                        Image(systemName: Constants.Images.placeholderImage)
-                    }
-                    .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
-                    .cornerRadius(Constants.UI.cornerRadius)
-                } else {
-                    Image(systemName: Constants.Images.placeholderFeedIcon)
-                        .font(.title2)
-                        .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
-                        .foregroundStyle(.blue)
-                }
-                
+                FeedImageView(url: feed.imageURL)
+
                 VStack(alignment: .leading, spacing: Constants.UI.verticalPadding) {
-                    Text(feed.title ?? "Unnamed Feed")
+                    Text(feed.title ?? LocalizedStrings.Feed.unnamedFeed)
                         .font(.headline)
-                    
+                        .testId(AccessibilityIdentifier.FeedView.feedTitle)
+
                     if let description = feed.description {
                         Text(description)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .lineLimit(Constants.UI.feedDescriptionLineLimit)
+                            .testId(AccessibilityIdentifier.FeedView.feedDescription)
+                    }
+                    HStack {
+                        Spacer()
+
+                        ToggleButton(
+                            action: viewModel.toggleNotifications,
+                            systemImage: viewModel.feed.notificationsEnabled ? Constants.Images.notificationEnabledIcon : Constants.Images.notificationDisabledIcon,
+                            isActive: viewModel.feed.notificationsEnabled,
+                            testId: AccessibilityIdentifier.FeedView.notificationsButton
+                        )
+
+                        ToggleButton(
+                            action: viewModel.toggleFavorite,
+                            systemImage: viewModel.feed.isFavorite ? Constants.Images.isFavoriteIcon : Constants.Images.isNotFavoriteIcon,
+                            isActive: viewModel.feed.isFavorite,
+                            activeColor: .yellow,
+                            testId: AccessibilityIdentifier.FeedView.favoriteButton
+                        )
                     }
                 }
-                
+
             case .error(let error):
                 Image(systemName: Constants.Images.errorIcon)
                     .font(.title2)
                     .frame(width: Constants.UI.feedIconSize, height: Constants.UI.feedIconSize)
                     .foregroundStyle(.red)
-                
+
                 VStack(alignment: .leading) {
                     Text(viewModel.url.absoluteString)
                         .font(.headline)
-                        .lineLimit(1)
-                    Text("Failed to load feed: \(error.localizedDescription)")
+                        .lineLimit(Constants.UI.feedTitleLineLimit)
+                    Text(String(format: LocalizedStrings.Feed.failedToLoad, error.errorDescription))
                         .font(.caption)
                         .foregroundStyle(.red)
                 }
-                
+                .testId(AccessibilityIdentifier.FeedView.errorView)
+
             case .empty:
-                Text("No feed data available")
+                Text(LocalizedStrings.Feed.noDataAvailable)
                     .foregroundStyle(.secondary)
             }
         }

@@ -1,0 +1,61 @@
+// Feed Items
+"feed_items_no_items_title" = "No Items";
+"feed_items_no_items_description" = "This feed contains no items";
+
+// Loading States
+"loading" = "Loading...";
+
+// Tab Bar
+"tab_feeds" = "Feeds";
+"tab_explore" = "Explore";
+"tab_favorites" = "Favorites";
+
+// Explore
+"explore_title" = "Explore Feeds";
+"explore_no_feeds_title" = "No Feeds Found";
+"explore_no_feeds_description" = "No feeds available";
+"explore_error_adding_feed" = "Error Adding Feed";
+
+// Add Feed
+"add_feed_title" = "Add Feed";
+"add_feed_url_placeholder" = "Feed URL";
+"add_feed_url_header" = "Enter RSS feed URL";
+"add_feed_examples_header" = "Examples (tap to use):";
+"add_feed_example_bbc" = "BBC News";
+"add_feed_example_nbc" = "NBC News";
+"add_feed_error_title" = "Error Adding Feed";
+
+// Explore Feed Row
+"explore_feed_add" = "Add";
+"explore_feed_added" = "Added";
+
+// Empty State
+"empty_state_default_title" = "No Items";
+"empty_state_default_description" = "Add items to get started";
+"empty_state_default_action" = "Add Item";
+
+// Error State
+"error_state_title" = "Failed to Load";
+"error_state_try_again" = "Try Again";
+
+// Feed View
+"feed_loading_details" = "Loading feed details...";
+"feed_unnamed" = "Unnamed Feed";
+"feed_failed_to_load" = "Failed to load feed: %@";
+"feed_no_data_available" = "No feed data available";
+
+// Feed List
+"feed_list_favorite_feeds" = "Favorite Feeds";
+"feed_list_rss_feeds" = "RSS Feeds";
+"feed_list_add_feed" = "Add Feed";
+"feed_list_edit" = "Edit";
+"feed_list_no_favorites_title" = "No Favorites";
+"feed_list_no_feeds_title" = "No Feeds";
+"feed_list_no_favorites_description" = "Add feeds to favorites from the Feeds tab";
+"feed_list_no_feeds_description" = "Add an RSS feed to get started";
+"feed_list_unnamed_feed" = "Unnamed feed";
+
+// General
+"general_ok" = "OK";
+"general_cancel" = "Cancel";
+"general_add" = "Add";

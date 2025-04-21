@@ -5,14 +5,14 @@
 //  Created by Martino Mamić on 12.04.25.
 //
 
+import Dependencies
 import Foundation
 import SharedModels
-import Dependencies
 
 extension RSSClient {
     public static func live() -> RSSClient {
         let parser = RSSParser()
-        
+
         return RSSClient(
             fetchFeed: { url in
                 do {
@@ -26,7 +26,7 @@ extension RSSClient {
                     throw RSSError.networkError(error)
                 }
             },
-            
+
             fetchFeedItems: { url in
                 do {
                     let (data, _) = try await URLSession.shared.data(from: url)
