@@ -8,6 +8,7 @@ let package = Package(
         .iOS(.v17)
     ],
     products: [
+        .library(name: "BackgroundTasksClient", targets: ["BackgroundTasksClient"]),
         .library(name: "Common", targets: ["Common"]),
         .library(name: "ExploreClient", targets: ["ExploreClient"]),
         .library(name: "ExploreFeature", targets: ["ExploreFeature"]),
@@ -25,6 +26,15 @@ let package = Package(
         .package(url: "https://github.com/onevcat/Kingfisher.git", from: "8.3.2"),
     ],
     targets: [
+        .target(
+            name: "BackgroundTasksClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "PersistenceClient",
+                "NotificationClient",
+                "SharedModels"
+            ]
+        ),
         .target(
             name: "RSSClient",
             dependencies: [
