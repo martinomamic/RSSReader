@@ -56,3 +56,12 @@ public class FeedItemsViewModel: Identifiable {
         }
     }
 }
+
+#if DEBUG
+extension FeedItemsViewModel {
+    @MainActor
+    func waitForLoadToFinish() async {
+        await loadTask?.value
+    }
+}
+#endif

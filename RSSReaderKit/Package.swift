@@ -53,10 +53,29 @@ let package = Package(
                 "Kingfisher"
             ]
         ),
+        .testTarget(
+            name: "CommonComponentTests",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+                "Common"
+            ],
+            exclude: ["__Snapshots__"]
+        ),
         .target(
             name: "ExploreClient",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                "PersistenceClient",
+                "RSSClient",
+                "SharedModels"
+            ]
+        ),
+        .testTarget(
+            name: "ExploreClientTests",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "ExploreClient",
                 "PersistenceClient",
                 "RSSClient",
                 "SharedModels"
@@ -70,6 +89,15 @@ let package = Package(
                 "ExploreClient",
                 "SharedModels"
             ]
+        ),
+        .testTarget(
+            name: "ExploreFeatureTests",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+                "ExploreFeature"
+            ],
+            exclude: ["__Snapshots__"]
         ),
         .target(
             name: "FeedListFeature",
@@ -88,20 +116,29 @@ let package = Package(
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
                 "FeedListFeature",
-                "NotificationClient" 
+                "NotificationClient"
             ],
             exclude: ["__Snapshots__"]
         ),
-        
-            .target(
-                name: "FeedItemsFeature",
-                dependencies: [
-                    .product(name: "Dependencies", package: "swift-dependencies"),
-                    "Common",
-                    "RSSClient",
-                    "SharedModels"
-                ]
-            ),
+        .target(
+            name: "FeedItemsFeature",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "Common",
+                "RSSClient",
+                "SharedModels"
+            ]
+        ),
+        .testTarget(
+            name: "FeedItemsTests",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+                "FeedItemsFeature",
+                "NotificationClient"
+            ],
+            exclude: ["__Snapshots__"]
+        ),
         .target(
             name: "NotificationClient",
             dependencies: [

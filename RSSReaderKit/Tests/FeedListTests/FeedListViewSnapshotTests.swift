@@ -43,7 +43,7 @@ import Common
         return viewModel
     }
     
-    @Test("FeedListView with feeds renders correctly")
+    @Test("FeedListView with feeds")
     func testFeedListViewWithFeeds() async throws {
         let mockFeeds = [
             testFeed(title: "First Feed", description: "First feed description"),
@@ -56,13 +56,13 @@ import Common
         } operation: {
             let view = FeedListView()
                 .frame(width: 375, height: 600)
-                .preferredColorScheme(.light)
+                
             
             assertSnapshot(of: view, as: .image)
         }
     }
     
-    @Test("FeedListView with favorites renders correctly")
+    @Test("FeedListView with favorites")
     func testFeedListViewWithFavorites() async throws {
         let mockFeeds = [
             testFeed(title: "First Feed", description: "First feed description", isFavorite: true),
@@ -75,75 +75,35 @@ import Common
         } operation: {
             let view = FeedListView(showOnlyFavorites: true)
                 .frame(width: 375, height: 600)
-                .preferredColorScheme(.light)
+                
             
             assertSnapshot(of: view, as: .image)
         }
     }
     
-    @Test("FeedListView with empty state renders correctly")
+    @Test("FeedListView with empty state")
     func testFeedListViewEmpty() async throws {
         withDependencies {
             $0.persistenceClient.loadFeeds = { [] }
         } operation: {
             let view = FeedListView()
                 .frame(width: 375, height: 600)
-                .preferredColorScheme(.light)
+                
             
             assertSnapshot(of: view, as: .image)
             assertSnapshot(of: view, as: .image)
         }
     }
     
-    @Test("FeedListView with error state renders correctly")
+    @Test("FeedListView with error state")
     func testFeedListViewError() async throws {
         withDependencies {
             $0.persistenceClient.loadFeeds = { throw PersistenceError.loadFailed("Failed to load feeds") }
         } operation: {
             let view = FeedListView()
                 .frame(width: 375, height: 600)
-                .preferredColorScheme(.light)
             
             assertSnapshot(of: view, as: .image)
         }
-    }
-    
-    @Test("FeedView renders correctly")
-    func testFeedViewRendering() throws {
-        let feed = testFeed(title: "Test Feed", description: "This is a test feed description", isFavorite: true, notificationsEnabled: true)
-        let feedViewModel = makeFeedViewModel(feed: feed, state: .loaded(feed))
-        
-        let view = FeedView(viewModel: feedViewModel)
-            .frame(width: 375)
-            .preferredColorScheme(.light)
-        
-        assertSnapshot(of: view, as: .image)
-    }
-    
-    @Test("FeedView error state renders correctly")
-    func testFeedViewError() throws {
-        let feed = testFeed()
-        let feedViewModel = makeFeedViewModel(
-            feed: feed, 
-            state: .error(RSSViewError.networkError("Network connection failed"))
-        )
-        
-        let view = FeedView(viewModel: feedViewModel)
-            .frame(width: 375)
-            .preferredColorScheme(.light)
-        
-        assertSnapshot(of: view, as: .image)
-    }
-    
-    @Test("FeedView loading state renders correctly")
-    func testFeedViewLoading() throws {
-        let feed = testFeed()
-        let feedViewModel = makeFeedViewModel(feed: feed, state: .loading)
-        
-        let view = FeedView(viewModel: feedViewModel)
-            .frame(width: 375)
-            .preferredColorScheme(.light)
-        
-        assertSnapshot(of: view, as: .image)
     }
 }

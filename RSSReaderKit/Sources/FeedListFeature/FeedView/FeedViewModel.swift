@@ -112,3 +112,16 @@ extension FeedViewModel: Hashable {
         hasher.combine(url)
     }
 }
+#if DEBUG
+extension FeedViewModel {
+    @MainActor
+    func waitForNotificationToggleToFinish() async {
+        await toggleNotificationsTask?.value
+    }
+    
+    @MainActor
+    func waitForFavoritesToggleToFinish() async {
+        await toggleFavoriteTask?.value
+    }
+}
+#endif
