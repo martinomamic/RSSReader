@@ -27,7 +27,7 @@ import ConcurrencyExtras
         imageURL: URL? = nil
     ) -> FeedItem {
         FeedItem(
-            id: id, 
+            id: id,
             feedID: feedID,
             title: title,
             link: link,
@@ -81,7 +81,6 @@ import ConcurrencyExtras
     func testFeedItemsViewLoading() async throws {
         let view = FeedItemsView(viewModel: createViewModel(title: "Feed Loading..."))
             .frame(width: 375, height: 600)
-            
         
         assertSnapshot(of: view, as: .image)
     }
@@ -93,7 +92,6 @@ import ConcurrencyExtras
         } operation: {
             let view = FeedItemsView(viewModel: createViewModel(title: "Empty Feed"))
                 .frame(width: 375, height: 600)
-                
             
             assertSnapshot(of: view, as: .image)
         }
@@ -102,7 +100,7 @@ import ConcurrencyExtras
     @Test("FeedItemsView with error state")
     func testFeedItemsViewError() async throws {
         withDependencies {
-            $0.rssClient.fetchFeedItems = { _ in 
+            $0.rssClient.fetchFeedItems = { _ in
                 throw RSSViewError.networkError("Network connection failed")
             }
         } operation: {

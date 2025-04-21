@@ -5,7 +5,6 @@
 //  Created by Martino Mamić on 21.04.25.
 //
 
-
 import Testing
 import SnapshotTesting
 import SwiftUI
@@ -26,7 +25,7 @@ import Common
         imageURL: URL? = nil
     ) -> FeedItem {
         FeedItem(
-            id: id, 
+            id: id,
             feedID: feedID,
             title: title,
             link: link,
@@ -46,7 +45,6 @@ import Common
         let view = FeedItemRow(item: item)
             .frame(width: 375)
             .padding()
-            
         
         assertSnapshot(of: view, as: .image)
     }
@@ -61,7 +59,6 @@ import Common
         let view = FeedItemRow(item: item)
             .frame(width: 375)
             .padding()
-            
         
         assertSnapshot(of: view, as: .image)
     }
@@ -76,7 +73,6 @@ import Common
         let view = FeedItemRow(item: item)
             .frame(width: 375)
             .padding()
-            
         
         assertSnapshot(of: view, as: .image)
     }
@@ -92,7 +88,6 @@ import Common
         let view = FeedItemRow(item: item)
             .frame(width: 375)
             .padding()
-            
         
         assertSnapshot(of: view, as: .image)
     }

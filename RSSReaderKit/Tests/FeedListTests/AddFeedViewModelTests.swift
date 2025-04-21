@@ -26,7 +26,6 @@ import SwiftUI
             viewModel.urlString = urlString
             viewModel.state = state
             return viewModel
-            
         }
     
     @Test("Test add button disabled with empty URL")
@@ -86,7 +85,7 @@ import SwiftUI
         let viewModel = await createViewModel(urlString: "https://example.com")
         
         await withDependencies {
-            $0.rssClient.fetchFeed = { _ in 
+            $0.rssClient.fetchFeed = { _ in
                 throw RSSError.networkError(NSError(domain: "test", code: -1, userInfo: nil))
             }
         } operation: {

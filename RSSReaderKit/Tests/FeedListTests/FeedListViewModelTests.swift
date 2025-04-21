@@ -105,8 +105,6 @@ import Common
             #expect(await viewModel.feeds.isEmpty)
         }
     }
-
-
     
     @Test("Navigation title shows correctly for feeds")
     func testNavigationTitleForFeeds() async throws {

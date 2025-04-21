@@ -56,7 +56,6 @@ import Common
         } operation: {
             let view = FeedListView()
                 .frame(width: 375, height: 600)
-                
             
             assertSnapshot(of: view, as: .image)
         }
@@ -75,7 +74,6 @@ import Common
         } operation: {
             let view = FeedListView(showOnlyFavorites: true)
                 .frame(width: 375, height: 600)
-                
             
             assertSnapshot(of: view, as: .image)
         }
@@ -88,7 +86,6 @@ import Common
         } operation: {
             let view = FeedListView()
                 .frame(width: 375, height: 600)
-                
             
             assertSnapshot(of: view, as: .image)
             assertSnapshot(of: view, as: .image)

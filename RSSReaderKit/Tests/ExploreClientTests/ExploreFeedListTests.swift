@@ -11,7 +11,6 @@ import Foundation
 @testable import SharedModels
 
 @Suite struct ExploreFeedListTests {
-    
     @Test("ExploreFeedList can be encoded and decoded")
     func testExploreFeedListCoding() throws {
         let feeds = [
