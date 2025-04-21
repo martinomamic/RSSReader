@@ -5,7 +5,6 @@
 //  Created by Martino Mamić on 21.04.25.
 //
 
-
 import Testing
 import SnapshotTesting
 import SwiftUI
@@ -65,7 +64,6 @@ import Common
         
         let view = FeedView(viewModel: feedViewModel)
             .frame(width: 375)
-            
         
         assertSnapshot(of: view, as: .image)
     }
@@ -77,7 +75,6 @@ import Common
         
         let view = FeedView(viewModel: feedViewModel)
             .frame(width: 375)
-            
         
         assertSnapshot(of: view, as: .image)
     }

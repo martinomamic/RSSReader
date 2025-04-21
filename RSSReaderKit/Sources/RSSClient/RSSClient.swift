@@ -27,7 +27,7 @@ extension RSSClient: DependencyKey {
 
     public static var testValue: RSSClient {
         @Sendable
-        func mockFeed(url: URL? = nil)-> Feed {
+        func mockFeed(url: URL? = nil) -> Feed {
             return Feed(
                 url: url ?? URL(string: "https://test.example.com/feed")!,
                 title: "Test Feed",
