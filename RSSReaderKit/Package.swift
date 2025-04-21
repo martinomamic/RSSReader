@@ -22,6 +22,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-concurrency-extras", from: "1.3.1"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.9.1"),
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.15.0"),
         .package(url: "https://github.com/onevcat/Kingfisher.git", from: "8.3.2"),
     ],
     targets: [
@@ -81,15 +82,26 @@ let package = Package(
                 "SharedModels"
             ]
         ),
-        .target(
-            name: "FeedItemsFeature",
+        .testTarget(
+            name: "FeedListTests",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                "Common",
-                "RSSClient",
-                "SharedModels"
-            ]
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+                "FeedListFeature",
+                "NotificationClient" 
+            ],
+            exclude: ["__Snapshots__"]
         ),
+        
+            .target(
+                name: "FeedItemsFeature",
+                dependencies: [
+                    .product(name: "Dependencies", package: "swift-dependencies"),
+                    "Common",
+                    "RSSClient",
+                    "SharedModels"
+                ]
+            ),
         .target(
             name: "NotificationClient",
             dependencies: [

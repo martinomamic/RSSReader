@@ -12,7 +12,7 @@ import SharedModels
 import SwiftUI
 
 public struct FeedListView: View {
-    @State private var viewModel = FeedListViewModel()
+    @State public var viewModel = FeedListViewModel()
     @State private var showingAddFeed = false
     private let showOnlyFavorites: Bool
 
@@ -45,6 +45,13 @@ public struct FeedListView: View {
             )
         }
         .toolbar {
+            if viewModel.showEditButton {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    EditButton()
+                        .testId(AccessibilityIdentifier.FeedList.editButton)
+                }
+            }
+            
             ToolbarItem(placement: .primaryAction) {
                 Button {
                     showingAddFeed = true
@@ -53,12 +60,6 @@ public struct FeedListView: View {
                           systemImage: Constants.Images.addIcon)
                 }
                 .testId(AccessibilityIdentifier.FeedList.addFeedButton)
-            }
-            if !viewModel.feeds.isEmpty {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    EditButton()
-                        .testId(AccessibilityIdentifier.FeedList.editButton)
-                }
             }
         }
         .sheet(isPresented: $showingAddFeed) {

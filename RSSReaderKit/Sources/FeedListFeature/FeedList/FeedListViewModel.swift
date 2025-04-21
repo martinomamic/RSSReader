@@ -35,6 +35,14 @@ public class FeedListViewModel {
     }
     var state: FeedListState = .idle
 
+    var isEmptyState: Bool {
+        displayedFeeds(showOnlyFavorites: false).isEmpty
+    }
+    
+    var showEditButton: Bool {
+        !feeds.isEmpty
+    }
+
     func displayedFeeds(showOnlyFavorites: Bool) -> [FeedViewModel] {
         showOnlyFavorites ? favoriteFeeds : feeds
     }
