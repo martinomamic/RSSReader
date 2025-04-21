@@ -5,9 +5,11 @@
 //  Created by Martino Mamić on 15.04.25.
 //
 
+import Dependencies
 import Foundation
 import SharedModels
 import SwiftData
+import RSSClient
 
 extension PersistenceClient {
     public static func live() -> PersistenceClient {
@@ -24,7 +26,18 @@ extension PersistenceClient {
         return PersistenceClient(
             addFeed: { feed async throws in
                 let context = ModelContext(modelContainer)
-                let persistableFeed = PersistableFeed(from: feed)
+                var feedToPersist = feed
+                @Dependency(\.rssClient.fetchFeedItems) var fetchFeedItems
+                do {
+                    let items = try await fetchFeedItems(feed.url)
+                    let latestPubDate = items.compactMap(\.pubDate).max() ?? Date()
+                    feedToPersist.lastFetchDate = latestPubDate
+                    print("[Persistence] Added feed '\(feed.title ?? feed.url.absoluteString)' setting lastFetchDate = \(latestPubDate)")
+                } catch {
+                    feedToPersist.lastFetchDate = Date()
+                    print("[Persistence] Failed to fetch items for '\(feed.title ?? feed.url.absoluteString)'; setting lastFetchDate = NOW (\(feedToPersist.lastFetchDate!))")
+                }
+                let persistableFeed = PersistableFeed(from: feedToPersist)
                 context.insert(persistableFeed)
 
                 do {

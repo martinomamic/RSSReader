@@ -21,6 +21,7 @@ enum FeedListState: Equatable {
     case error(RSSViewError)
 }
 
+// Main ViewModel for feeds, also now owns notification toggle logic
 @MainActor @Observable
 public class FeedListViewModel {
     @ObservationIgnored
@@ -58,6 +59,8 @@ public class FeedListViewModel {
                     return viewModel
                 }
                 state = .idle
+                // Ensure BGTask scheduling is correct on launch/load
+                refreshBackgroundTaskSchedulingIfNeeded()
             } catch {
                 state = .error(RSSErrorMapper.map(error))
             }
@@ -79,6 +82,8 @@ public class FeedListViewModel {
                 deleteFeed(feed)
             }
             feeds.remove(atOffsets: indexSet)
+            // Check if scheduling should change after removal
+            refreshBackgroundTaskSchedulingIfNeeded()
         }
     }
 
@@ -98,22 +103,25 @@ public class FeedListViewModel {
         deleteTask = Task {
             do {
                 try await persistenceClient.deleteFeed(feedViewModel.url)
+                // After actual delete, refresh scheduling
+                refreshBackgroundTaskSchedulingIfNeeded()
             } catch {
                 state = .error(RSSErrorMapper.map(error))
             }
         }
     }
 
+    // --- CENTRALIZED NOTIFICATION TOGGLE LOGIC ---
     func toggleNotifications(for feedViewModel: FeedViewModel) async {
         updateTask?.cancel()
         updateTask = Task {
             do {
+                // Only request permissions if turning on notifications
                 if !feedViewModel.feed.notificationsEnabled {
                     let authorizationStatus = await notificationClient.checkAuthorizationStatus()
                     
                     if authorizationStatus == .notDetermined {
                         try await notificationClient.requestPermissions()
-                        
                         let newAuthorizationStatus = await notificationClient.checkAuthorizationStatus()
                         guard newAuthorizationStatus == .authorized else {
                             state = .error(.notificationPermissionDenied)
@@ -130,16 +138,27 @@ public class FeedListViewModel {
                 feedViewModel.feed.notificationsEnabled.toggle()
                 try await persistenceClient.updateFeed(feedViewModel.feed)
                 
-                if feedViewModel.feed.notificationsEnabled {
-                    BackgroundRefreshClient.shared.scheduleAppRefresh()
-                } else {
-                    let feeds = try await persistenceClient.loadFeeds()
-                    if !feeds.contains(where: \.notificationsEnabled) {
-                        BackgroundRefreshClient.shared.cancelScheduledRefresh()
-                    }
-                }
+                refreshBackgroundTaskSchedulingIfNeeded()
             } catch {
                 state = .error(RSSErrorMapper.map(error))
+            }
+        }
+    }
+
+    // --- SINGLE SOURCE OF TRUTH FOR BGTask SCHEDULING ---
+    func refreshBackgroundTaskSchedulingIfNeeded() {
+        Task {
+            @Dependency(\.persistenceClient.loadFeeds) var loadFeeds
+            do {
+                let feeds = try await loadFeeds()
+                let enabledFeeds = feeds.filter(\.notificationsEnabled)
+                if enabledFeeds.isEmpty {
+                    BackgroundRefreshClient.shared.cancelScheduledRefresh()
+                } else {
+                    BackgroundRefreshClient.shared.scheduleAppRefresh()
+                }
+            } catch {
+                print("[FeedListViewModel] Failed to update BGTask scheduling: \(error)")
             }
         }
     }

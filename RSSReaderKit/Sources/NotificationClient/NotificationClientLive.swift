@@ -81,12 +81,12 @@ extension NotificationClient {
                 let cutoffDate = feed.lastFetchDate ?? Date()
                 // --- SIMULATION PATCH START ---
                 // To simulate new RSS items for every refresh, uncomment the next line:
-                 let newItems = items.prefix(1) // always pretend the first item is 'new'
+//                 let newItems = items.prefix(1) // always pretend the first item is 'new'
                 // To restore normal behavior, comment out/remove above and use:
-//                let newItems = items.filter { item in
-//                    guard let pubDate = item.pubDate else { return false }
-//                    return pubDate > cutoffDate
-//                }
+                let newItems = items.filter { item in
+                    guard let pubDate = item.pubDate else { return false }
+                    return pubDate > cutoffDate
+                }
                 // --- SIMULATION PATCH END ---
                 print("  - New items found: \(newItems.count) (cutoff: \(cutoffDate))")
 
