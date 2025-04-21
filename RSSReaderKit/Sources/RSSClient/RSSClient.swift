@@ -26,23 +26,42 @@ extension RSSClient: DependencyKey {
     public static var liveValue: RSSClient { RSSClient.live() }
 
     public static var testValue: RSSClient {
+        @Sendable
+        func mockFeed(url: URL? = nil)-> Feed {
+            return Feed(
+                url: url ?? URL(string: "https://test.example.com/feed")!,
+                title: "Test Feed",
+                description: "This is a test feed for unit testing",
+                imageURL: URL(string: "https://test.example.com/image.jpg"),
+                isFavorite: false,
+                notificationsEnabled: false
+            )
+        }
+        
+        let mockItems = [
+            FeedItem(
+                feedID: UUID(),
+                title: "Test Item 1",
+                link: URL(string: "https://test.example.com/item1")!,
+                pubDate: Date(),
+                description: "This is test item 1",
+                imageURL: URL(string: "https://test.example.com/item1.jpg")
+            ),
+            FeedItem(
+                feedID: UUID(),
+                title: "Test Item 2",
+                link: URL(string: "https://test.example.com/item2")!,
+                pubDate: Date().addingTimeInterval(-3600),
+                description: "This is test item 2"
+            )
+        ]
+        
         return RSSClient(
             fetchFeed: { url in
-                return Feed(
-                    url: url,
-                    title: "",
-                    description: ""
-                )
+                return mockFeed(url: url)
             },
             fetchFeedItems: { _ in
-                return [
-                    FeedItem(
-                        feedID: UUID(),
-                        title: "",
-                        link: URL(string: "")!,
-                        description: ""
-                    )
-                ]
+                return mockItems
             }
         )
     }

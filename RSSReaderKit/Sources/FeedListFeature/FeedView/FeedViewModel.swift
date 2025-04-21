@@ -89,10 +89,10 @@ enum FeedViewState: Equatable {
                 }
 
                 feed.notificationsEnabled.toggle()
-
                 try await updateFeed(feed)
 
                 if feed.notificationsEnabled {
+                    BackgroundRefreshClient.shared.scheduleAppRefresh()
                     try await notificationClient.checkForNewItems()
                 }
             } catch {
@@ -112,3 +112,16 @@ extension FeedViewModel: Hashable {
         hasher.combine(url)
     }
 }
+#if DEBUG
+extension FeedViewModel {
+    @MainActor
+    func waitForNotificationToggleToFinish() async {
+        await toggleNotificationsTask?.value
+    }
+    
+    @MainActor
+    func waitForFavoritesToggleToFinish() async {
+        await toggleFavoriteTask?.value
+    }
+}
+#endif

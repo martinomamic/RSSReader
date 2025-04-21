@@ -1,0 +1,87 @@
+{
+  "configurations" : [
+    {
+      "id" : "1485DAD2-E71C-465A-AC36-CF89D5C717FA",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "ExploreFeatureTests",
+        "name" : "ExploreFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReader.xcodeproj",
+        "identifier" : "386A8D2E2DAA864A00BCD162",
+        "name" : "RSSReaderTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReader.xcodeproj",
+        "identifier" : "386A8D382DAA864A00BCD162",
+        "name" : "RSSReaderUITests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "FeedItemsTests",
+        "name" : "FeedItemsTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "FeedListTests",
+        "name" : "FeedListTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "PersistenceClientTests",
+        "name" : "PersistenceClientTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "CommonComponentTests",
+        "name" : "CommonComponentTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "NotificationClientTests",
+        "name" : "NotificationClientTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "RSSClientTests",
+        "name" : "RSSClientTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "ExploreClientTests",
+        "name" : "ExploreClientTests"
+      }
+    }
+  ],
+  "version" : 1
+}

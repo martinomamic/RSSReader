@@ -64,6 +64,8 @@ public enum Constants {
         public static let failedToLoadIcon = "exclamationmark.triangle"
         public static let notificationEnabledIcon = "bell.fill"
         public static let notificationDisabledIcon = "bell"
+        public static let isFavoriteIcon = "star.fill"
+        public static let isNotFavoriteIcon = "star"
     }
 
     public enum Storage {

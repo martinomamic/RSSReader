@@ -20,75 +20,68 @@ struct AddFeedView: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Feed URL", text: $viewModel.urlString)
+                    TextField(LocalizedStrings.AddFeed.urlPlaceholder, text: $viewModel.urlString)
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                         .keyboardType(.URL)
                         .testId(AccessibilityIdentifier.AddFeed.urlTextField)
                 } header: {
-                    Text("Enter RSS feed URL")
+                    Text(LocalizedStrings.AddFeed.urlHeader)
                 } footer: {
                     VStack(alignment: .leading, spacing: Constants.UI.footerSpacing) {
-                        Text("Examples (tap to use):")
+                        Text(LocalizedStrings.AddFeed.examplesHeader)
                             .font(.footnote)
                             .foregroundColor(.secondary)
 
                         VStack(alignment: .leading, spacing: Constants.UI.exampleButtonSpacing) {
-                            Button("BBC News") {
-                                viewModel.urlString = Constants.URLs.bbcNews
+                            Button(LocalizedStrings.AddFeed.bbcNews) {
+                                viewModel.setExampleURL(.bbc)
                             }
                             .testId(AccessibilityIdentifier.AddFeed.bbcExampleButton)
 
-                            Button("NBC News") {
-                                viewModel.urlString = Constants.URLs.nbcNews
+                            Button(LocalizedStrings.AddFeed.nbcNews) {
+                                viewModel.setExampleURL(.nbc)
                             }
                             .testId(AccessibilityIdentifier.AddFeed.nbcExampleButton)
                         }
                     }
                 }
             }
-            .navigationTitle("Add Feed")
+            .navigationTitle(LocalizedStrings.AddFeed.title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(LocalizedStrings.General.cancel) {
                         dismiss()
                     }
                     .testId(AccessibilityIdentifier.AddFeed.cancelButton)
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
+                    Button(LocalizedStrings.General.add) {
                         viewModel.addFeed()
                     }
-                    .disabled(!viewModel.isValidURL || viewModel.state == .adding)
+                    .disabled(viewModel.isAddButtonDisabled)
                     .testId(AccessibilityIdentifier.AddFeed.addButton)
                 }
             }
             .overlay {
-                if case .adding = viewModel.state {
+                if viewModel.isLoading {
                     ProgressView()
                 }
             }
-            .alert("Error Adding Feed", isPresented: .init(
-                get: {
-                    if case .error = viewModel.state { return true }
-                    return false
-                },
-                set: { show in
-                    if !show, case .error = viewModel.state {
-                        viewModel.state = .idle
-                    }
+            .alert(Text(LocalizedStrings.AddFeed.errorTitle),
+                   isPresented: viewModel.errorAlertBinding) {
+                Button(LocalizedStrings.General.ok) {
+                    viewModel.dismissError()
                 }
-            )) {
-                Button("OK") {}
             } message: {
                 if case .error(let error) = viewModel.state {
                     Text(error.errorDescription)
                 }
             }
-            .onChange(of: viewModel.state) { _, newState in
-                if case .success = newState {
+            .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
+                if shouldDismiss {
                     dismiss()
                 }
             }

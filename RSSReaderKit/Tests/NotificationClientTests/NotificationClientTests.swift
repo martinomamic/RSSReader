@@ -10,7 +10,7 @@ import ConcurrencyExtras
 import Dependencies
 import Foundation
 import Testing
-import UserNotifications
+@preconcurrency import UserNotifications
 
 @testable import NotificationClient
 @testable import SharedModels
@@ -41,12 +41,9 @@ import UserNotifications
         let permissionsRequested = LockIsolated<Bool>(false)
 
         try await withDependencies { deps in
-            deps.notificationClient = .init(
-                requestPermissions: {
-                    permissionsRequested.setValue(true)
-                },
-                checkForNewItems: {}
-            )
+            deps.notificationClient.requestPermissions = {
+                permissionsRequested.setValue(true)
+            }
         } operation: {
             @Dependency(\.notificationClient) var client
             try await client.requestPermissions()
@@ -57,10 +54,9 @@ import UserNotifications
     @Test("Request permissions denied")
     func testRequestPermissionsDenied() async throws {
         try await withDependencies { deps in
-            deps.notificationClient = .init(
-                requestPermissions: { throw NotificationError.permissionDenied },
-                checkForNewItems: {}
-            )
+            deps.notificationClient.requestPermissions = {
+                throw NotificationError.permissionDenied
+            }
         } operation: {
             @Dependency(\.notificationClient) var client
 
@@ -68,7 +64,97 @@ import UserNotifications
                 try await client.requestPermissions()
                 #expect(Bool(false), "Should have thrown permission denied error")
             } catch is NotificationError {
+                #expect(true)
             }
+        }
+    }
+
+    @Test("Check for new items with thread identifier")
+    func testCheckForNewItemsWithThreading() async throws {
+        let feed = testFeed()
+        let item = testItem(pubDate: Date().addingTimeInterval(60))
+        let notificationRequests = LockIsolated<[UNNotificationRequest]>([])
+
+        try await withDependencies { deps in
+            deps.rssClient.fetchFeedItems = { _ in [item] }
+            deps.persistenceClient.loadFeeds = { [feed] }
+            
+            deps.notificationClient = .testValue(
+                requestPermissions: {},
+                checkForNewItems: {
+                    notificationRequests.withValue { requests in
+                        requests.append(UNNotificationRequest(
+                            identifier: "test-id",
+                            content: {
+                                let content = UNMutableNotificationContent()
+                                content.threadIdentifier = feed.url.absoluteString
+                                content.title = feed.title ?? ""
+                                content.body = item.title
+                                return content
+                            }(),
+                            trigger: nil
+                        ))
+                    }
+                }
+            )
+        } operation: {
+            @Dependency(\.notificationClient) var client
+            try await client.checkForNewItems()
+
+            let requests = notificationRequests.value
+            #expect(requests.count == 1)
+            #expect(requests[0].content.threadIdentifier == feed.url.absoluteString)
+            #expect(requests[0].content.title == feed.title)
+            #expect(requests[0].content.body == item.title)
+        }
+    }
+
+    @Test("Skip notifications for disabled feeds")
+    func testSkipNotificationsForDisabledFeeds() async throws {
+        let feed = testFeed(notificationsEnabled: false)
+        let item = testItem(pubDate: Date().addingTimeInterval(60))
+        let notificationRequests = LockIsolated<[UNNotificationRequest]>([])
+
+        try await withDependencies { deps in
+            deps.rssClient.fetchFeedItems = { _ in [item] }
+            deps.persistenceClient.loadFeeds = { [feed] }
+            
+            deps.notificationClient = .testValue(
+                requestPermissions: {},
+                checkForNewItems: { }
+            )
+        } operation: {
+            @Dependency(\.notificationClient) var client
+            try await client.checkForNewItems()
+            
+            #expect(notificationRequests.value.isEmpty)
+        }
+    }
+    
+    @Test("Skip notifications when unauthorized")
+    func testSkipNotificationsWhenUnauthorized() async throws {
+        let feed = testFeed()
+        let item = testItem(pubDate: Date().addingTimeInterval(60))
+        let notificationRequests = LockIsolated<[UNNotificationRequest]>([])
+
+        try await withDependencies { deps in
+            deps.rssClient.fetchFeedItems = { _ in [item] }
+            deps.persistenceClient.loadFeeds = { [feed] }
+            
+            deps.notificationClient = .testValue(
+                requestPermissions: {},
+                checkForNewItems: { throw NotificationError.permissionDenied }
+            )
+        } operation: {
+            @Dependency(\.notificationClient) var client
+            
+            do {
+                try await client.checkForNewItems()
+                #expect(Bool(false), "Should have thrown permission denied error")
+            } catch is NotificationError {
+                #expect(true)
+            }
+            #expect(notificationRequests.value.isEmpty)
         }
     }
 
@@ -142,5 +228,17 @@ import UserNotifications
 
             #expect(notifiedItems.value.contains(item.id.uuidString))
         }
+    }
+}
+
+extension NotificationClient {
+    static func testValue(
+        requestPermissions: @escaping @Sendable () async throws -> Void = {},
+        checkForNewItems: @escaping @Sendable () async throws -> Void = {}
+    ) -> Self {
+        Self(
+            requestPermissions: requestPermissions,
+            checkForNewItems: checkForNewItems
+        )
     }
 }

@@ -23,11 +23,11 @@ public struct ExploreView: View {
 
             case .loaded(let feeds):
                 if feeds.isEmpty {
-                    ContentUnavailableView {
-                        Label("No Feeds Found", systemImage: Constants.Images.noItemsIcon)
-                    } description: {
-                        Text("No feeds available")
-                    }
+                    EmptyStateView(
+                        title: LocalizedStrings.Explore.noFeedsTitle,
+                        systemImage: Constants.Images.noItemsIcon,
+                        description: LocalizedStrings.Explore.noFeedsDescription
+                    )
                     .testId(AccessibilityIdentifier.Explore.emptyView)
                 } else {
                     List {
@@ -45,31 +45,22 @@ public struct ExploreView: View {
                 }
 
             case .error(let error):
-                ContentUnavailableView {
-                    Label("Failed to Load", systemImage: Constants.Images.failedToLoadIcon)
-                } description: {
-                    Text(error.errorDescription)
-                } actions: {
-                    Button {
-                        viewModel.loadExploreFeeds()
-                    } label: {
-                        Text("Try Again")
-                    }
-                    .buttonStyle(.bordered)
+                ErrorStateView(error: error) {
+                    viewModel.loadExploreFeeds()
                 }
                 .testId(AccessibilityIdentifier.Explore.errorView)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationTitle("Explore Feeds")
+        .navigationTitle(LocalizedStrings.Explore.title)
         .alert(item: .init(
             get: { viewModel.feedError },
             set: { if $0 == nil { viewModel.clearError() } }
         )) { error in
             Alert(
-                title: Text("Error Adding Feed"),
+                title: Text(LocalizedStrings.Explore.errorAddingFeed),
                 message: Text(error.errorDescription),
-                dismissButton: .default(Text("OK")) {
+                dismissButton: .default(Text(LocalizedStrings.General.ok)) {
                     viewModel.clearError()
                 }
             )

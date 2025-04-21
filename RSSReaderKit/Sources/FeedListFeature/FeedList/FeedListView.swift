@@ -12,7 +12,7 @@ import SharedModels
 import SwiftUI
 
 public struct FeedListView: View {
-    @State private var viewModel = FeedListViewModel()
+    @State public var viewModel = FeedListViewModel()
     @State private var showingAddFeed = false
     private let showOnlyFavorites: Bool
 
@@ -20,15 +20,9 @@ public struct FeedListView: View {
         self.showOnlyFavorites = showOnlyFavorites
     }
 
-    var displayedFeeds: [FeedViewModel] {
-        showOnlyFavorites ? viewModel.favoriteFeeds : viewModel.feeds
-    }
-
     public var body: some View {
         List {
-            let displayedFeeds = showOnlyFavorites ? viewModel.favoriteFeeds : viewModel.feeds
-
-            ForEach(displayedFeeds) { feed in
+            ForEach(viewModel.displayedFeeds(showOnlyFavorites: showOnlyFavorites)) { feed in
                 FeedView(viewModel: feed)
                     .background {
                         NavigationLink(value: feed) {}
@@ -39,60 +33,47 @@ public struct FeedListView: View {
                 viewModel.removeFeed(at: indexSet, fromFavorites: showOnlyFavorites)
             }
         }
-        .testId(showOnlyFavorites ? 
-            AccessibilityIdentifier.FeedList.favoritesList :
-            AccessibilityIdentifier.FeedList.feedsList)
+        .testId(viewModel.listAccessibilityId(showOnlyFavorites: showOnlyFavorites))
         .onAppear {
             viewModel.loadFeeds()
         }
-        .navigationTitle(showOnlyFavorites ? "Favorite Feeds" : "RSS Feeds")
+        .navigationTitle(viewModel.navigationTitle(showOnlyFavorites: showOnlyFavorites))
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: FeedViewModel.self) { feed in
             FeedItemsView(
-                viewModel: FeedItemsViewModel(
-                    feedURL: feed.url,
-                    feedTitle: feed.feed.title ?? "Unnamed feed"
-                )
+                viewModel: viewModel.makeFeedItemsViewModel(for: feed)
             )
         }
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    showingAddFeed = true
-                } label: {
-                    Label("Add Feed", systemImage: Constants.Images.addIcon)
-                }
-                .testId(AccessibilityIdentifier.FeedList.addFeedButton)
-            }
-            if !viewModel.feeds.isEmpty {
+            if viewModel.showEditButton {
                 ToolbarItem(placement: .navigationBarLeading) {
                     EditButton()
                         .testId(AccessibilityIdentifier.FeedList.editButton)
                 }
+            }
+            
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    showingAddFeed = true
+                } label: {
+                    Label(LocalizedStrings.FeedList.addFeed,
+                          systemImage: Constants.Images.addIcon)
+                }
+                .testId(AccessibilityIdentifier.FeedList.addFeedButton)
             }
         }
         .sheet(isPresented: $showingAddFeed) {
             AddFeedView(feeds: $viewModel.feeds)
         }
         .overlay {
-            if displayedFeeds.isEmpty {
-                ContentUnavailableView {
-                    Label(showOnlyFavorites ? "No Favorites" : "No Feeds",
-                          systemImage: Constants.Images.noItemsIcon)
-                } description: {
-                    Text(showOnlyFavorites ?
-                         "Add feeds to favorites from the Feeds tab" :
-                         "Add an RSS feed to get started")
-                } actions: {
-                    if !showOnlyFavorites {
-                        Button {
-                            showingAddFeed = true
-                        } label: {
-                            Label("Add Feed", systemImage: Constants.Images.addIcon)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                }
+            if viewModel.displayedFeeds(showOnlyFavorites: showOnlyFavorites).isEmpty {
+                EmptyStateView(
+                    title: viewModel.emptyStateTitle(showOnlyFavorites: showOnlyFavorites),
+                    systemImage: Constants.Images.noItemsIcon,
+                    description: viewModel.emptyStateDescription(showOnlyFavorites: showOnlyFavorites),
+                    primaryAction: showOnlyFavorites ? nil : { showingAddFeed = true },
+                    primaryActionLabel: showOnlyFavorites ? nil : LocalizedStrings.FeedList.addFeed
+                )
             }
         }
     }

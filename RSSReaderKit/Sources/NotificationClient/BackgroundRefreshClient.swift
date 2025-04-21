@@ -9,19 +9,23 @@ import BackgroundTasks
 import Common
 import Dependencies
 import Foundation
+import PersistenceClient
 import UserNotifications
 
 @MainActor
 public final class BackgroundRefreshClient {
     @Dependency(\.notificationClient) private var notificationClient
+    @Dependency(\.persistenceClient.loadFeeds) private var loadFeeds
 
-    private let feedRefreshTaskIdentifier = "com.rssreader.feedrefresh"
+    private let feedRefreshTaskIdentifier = "com.maminjo.feedrefresh"
+    private let refreshInterval: TimeInterval = 15 * 60
+    private var isConfigured = false
 
     public static let shared = BackgroundRefreshClient()
 
     private init() {}
 
-    public func registerBackgroundTasks() {
+    public func configure() {
         BGTaskScheduler.shared.register(
             forTaskWithIdentifier: feedRefreshTaskIdentifier,
             using: nil
@@ -30,35 +34,51 @@ public final class BackgroundRefreshClient {
                 self?.handleAppRefresh(task: bgTask)
             }
         }
+        isConfigured = true
+        scheduleAppRefresh()
     }
 
     public func scheduleAppRefresh() {
-        let request = BGAppRefreshTaskRequest(identifier: feedRefreshTaskIdentifier)
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60)
+        guard isConfigured else {
+            return
+        }
 
-        do {
-            try BGTaskScheduler.shared.submit(request)
-            print("Scheduled background refresh for future execution")
-        } catch {
-            print("Could not schedule app refresh: \(error)")
+        Task {
+            let feeds = (try? await loadFeeds()) ?? []
+            guard feeds.contains(where: \.notificationsEnabled) else {
+                return
+            }
+
+            let request = BGAppRefreshTaskRequest(identifier: feedRefreshTaskIdentifier)
+            request.earliestBeginDate = Date(timeIntervalSinceNow: refreshInterval)
+
+            do {
+                try BGTaskScheduler.shared.submit(request)
+            } catch {}
         }
     }
 
     private func handleAppRefresh(task: BGAppRefreshTask) {
-        scheduleAppRefresh()
-
         let refreshTask = Task {
             do {
+                let feeds = try await loadFeeds()
+                guard feeds.contains(where: \.notificationsEnabled) else {
+                    task.setTaskCompleted(success: true)
+                    return
+                }
+
                 try await notificationClient.checkForNewItems()
                 task.setTaskCompleted(success: true)
+                scheduleAppRefresh()
             } catch {
                 task.setTaskCompleted(success: false)
             }
         }
 
-        task.expirationHandler = {
+        task.expirationHandler = { [weak self] in
             refreshTask.cancel()
             task.setTaskCompleted(success: false)
+            self?.scheduleAppRefresh()
         }
     }
 }

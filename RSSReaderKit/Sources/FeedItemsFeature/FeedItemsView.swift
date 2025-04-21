@@ -21,7 +21,7 @@ public struct FeedItemsView: View {
         Group {
             switch viewModel.state {
             case .loading:
-                ProgressView()
+                ProgressView(LocalizedStrings.LoadingStates.loading)
                     .testId(AccessibilityIdentifier.FeedItems.loadingView)
 
             case .loaded(let items):
@@ -38,26 +38,17 @@ public struct FeedItemsView: View {
                 .testId(AccessibilityIdentifier.FeedItems.itemsList)
 
             case .error(let error):
-                ContentUnavailableView {
-                    Label("Failed to Load", systemImage: Constants.Images.failedToLoadIcon)
-                } description: {
-                    Text(error.errorDescription)
-                } actions: {
-                    Button {
-                        viewModel.loadItems()
-                    } label: {
-                        Text("Try Again")
-                    }
-                    .buttonStyle(.bordered)
+                ErrorStateView(error: error) {
+                    viewModel.loadItems()
                 }
                 .testId(AccessibilityIdentifier.FeedItems.errorView)
 
             case .empty:
-                ContentUnavailableView {
-                    Label("No Items", systemImage: Constants.Images.noItemsIcon)
-                } description: {
-                    Text("This feed contains no items")
-                }
+                EmptyStateView(
+                    title: LocalizedStrings.FeedItems.noItemsTitle,
+                    systemImage: Constants.Images.noItemsIcon,
+                    description: LocalizedStrings.FeedItems.noItemsDescription
+                )
                 .testId(AccessibilityIdentifier.FeedItems.emptyView)
             }
         }

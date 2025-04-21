@@ -19,8 +19,8 @@ public class FeedItemsViewModel: Identifiable {
     @ObservationIgnored
     @Dependency(\.openURL) private var openURL
 
-    let feedURL: URL
-    let feedTitle: String
+    public let feedURL: URL
+    public let feedTitle: String
 
     var state: FeedItemsState = .loading
 
@@ -56,3 +56,12 @@ public class FeedItemsViewModel: Identifiable {
         }
     }
 }
+
+#if DEBUG
+extension FeedItemsViewModel {
+    @MainActor
+    func waitForLoadToFinish() async {
+        await loadTask?.value
+    }
+}
+#endif

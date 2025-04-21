@@ -28,26 +28,12 @@ struct ExploreFeedRow: View {
 
             Spacer()
 
-            if isAdded {
-                Text("Added")
-                    .font(.caption)
-                    .padding(.horizontal, Constants.UI.exploreFeedButtonHorizontalPadding)
-                    .padding(.vertical, Constants.UI.exploreFeedButtonVerticalPadding)
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(Constants.UI.exploreFeedButtonCornerRadius)
-            } else {
-                Button(action: onAddTapped) {
-                    Text("Add")
-                        .font(.caption)
-                        .padding(.horizontal, Constants.UI.exploreFeedButtonHorizontalPadding)
-                        .padding(.vertical, Constants.UI.exploreFeedButtonVerticalPadding)
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(Constants.UI.exploreFeedButtonCornerRadius)
-                }
-                .testId(AccessibilityIdentifier.Explore.addButton)
-            }
+            RoundedButton(
+                title: isAdded ? LocalizedStrings.ExploreFeed.added : LocalizedStrings.ExploreFeed.add,
+                action: onAddTapped,
+                backgroundColor: isAdded ? .green : .blue,
+                isEnabled: !isAdded
+            )
         }
         .padding(.vertical, Constants.UI.verticalPadding)
         .testId(AccessibilityIdentifier.Explore.feedRow)
