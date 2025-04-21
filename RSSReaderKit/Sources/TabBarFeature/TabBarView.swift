@@ -13,9 +13,9 @@ import NotificationClient
 
 public struct TabBarView: View {
     @State private var viewModel = TabBarViewModel()
-
+    
     public init() {}
-
+    
     public var body: some View {
         TabView(selection: $viewModel.selectedTab) {
             ForEach(TabItem.allCases, id: \.self) { tab in
@@ -25,14 +25,14 @@ public struct TabBarView: View {
                             viewModel.getTitle(for: tab),
                             systemImage: viewModel.getIcon(for: tab)
                         )
+                        .accessibilityIdentifier(accessibilityIdForTab(tab))
                     }
                     .tag(tab)
-                    .testId(accessibilityIdForTab(tab))
             }
         }
         .testId(AccessibilityIdentifier.TabBar.navigationTabs)
     }
-
+    
     private func accessibilityIdForTab(_ tab: TabItem) -> String {
         switch tab {
         case .feeds:
@@ -45,7 +45,7 @@ public struct TabBarView: View {
             return AccessibilityIdentifier.TabBar.debugTab
         }
     }
-
+    
     @ViewBuilder
     private func tabContent(for tab: TabItem) -> some View {
         NavigationStack {
