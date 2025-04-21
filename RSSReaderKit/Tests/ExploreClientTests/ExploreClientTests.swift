@@ -16,7 +16,6 @@ import ConcurrencyExtras
 @testable import PersistenceClient
 
 @Suite struct ExploreClientTests {
-    
     func createExploreFeed(
         name: String = "Test Feed",
         url: String = "https://example.com/feed"

@@ -5,7 +5,6 @@
 //  Created by Martino Mamić on 21.04.25.
 //
 
-
 import Testing
 import Foundation
 import Dependencies
@@ -91,7 +90,7 @@ import Common
         let viewModel = createViewModel()
         
         await withDependencies {
-            $0.rssClient.fetchFeedItems = { _ in 
+            $0.rssClient.fetchFeedItems = { _ in
                 throw RSSError.networkError(NSError(domain: "test", code: -1, userInfo: nil))
             }
         } operation: {

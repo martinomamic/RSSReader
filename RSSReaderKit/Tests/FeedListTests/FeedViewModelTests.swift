@@ -106,7 +106,6 @@ import ConcurrencyExtras
             #expect(updatedFeed.value.isFavorite == false)
         }
     }
-
     
     @Test("Toggle notifications successfully")
     func testToggleNotifications() async throws {
@@ -140,8 +139,6 @@ import ConcurrencyExtras
             #expect(updatedFeed.value.notificationsEnabled == false)
         }
     }
-
-
     
     @Test("Handle notification permission error")
     func testNotificationPermissionError() async throws {
