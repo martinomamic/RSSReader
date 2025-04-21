@@ -1,91 +1,68 @@
 # RSS Reader
 
-A modular iOS application with a Swift package core for reading and displaying RSS feeds built with SwiftUI and Swift Concurrency.
+An iOS application for reading and managing RSS feeds, built with Swift and SwiftUI, suing MVVM. This project follows a modular architecture using a Swift Package core with clean architecture principles.
 
-## Features
+## Assignment Requirements
 
-### Core Features
+### Core Requirements ✅
 - ✅ Add RSS feeds by specifying an RSS feed URL
-- ✅ Remove RSS feeds
-- ✅ View added RSS feeds with name, image, and description
-- ✅ Select an RSS feed to open a screen with feed items
-- ✅ View feed items with image, title, and description
-- ✅ Open RSS item links in WebView or device browser
+- ✅ Remove RSS feeds 
+- ✅ View added RSS feeds with name, image (if available), and description
+- ✅ Select a feed to view its items with image (if available), title, and description
+- ✅ Open feed items in the device browser (webview branch is not finished, also not really nice with the webviews not optimised)
 
-### Optional Features
-- ⬜️ Turn on notifications for new feed items
-- ⬜️ Add RSS feeds to Favorites
+### Optional Requirements ✅
+- ✅ Turn on notifications for new feed items for subscribed RSS feeds
+- ✅ Add RSS feeds to Favorites
+- ✅ Additional functionality: Explore tab with suggested feeds
+- ✅ Debug tab and view for testing notifications and background tasks (can be switched to Settings tab)
+
+### Potential Improvements 
+- Enable opening feed items in webview and disabling navigation within
+- Switching between webview and safari in a settings tab
+- Displaying top 5 or 10 feeds which are not already in the feeds list from explore in add view 
+- Handling background tasks better (maybe creating a proper modern async wrapper), current solution is still buggy
+- Finish enabling the PR templates for feature, bugfix, task and release branches
+- Handle HTML in feed articles (and reuse the KFImage wrapper or create a simple cache - but I'm pro battle tested solutions)
+- Consider pagination for the news items
+- Retrying setting up CI (current max Xcode version in Github Actions runners is 15.4, requires a lot of compromising)
+- Use tuist for project and resources generation
+- Use POEditor or similar for localization
+- Handle scroll to top and navigation path resetting for iOS17
+- Add crash and non fatals tracking tool
+- 
+ 
 
 ## Architecture
 
 This project uses a clean architecture approach with the following components:
 
+- **RSSReaderKit**: Swift Package containing all the core modules
 - **RSSClient**: Core module for fetching and parsing RSS feeds
 - **SharedModels**: Common models used across modules
+- **PersistenceClient**: SwiftData-based persistence layer
+- **NotificationClient**: Handles notification permissions and delivery
+- **Common**: Reusable UI components and utilities
 - **FeedListFeature**: UI components for displaying and managing feeds
+- **FeedItemsFeature**: UI for displaying feed items
+- **ExploreFeature**: Discovery interface for finding new feeds
+- **TabBarFeature**: Main navigation structure
 
 The project implements:
 - Dependency injection using swift-dependencies
 - Swift Concurrency with async/await
 - Protocol-oriented programming for testability
 - SwiftUI with the Observation framework
-- Modular architecture with a thin app layer on top of a Swift package core
-
-## Project Structure
-
-```
-RSSReader/
-├── RSSClient/
-├── RSSReaderKit/
-│   ├── Package
-│   ├── Sources/
-│   │   ├── FeedListFeature/
-│   │   │   ├── AddFeed/
-│   │   │   │   ├── AddFeedView
-│   │   │   │   └── AddFeedViewModel
-│   │   │   ├── FeedList/
-│   │   │   │   ├── FeedListView
-│   │   │   │   └── FeedListViewModel
-│   │   │   ├── FeedView/
-│   │   │   │   ├── FeedView
-│   │   │   │   └── FeedViewModel
-│   │   │   └── Helpers/
-│   │   │       ├── Constants
-│   │   │       ├── RSSErrorMapper
-│   │   │       └── RSSViewError
-│   │   ├── RSSClient/
-│   │   │   ├── RSSClient
-│   │   │   ├── RSSClientLive
-│   │   │   ├── RSSElement
-│   │   │   ├── RSSError
-│   │   │   ├── RSSParser
-│   │   │   ├── RSSParserDelegate
-│   │   │   └── RSSParserDelegateProtocol
-│   │   └── SharedModels/
-│   │       ├── Feed
-│   │       └── FeedItem
-│   └── Tests/
-│       ├── RSSClientTests/
-│       │   └── RSSClientTests
-│       └── SharedModelsTests/
-├── RSSReader/
-│   ├── Preview Content/
-│   │   └── Preview Assets
-│   ├── Assets
-│   ├── RSSReader
-│   └── RSSReaderApp
-├── RSSReaderTests/
-│   └── RSSReaderTests
-└── RSSReaderUITests/
-    └── RSSReaderUITests
-```
+- Comprehensive test coverage with snapshot tests and unit tests
+- SwiftData for persistent storage
+- Background notifications for feed updates
 
 ## Getting Started
 
 ### Requirements
 - iOS 17+
 - Swift 6+
-- Xcode 15+
+- Xcode 16+
 
 ### Installation
 
@@ -93,26 +70,31 @@ RSSReader/
 2. Open the project in Xcode
 3. Build and run
 
-## Sample RSS Feeds
+### Development Tools
 
-For testing these feeds can be used:
-https://blog.feedspot.com/world_news_rss_feeds/
-
-These feeds are extracted from the link above and can be added directly in the app without searching by tapping on them:
-- BBC News: https://feeds.bbci.co.uk/news/world/rss.xml
-- NBC News: https://feeds.nbcnews.com/nbcnews/public/news
-
-
-
-## Testing
-
-Run the tests using Xcode's test navigator or with the following command:
+The project includes a Makefile with various commands to simplify development:
 
 ```bash
-swift test
-```
+# Build the project
+make build
 
-## License
+# Run all tests
+make test
 
-This project is available under the MIT license.
+# Run SwiftLint
+make lint
 
+# Fix linting issues where possible
+make lint-fix
+
+# Format code using swift-format
+make format
+
+# Clean build artifacts
+make clean
+
+# Generate Xcode project
+make xcodeproj
+
+# Install required development tools
+make install-tools
