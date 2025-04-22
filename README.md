@@ -114,7 +114,7 @@ The project implements:
 2. Open the project in Xcode
 3. Build and run
 
-Makefile can be leverage as well: `make project`
+Makefile can be leverage as well, run from root: `make project`
 
 ### Development Tools
 

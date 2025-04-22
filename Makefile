@@ -9,15 +9,13 @@ XCODE_PROJECT := $(PROJECT_NAME).xcodeproj
 
 project: setup open
 
-setup: install-tools init-packages
-	$(SWIFT_PACKAGE) resolve
-	$(SWIFT_PACKAGE) update
+setup: init-packages
 	@echo "Project dependencies resolved successfully!"
 
 init-packages:
 	@echo "Initializing local package dependencies..."
 	@if [ -d "RSSReaderKit" ]; then \
-		cd RSSReaderKit && $(SWIFT_PACKAGE) resolve; \
+		cd RSSReaderKit && $(SWIFT_PACKAGE) resolve && cd ..; \
 	fi
 	@echo "Local packages initialized"
 
@@ -34,11 +32,11 @@ open:
 reset-packages:
 	rm -rf .build
 	rm -rf *.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
-	$(SWIFT_PACKAGE) reset
-	$(SWIFT_PACKAGE) resolve
+	cd RSSReaderKit && $(SWIFT_PACKAGE) reset && cd ..
+	cd RSSReaderKit && $(SWIFT_PACKAGE) resolve && cd ..
 
 test:
-	$(SWIFT_TEST)
+	cd RSSReaderKit && $(SWIFT_TEST) && cd ..
 
 lint:
 	$(SWIFT_LINT) lint --config .swiftlint.yml
@@ -50,8 +48,7 @@ format:
 	$(SWIFT_FORMAT) format --in-place --recursive ./Sources ./Tests
 
 clean:
-	rm -rf .build
-	$(SWIFT_PACKAGE) clean
+	cd RSSReaderKit && $(SWIFT_PACKAGE) clean && cd ..
 
 install-tools:
 	brew install swiftlint
