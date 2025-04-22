@@ -15,15 +15,16 @@ Built with Swift and SwiftUI, using MVVM for handling logic within the packages 
   <img src="RSSReader/Screenshots/Main%20feeds%20edit%20mode.png" width="200" alt="Edit Mode">
   <img src="RSSReader/Screenshots/Add%20feed.png" width="200" alt="Add Feed">
 </p>
-
+<p align="center">
+  <em>Left: Main feed list with all RSS feeds - Middle: Edit mode for deleting feeds(also simple swipe to delete) - Right: Add new feed screen with example options (Explore could be reused here)</em>
+</p>
 <p align="center">
   <img src="RSSReader/Screenshots/Favorites.png" width="200" alt="Favorites">
   <img src="RSSReader/Screenshots/Explore%20feeds.png" width="200" alt="Explore">
   <img src="RSSReader/Screenshots/Notification%20debug.png" width="200" alt="Debug">
 </p>
-
 <p align="center">
-  <img src="RSSReader/Screenshots/Duplicate%20feed%20check.png" width="200" alt="Duplicate Feed Error">
+  <em>Left: Favorites tab showing starred feeds - Middle: Explore tab with suggested feeds to add(from local JSON) - Right: Debug panel for testing notifications and background tasks</em>
 </p>
 
 ## Assignment Requirements
