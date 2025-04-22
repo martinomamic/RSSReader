@@ -22,7 +22,7 @@ extension PersistenceClient {
         }
 
         return PersistenceClient(
-            addFeed: { feed async throws in
+            saveFeed: { feed async throws in
                 let context = ModelContext(modelContainer)
                 let persistableFeed = PersistableFeed(from: feed)
                 context.insert(persistableFeed)

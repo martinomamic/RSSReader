@@ -32,7 +32,7 @@ struct ExploreFeedRow: View {
                 title: isAdded ? LocalizedStrings.ExploreFeed.added : LocalizedStrings.ExploreFeed.add,
                 action: onAddTapped,
                 backgroundColor: isAdded ? .green : .blue,
-                isEnabled: !isAdded
+                isDisabled: isAdded
             )
         }
         .padding(.vertical, Constants.UI.verticalPadding)

@@ -1,10 +1,11 @@
 //
-//  ExploreFeedError.swift
+//  ExploreError.swift
 //  RSSReaderKit
 //
 //  Created by Martino Mamić on 18.04.25.
 //
 
+import Common
 import Foundation
 
 public enum ExploreError: Error, LocalizedError {
@@ -12,17 +13,19 @@ public enum ExploreError: Error, LocalizedError {
     case decodingFailed(String)
     case invalidURL
     case feedFetchFailed(String)
+}
 
-    public var errorDescription: String? {
+extension ExploreError: AppErrorConvertible {
+    public func asAppError() -> AppError {
         switch self {
         case .fileNotFound:
-            return "Feeds file not found"
-        case .decodingFailed(let message):
-            return "Failed to decode feeds: \(message)"
+            return .unknown("Feeds file not found")
+        case .decodingFailed(_):
+            return .parsingError
         case .invalidURL:
-            return "Invalid feed URL"
+            return .invalidURL
         case .feedFetchFailed(let message):
-            return "Failed to fetch feed: \(message)"
+            return .unknown(message)
         }
     }
 }

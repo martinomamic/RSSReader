@@ -20,7 +20,7 @@ public struct ErrorStateView: View {
         ContentUnavailableView {
             Label("Failed to Load", systemImage: Constants.Images.failedToLoadIcon)
         } description: {
-            Text(error.localizedDescription)
+            Text(ErrorUtils.toAppError(error).errorDescription)
         } actions: {
             Button("Try Again", action: retryAction)
                 .buttonStyle(.bordered)
@@ -30,7 +30,7 @@ public struct ErrorStateView: View {
 
 #Preview {
     ErrorStateView(
-        error: NSError(domain: "test", code: -1, userInfo: [NSLocalizedDescriptionKey: "Something went wrong"]),
+        error: AppError.general,
         retryAction: {}
     )
 }

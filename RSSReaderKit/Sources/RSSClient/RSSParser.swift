@@ -1,5 +1,5 @@
 //
-//  RSSParserDelegate.swift
+//  RSSParser.swift
 //  RSSReaderKit
 //
 //  Created by Martino Mamić on 13.04.25.
@@ -26,7 +26,7 @@ public struct RSSParser: Sendable {
         } else if let error = parser.parserError {
             throw RSSError.parsingError(error)
         } else {
-            throw RSSError.unknown
+            throw RSSError.general
         }
     }
 }

@@ -14,7 +14,7 @@ import PersistenceClient
 extension ExploreClient {
     public static func live() -> ExploreClient {
         @Dependency(\.rssClient.fetchFeed) var fetchFeed
-        @Dependency(\.persistenceClient.addFeed) var addFeed
+        @Dependency(\.persistenceClient.saveFeed) var addFeed
 
         return ExploreClient(
             loadExploreFeeds: {

@@ -1,6 +1,30 @@
 # RSS Reader
 
-An iOS application for reading and managing RSS feeds, built with Swift and SwiftUI, suing MVVM. This project follows a modular architecture using a Swift Package core with clean architecture principles.
+![Swift](https://img.shields.io/badge/Swift-6.0-orange.svg)
+![Platforms](https://img.shields.io/badge/Platform-iOS%2017-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+![Coverage](https://img.shields.io/badge/Coverage-64%25-yellow.svg)
+
+An iOS application for reading and managing RSS feeds, a project that follows a modular architecture using a Swift Package core with clean architecture principles.
+Built with Swift and SwiftUI, using MVVM for handling logic within the packages modules. 
+
+## Screenshots
+
+<p align="center">
+  <img src="Screenshots/Main%20feeds.png" width="200" alt="Feed List">
+  <img src="Screenshots/Main%20feeds%20edit%20mode.png" width="200" alt="Edit Mode">
+  <img src="Screenshots/Add%20feed.png" width="200" alt="Add Feed">
+</p>
+
+<p align="center">
+  <img src="Screenshots/Favorites.png" width="200" alt="Favorites">
+  <img src="Screenshots/Explore%20feeds.png" width="200" alt="Explore">
+  <img src="Screenshots/Notification%20debug.png" width="200" alt="Debug">
+</p>
+
+<p align="center">
+  <img src="Screenshots/Duplicate%20feed%20check.png" width="200" alt="Duplicate Feed Error">
+</p>
 
 ## Assignment Requirements
 
@@ -12,24 +36,44 @@ An iOS application for reading and managing RSS feeds, built with Swift and Swif
 - ✅ Open feed items in the device browser (webview branch is not finished, also not really nice with the webviews not optimised)
 
 ### Optional Requirements ✅
-- ✅ Turn on notifications for new feed items for subscribed RSS feeds
 - ✅ Add RSS feeds to Favorites
-- ✅ Additional functionality: Explore tab with suggested feeds
+- ✅ Additional functionality: Explore tab with suggested feeds (loaded from a local JSON file) for more convenient adding the feeds
 - ✅ Debug tab and view for testing notifications and background tasks (can be switched to Settings tab)
 
-### Potential Improvements 
+### Optional Requirements still in progress
+- ✅ Turn on notifications for new feed items for subscribed RSS feeds
+- Background task logic for fetching new items is still buggy and needs improvement
+- Currently it works by using the debug meenu option to trigger the task manually, shows notifications for new articles in the subscribed feeds
+
+### Potential Improvements
+- Raise coverage to 80% (currently at ca 64%) and maintain it
+- Handling background tasks better (maybe creating a proper modern async wrapper), current solution is still buggy
+- Deep linking from the notifications to the articles
 - Enable opening feed items in webview and disabling navigation within
 - Switching between webview and safari in a settings tab
 - Displaying top 5 or 10 feeds which are not already in the feeds list from explore in add view 
-- Handling background tasks better (maybe creating a proper modern async wrapper), current solution is still buggy
 - Finish enabling the PR templates for feature, bugfix, task and release branches
 - Handle HTML in feed articles (and reuse the KFImage wrapper or create a simple cache - but I'm pro battle tested solutions)
 - Consider pagination for the news items
 - Retrying setting up CI (current max Xcode version in Github Actions runners is 15.4, requires a lot of compromising)
+- Use Codecov or similar to handle coverage and add it as part of pipelines
+- Use Sonarqube or similar to handle code quality
 - Use tuist for project and resources generation
 - Use POEditor or similar for localization
 - Handle scroll to top and navigation path resetting for iOS17
 - Add crash and non fatals tracking tool
+- Use a standardized state enum pattern, maybe a generic ViewState<T>
+- Separate UI elements from the Common module into SharedUI or similar
+- Add a styleguide module, containing fonts, colors, font styles, button styles etc
+- Add a schema migration strategy for SwiftData to handle future model changes
+- Standardize dependency injection approach across the codebase
+- Implement feed refresh indicators and pull-to-refresh functionality
+- Add feed search/filtering capability within the app
+- Create a reading history feature to track read/unread items
+- Add dark mode theme optimization (or improve design in general as it is pretty basic right now)
+- Create widget extensions for quick access to favorite feeds
+- Add share sheet extension for adding feeds from websites
+- Support for importing/exporting OPML feed lists
  
 
 ## Architecture
@@ -72,4 +116,3 @@ The project implements:
 ### Development Tools
 
 The project includes a Makefile with various commands to simplify development, and can be used to run them locally, like swiftlint.
-

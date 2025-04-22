@@ -1,5 +1,5 @@
 //
-//  PersistenceDependency.swift
+//  PersistenceClientDependency.swift
 //  RSSReaderKit
 //
 //  Created by Martino Mamić on 15.04.25.
@@ -17,7 +17,7 @@ extension PersistenceClient: DependencyKey {
         let feedStore = LockIsolated<[Feed]>([])
 
         return PersistenceClient(
-            addFeed: { feed in
+            saveFeed: { feed in
                 feedStore.withValue { feeds in
                     feeds.append(feed)
                 }

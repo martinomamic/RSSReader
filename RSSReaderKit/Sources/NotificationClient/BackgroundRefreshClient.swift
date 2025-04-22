@@ -17,7 +17,7 @@ public final class BackgroundRefreshClient {
     @Dependency(\.notificationClient) private var notificationClient
     @Dependency(\.persistenceClient.loadFeeds) private var loadFeeds
 
-    private let feedRefreshTaskIdentifier = "com.maminjo.feedrefresh"
+    private let feedRefreshTaskIdentifier = "hr.maminjo.RSSReader.feedrefresh"
     private let refreshInterval: TimeInterval = 15 * 60
     private var isConfigured = false
 

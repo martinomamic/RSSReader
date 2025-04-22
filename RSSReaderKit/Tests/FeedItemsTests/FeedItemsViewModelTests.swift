@@ -99,7 +99,7 @@ import Common
             await viewModel.waitForLoadToFinish()
             
             if case .error(let error) = viewModel.state {
-                #expect(error.errorDescription.contains("Network error"))
+                #expect(error.errorDescription == AppError.networkError.errorDescription)
             }
         }
     }

@@ -9,6 +9,7 @@
 "tab_feeds" = "Feeds";
 "tab_explore" = "Explore";
 "tab_favorites" = "Favorites";
+"tab_debug" = "Debug";
 
 // Explore
 "explore_title" = "Explore Feeds";

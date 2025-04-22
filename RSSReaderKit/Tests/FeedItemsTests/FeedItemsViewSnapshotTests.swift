@@ -101,7 +101,7 @@ import ConcurrencyExtras
     func testFeedItemsViewError() async throws {
         withDependencies {
             $0.rssClient.fetchFeedItems = { _ in
-                throw RSSViewError.networkError("Network connection failed")
+                throw AppError.networkError
             }
         } operation: {
             let view = FeedItemsView(viewModel: createViewModel(title: "Error Feed"))

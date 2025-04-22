@@ -5,7 +5,20 @@
 //  Created by Martino Mamić on 17.04.25.
 //
 
+import Common
+
 public enum PersistenceError: Error, Equatable {
     case saveFailed(String)
     case loadFailed(String)
+}
+
+extension PersistenceError: AppErrorConvertible {
+    public func asAppError() -> AppError {
+        switch self {
+        case .saveFailed(_):
+            return .unknown("Failed to save data")
+        case .loadFailed(_):
+            return .unknown("Failed to load data")
+        }
+    }
 }
