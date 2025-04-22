@@ -114,6 +114,11 @@ The project implements:
 2. Open the project in Xcode
 3. Build and run
 
+Makefile can be leverage as well, run from root: `make project`
+
 ### Development Tools
 
-The project includes a Makefile with various commands to simplify development, and can be used to run them locally, like swiftlint.
+The project includes a Makefile with various commands to simplify development, and can be used to run them locally, like swiftlint and swiftformat.
+
+
+

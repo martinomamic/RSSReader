@@ -41,6 +41,8 @@
 		386A8D392DAA864A00BCD162 /* RSSReaderUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RSSReaderUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		386A8D4C2DAA86FC00BCD162 /* RSSReaderKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RSSReaderKit; sourceTree = "<group>"; };
 		38C352CA2DABC4F1008FA670 /* RSSReader.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = RSSReader.xctestplan; sourceTree = "<group>"; };
+		38C744242DB78E1300983997 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		38C744252DB78E2600983997 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -111,6 +113,8 @@
 		386A8D152DAA864900BCD162 = {
 			isa = PBXGroup;
 			children = (
+				38C744242DB78E1300983997 /* Makefile */,
+				38C744252DB78E2600983997 /* README.md */,
 				38C352CA2DABC4F1008FA670 /* RSSReader.xctestplan */,
 				386A8D4C2DAA86FC00BCD162 /* RSSReaderKit */,
 				386A8D202DAA864900BCD162 /* RSSReader */,
