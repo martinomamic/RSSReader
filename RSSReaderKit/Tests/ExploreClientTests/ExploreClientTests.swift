@@ -181,7 +181,7 @@ import ConcurrencyExtras
                 #expect(url.absoluteString == mockExploreFeed.url)
                 return mockFeed
             }
-            $0.persistenceClient.addFeed = { feed in
+            $0.persistenceClient.saveFeed = { feed in
                 #expect(feed.url.absoluteString == mockFeed.url.absoluteString)
                 #expect(feed.title == mockFeed.title)
             }
@@ -198,7 +198,7 @@ import ConcurrencyExtras
                     }
                     
                     @Dependency(\.rssClient.fetchFeed) var fetchFeed
-                    @Dependency(\.persistenceClient.addFeed) var addFeed
+                    @Dependency(\.persistenceClient.saveFeed) var addFeed
                     
                     let feed = try await fetchFeed(url)
                     try await addFeed(feed)

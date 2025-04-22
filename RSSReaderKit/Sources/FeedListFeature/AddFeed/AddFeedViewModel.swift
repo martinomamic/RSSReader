@@ -28,10 +28,9 @@ enum ExampleURL {
 @MainActor @Observable
 class AddFeedViewModel {
     @ObservationIgnored
-    @Dependency(\.persistenceClient) private var persistenceClient
-
+    @Dependency(\.persistenceClient.saveFeed) private var saveFeed
     @ObservationIgnored
-    @Dependency(\.rssClient) private var rssClient
+    @Dependency(\.rssClient.fetchFeed) private var fetchFeed
 
     private var feeds: Binding<[FeedViewModel]>
     private var addFeedTask: Task<Void, Never>?
@@ -96,11 +95,11 @@ class AddFeedViewModel {
 
         addFeedTask = Task {
             do {
-                let feed = try await rssClient.fetchFeed(url)
+                let feed = try await fetchFeed(url)
                 let feedViewModel = FeedViewModel(url: url, feed: feed)
                 feedViewModel.state = .loaded(feed)
                 feeds.wrappedValue.insert(feedViewModel, at: 0)
-                try await persistenceClient.addFeed(feed)
+                try await saveFeed(feed)
                 state = .success
             } catch {
                 state = .error(RSSErrorMapper.map(error))

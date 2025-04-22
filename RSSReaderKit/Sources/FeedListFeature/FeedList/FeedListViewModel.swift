@@ -9,7 +9,6 @@ import Common
 import Foundation
 import SwiftUI
 import PersistenceClient
-import RSSClient
 import SharedModels
 import Dependencies
 import Observation
@@ -23,9 +22,6 @@ enum FeedListState: Equatable {
 
 @MainActor @Observable
 public class FeedListViewModel {
-    @ObservationIgnored
-    @Dependency(\.rssClient) private var rssClient
-
     @ObservationIgnored
     @Dependency(\.persistenceClient) private var persistenceClient
 
@@ -41,41 +37,6 @@ public class FeedListViewModel {
     
     var showEditButton: Bool {
         !feeds.isEmpty
-    }
-
-    func displayedFeeds(showOnlyFavorites: Bool) -> [FeedViewModel] {
-        showOnlyFavorites ? favoriteFeeds : feeds
-    }
-    
-    func navigationTitle(showOnlyFavorites: Bool) -> String {
-        showOnlyFavorites ?
-            LocalizedStrings.FeedList.favoriteFeeds :
-            LocalizedStrings.FeedList.rssFeeds
-    }
-    
-    func listAccessibilityId(showOnlyFavorites: Bool) -> String {
-        showOnlyFavorites ?
-            AccessibilityIdentifier.FeedList.favoritesList :
-            AccessibilityIdentifier.FeedList.feedsList
-    }
-    
-    func emptyStateTitle(showOnlyFavorites: Bool) -> String {
-        showOnlyFavorites ?
-            LocalizedStrings.FeedList.noFavorites :
-            LocalizedStrings.FeedList.noFeeds
-    }
-    
-    func emptyStateDescription(showOnlyFavorites: Bool) -> String {
-        showOnlyFavorites ?
-            LocalizedStrings.FeedList.noFavoritesDescription :
-            LocalizedStrings.FeedList.noFeedsDescription
-    }
-    
-    func makeFeedItemsViewModel(for feed: FeedViewModel) -> FeedItemsViewModel {
-        FeedItemsViewModel(
-            feedURL: feed.url,
-            feedTitle: feed.feed.title ?? LocalizedStrings.FeedList.unnamedFeed
-        )
     }
     
     private var loadTask: Task<Void, Never>?
@@ -141,5 +102,40 @@ public class FeedListViewModel {
                 state = .error(RSSErrorMapper.map(error))
             }
         }
+    }
+    
+    func displayedFeeds(showOnlyFavorites: Bool) -> [FeedViewModel] {
+        showOnlyFavorites ? favoriteFeeds : feeds
+    }
+    
+    func navigationTitle(showOnlyFavorites: Bool) -> String {
+        showOnlyFavorites ?
+            LocalizedStrings.FeedList.favoriteFeeds :
+            LocalizedStrings.FeedList.rssFeeds
+    }
+    
+    func listAccessibilityId(showOnlyFavorites: Bool) -> String {
+        showOnlyFavorites ?
+            AccessibilityIdentifier.FeedList.favoritesList :
+            AccessibilityIdentifier.FeedList.feedsList
+    }
+    
+    func emptyStateTitle(showOnlyFavorites: Bool) -> String {
+        showOnlyFavorites ?
+            LocalizedStrings.FeedList.noFavorites :
+            LocalizedStrings.FeedList.noFeeds
+    }
+    
+    func emptyStateDescription(showOnlyFavorites: Bool) -> String {
+        showOnlyFavorites ?
+            LocalizedStrings.FeedList.noFavoritesDescription :
+            LocalizedStrings.FeedList.noFeedsDescription
+    }
+    
+    func makeFeedItemsViewModel(for feed: FeedViewModel) -> FeedItemsViewModel {
+        FeedItemsViewModel(
+            feedURL: feed.url,
+            feedTitle: feed.feed.title ?? LocalizedStrings.FeedList.unnamedFeed
+        )
     }
 }

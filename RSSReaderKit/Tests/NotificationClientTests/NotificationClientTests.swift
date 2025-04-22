@@ -18,6 +18,8 @@ import Testing
 @testable import PersistenceClient
 
 @Suite struct NotificationClientTests {
+    @Dependency(\.notificationClient) var client
+    
     func testFeed(notificationsEnabled: Bool = true) -> Feed {
         Feed(
             url: URL(string: "https://example.com/feed")!,
@@ -40,12 +42,11 @@ import Testing
     func testRequestPermissionsSuccess() async throws {
         let permissionsRequested = LockIsolated<Bool>(false)
 
-        try await withDependencies { deps in
-            deps.notificationClient.requestPermissions = {
+        try await withDependencies {
+            $0.notificationClient.requestPermissions = {
                 permissionsRequested.setValue(true)
             }
         } operation: {
-            @Dependency(\.notificationClient) var client
             try await client.requestPermissions()
             #expect(permissionsRequested.value)
         }
@@ -53,13 +54,11 @@ import Testing
 
     @Test("Request permissions denied")
     func testRequestPermissionsDenied() async throws {
-        try await withDependencies { deps in
-            deps.notificationClient.requestPermissions = {
+        try await withDependencies {
+            $0.notificationClient.requestPermissions = {
                 throw NotificationError.permissionDenied
             }
         } operation: {
-            @Dependency(\.notificationClient) var client
-
             do {
                 try await client.requestPermissions()
                 #expect(Bool(false), "Should have thrown permission denied error")
@@ -75,11 +74,11 @@ import Testing
         let item = testItem(pubDate: Date().addingTimeInterval(60))
         let notificationRequests = LockIsolated<[UNNotificationRequest]>([])
 
-        try await withDependencies { deps in
-            deps.rssClient.fetchFeedItems = { _ in [item] }
-            deps.persistenceClient.loadFeeds = { [feed] }
+        try await withDependencies {
+            $0.rssClient.fetchFeedItems = { _ in [item] }
+            $0.persistenceClient.loadFeeds = { [feed] }
             
-            deps.notificationClient = .testValue(
+            $0.notificationClient = .testValue(
                 requestPermissions: {},
                 checkForNewItems: {
                     notificationRequests.withValue { requests in
@@ -98,7 +97,6 @@ import Testing
                 }
             )
         } operation: {
-            @Dependency(\.notificationClient) var client
             try await client.checkForNewItems()
 
             let requests = notificationRequests.value
@@ -115,16 +113,15 @@ import Testing
         let item = testItem(pubDate: Date().addingTimeInterval(60))
         let notificationRequests = LockIsolated<[UNNotificationRequest]>([])
 
-        try await withDependencies { deps in
-            deps.rssClient.fetchFeedItems = { _ in [item] }
-            deps.persistenceClient.loadFeeds = { [feed] }
+        try await withDependencies {
+            $0.rssClient.fetchFeedItems = { _ in [item] }
+            $0.persistenceClient.loadFeeds = { [feed] }
             
-            deps.notificationClient = .testValue(
+            $0.notificationClient = .testValue(
                 requestPermissions: {},
                 checkForNewItems: { }
             )
         } operation: {
-            @Dependency(\.notificationClient) var client
             try await client.checkForNewItems()
             
             #expect(notificationRequests.value.isEmpty)
@@ -137,11 +134,11 @@ import Testing
         let item = testItem(pubDate: Date().addingTimeInterval(60))
         let notificationRequests = LockIsolated<[UNNotificationRequest]>([])
 
-        try await withDependencies { deps in
-            deps.rssClient.fetchFeedItems = { _ in [item] }
-            deps.persistenceClient.loadFeeds = { [feed] }
+        try await withDependencies {
+            $0.rssClient.fetchFeedItems = { _ in [item] }
+            $0.persistenceClient.loadFeeds = { [feed] }
             
-            deps.notificationClient = .testValue(
+            $0.notificationClient = .testValue(
                 requestPermissions: {},
                 checkForNewItems: { throw NotificationError.permissionDenied }
             )
@@ -167,32 +164,32 @@ import Testing
         let notifiedItems = LockIsolated<[String]>([])
         let lastCheckTime = LockIsolated<Date?>(nil)
 
-        try await withDependencies { deps in
-            deps.rssClient = .init(
+        try await withDependencies {
+            $0.rssClient = .init(
                 fetchFeed: { _ in feed },
                 fetchFeedItems: { _ in [item] }
             )
 
-            deps.persistenceClient = .init(
-                addFeed: { _ in },
+            $0.persistenceClient = .init(
+                saveFeed: { _ in },
                 updateFeed: { _ in },
                 deleteFeed: { _ in },
                 loadFeeds: { [feed] }
             )
 
-            deps.notificationClient = .init(
+            $0.notificationClient = .init(
                 requestPermissions: {},
                 checkForNewItems: {
-                    @Dependency(\.persistenceClient) var persistenceClient
-                    @Dependency(\.rssClient) var rssClient
+                    @Dependency(\.persistenceClient.loadFeeds) var loadSavedFeeds
+                    @Dependency(\.rssClient.fetchFeedItems) var fetchFeedItems
 
                     let lastCheck = lastCheckTime.value ?? Date.distantPast
 
-                    let feeds = try await persistenceClient.loadFeeds()
+                    let feeds = try await loadSavedFeeds()
                     let enabledFeeds = feeds.filter(\.notificationsEnabled)
 
                     for feed in enabledFeeds {
-                        let items = try await rssClient.fetchFeedItems(feed.url)
+                        let items = try await fetchFeedItems(feed.url)
 
                         for item in items {
                             guard let pubDate = item.pubDate else { continue }
@@ -219,7 +216,6 @@ import Testing
                 }
             )
         } operation: {
-            @Dependency(\.notificationClient) var client
             try await client.checkForNewItems()
 
             #expect(notifications.value.count == 1)

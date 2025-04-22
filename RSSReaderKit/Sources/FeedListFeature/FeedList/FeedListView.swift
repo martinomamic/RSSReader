@@ -12,8 +12,9 @@ import SharedModels
 import SwiftUI
 
 public struct FeedListView: View {
-    @State public var viewModel = FeedListViewModel()
+    @State var viewModel = FeedListViewModel()
     @State private var showingAddFeed = false
+    
     private let showOnlyFavorites: Bool
 
     public init(showOnlyFavorites: Bool = false) {

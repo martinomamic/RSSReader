@@ -11,28 +11,25 @@ public struct RoundedButton: View {
     let title: String
     let action: () -> Void
     let backgroundColor: Color
-    let isEnabled: Bool
+    let isDisabled: Bool
     
     public init(
         title: String,
         action: @escaping () -> Void,
         backgroundColor: Color = .blue,
-        isEnabled: Bool = true
+        isDisabled: Bool = false
     ) {
         self.title = title
         self.action = action
         self.backgroundColor = backgroundColor
-        self.isEnabled = isEnabled
+        self.isDisabled = isDisabled
     }
     
     public var body: some View {
-        if isEnabled {
-            Button(action: action) {
-                buttonLabel
-            }
-        } else {
+        Button(action: action) {
             buttonLabel
         }
+        .disabled(isDisabled)
     }
     
     private var buttonLabel: some View {

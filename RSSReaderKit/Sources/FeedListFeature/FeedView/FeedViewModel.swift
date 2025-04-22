@@ -18,26 +18,16 @@ enum FeedViewState: Equatable {
     case loaded(Feed)
     case error(RSSViewError)
     case empty
-
-    static func == (lhs: FeedViewState, rhs: FeedViewState) -> Bool {
-        switch (lhs, rhs) {
-        case (.loading, .loading), (.empty, .empty):
-            return true
-        case (.loaded(let lhsFeed), .loaded(let rhsFeed)):
-            return lhsFeed.id == rhsFeed.id
-        case (.error(let lhsError), .error(let rhsError)):
-            return lhsError == rhsError
-        default:
-            return false
-        }
-    }
 }
 
-@MainActor
-@Observable class FeedViewModel: Identifiable {
-    @ObservationIgnored @Dependency(\.notificationClient) private var notificationClient
-    @ObservationIgnored @Dependency(\.rssClient.fetchFeed) private var fetchFeed
-    @ObservationIgnored @Dependency(\.persistenceClient.updateFeed) private var updateFeed
+@MainActor @Observable
+class FeedViewModel: Identifiable {
+    @ObservationIgnored
+    @Dependency(\.notificationClient) private var notificationClient
+    @ObservationIgnored
+    @Dependency(\.rssClient.fetchFeed) private var fetchFeed
+    @ObservationIgnored
+    @Dependency(\.persistenceClient.updateFeed) private var updateFeed
 
     let url: URL
     var feed: Feed
@@ -112,6 +102,7 @@ extension FeedViewModel: Hashable {
         hasher.combine(url)
     }
 }
+
 #if DEBUG
 extension FeedViewModel {
     @MainActor
