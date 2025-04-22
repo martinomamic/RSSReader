@@ -16,7 +16,7 @@ import SwiftUI
 enum AddFeedState: Equatable {
     case idle
     case adding
-    case error(RSSViewError)
+    case error(AppError)
     case success
 }
 
@@ -86,7 +86,7 @@ class AddFeedViewModel {
         }
 
         guard !feeds.wrappedValue.contains(where: { $0.url == url }) else {
-            state = .error(.duplicateFeed)
+            state = .error(AppError.duplicateFeed)
             return
         }
 
@@ -102,7 +102,7 @@ class AddFeedViewModel {
                 try await saveFeed(feed)
                 state = .success
             } catch {
-                state = .error(RSSErrorMapper.map(error))
+                state = .error(ErrorUtils.toAppError(error))
             }
         }
     }

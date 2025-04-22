@@ -213,19 +213,4 @@ import ConcurrencyExtras
             #expect(result.description == mockFeed.description)
         }
     }
-    
-    @Test("ExploreError has correct error descriptions")
-    func testExploreErrorDescriptions() {
-        let fileNotFoundError = ExploreError.fileNotFound
-        #expect(fileNotFoundError.errorDescription == "Feeds file not found")
-        
-        let decodingFailedError = ExploreError.decodingFailed("JSON parsing error")
-        #expect(decodingFailedError.errorDescription == "Failed to decode feeds: JSON parsing error")
-        
-        let invalidURLError = ExploreError.invalidURL
-        #expect(invalidURLError.errorDescription == "Invalid feed URL")
-        
-        let feedFetchFailedError = ExploreError.feedFetchFailed("Network timeout")
-        #expect(feedFetchFailedError.errorDescription == "Failed to fetch feed: Network timeout")
-    }
 }

@@ -17,7 +17,7 @@ import FeedItemsFeature
 enum FeedListState: Equatable {
     case idle
     case loading
-    case error(RSSViewError)
+    case error(AppError)
 }
 
 @MainActor @Observable
@@ -59,7 +59,7 @@ public class FeedListViewModel {
                 }
                 state = .idle
             } catch {
-                state = .error(RSSErrorMapper.map(error))
+                state = .error(ErrorUtils.toAppError(error))
             }
         }
     }
@@ -88,7 +88,7 @@ public class FeedListViewModel {
             do {
                 try await persistenceClient.updateFeed(feedViewModel.feed)
             } catch {
-                state = .error(RSSErrorMapper.map(error))
+                state = .error(ErrorUtils.toAppError(error))
             }
         }
     }
@@ -99,7 +99,7 @@ public class FeedListViewModel {
             do {
                 try await persistenceClient.deleteFeed(feedViewModel.url)
             } catch {
-                state = .error(RSSErrorMapper.map(error))
+                state = .error(ErrorUtils.toAppError(error))
             }
         }
     }
@@ -139,3 +139,22 @@ public class FeedListViewModel {
         )
     }
 }
+
+#if DEBUG
+extension FeedListViewModel {
+    @MainActor
+    func waitForLoadToFinish() async {
+        await loadTask?.value
+    }
+    
+    @MainActor
+    func waitForUpdateToFinish() async {
+        await updateTask?.value
+    }
+    
+    @MainActor
+    func waitForDeleteToFinish() async {
+        await deleteTask?.value
+    }
+}
+#endif

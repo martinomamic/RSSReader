@@ -16,7 +16,7 @@ import SharedModels
 enum FeedViewState: Equatable {
     case loading
     case loaded(Feed)
-    case error(RSSViewError)
+    case error(AppError)
     case empty
 }
 
@@ -51,7 +51,7 @@ class FeedViewModel: Identifiable {
                 let fetchedFeed = try await fetchFeed(url)
                 state = .loaded(fetchedFeed)
             } catch let error {
-                state = .error(RSSErrorMapper.map(error))
+                state = .error(ErrorUtils.toAppError(error))
             }
         }
     }
@@ -64,7 +64,7 @@ class FeedViewModel: Identifiable {
             do {
                 try await updateFeed(feed)
             } catch {
-                state = .error(RSSErrorMapper.map(error))
+                state = .error(ErrorUtils.toAppError(error))
             }
         }
     }
@@ -87,7 +87,7 @@ class FeedViewModel: Identifiable {
                 }
             } catch {
                 feed.notificationsEnabled.toggle()
-                state = .error(RSSErrorMapper.map(error))
+                state = .error(ErrorUtils.toAppError(error))
             }
         }
     }

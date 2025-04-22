@@ -1,4 +1,9 @@
-import Foundation
+//
+//  LocalizedStrings.swift
+//  RSSReaderKit
+//
+//  Created by Martino Mamić on 18.04.25.
+//
 
 public enum LocalizedStrings {
     public enum FeedItems {

@@ -16,7 +16,7 @@ import Observation
 enum ExploreState: Equatable {
     case loading
     case loaded([ExploreFeed])
-    case error(RSSViewError)
+    case error(AppError)
 }
 
 @MainActor @Observable
@@ -29,7 +29,7 @@ class ExploreViewModel {
     var state: ExploreState = .loading
     var isAddingFeed = false
     var selectedFeed: ExploreFeed?
-    var feedError: RSSViewError?
+    var feedError: AppError?
     var addedFeedURLs: Set<String> = []
 
     private var loadTask: Task<Void, Never>?
@@ -51,7 +51,7 @@ class ExploreViewModel {
                 self.addedFeedURLs = savedURLs
                 self.state = .loaded(feeds)
             } catch {
-                state = .error(RSSErrorMapper.map(error))
+                state = .error(ErrorUtils.toAppError(error))
             }
         }
     }
@@ -83,12 +83,9 @@ class ExploreViewModel {
                 _ = try await exploreClient.addFeed(exploreFeed)
                 isAddingFeed = false
                 addedFeedURLs.insert(exploreFeed.url)
-            } catch let error as RSSViewError {
-                isAddingFeed = false
-                feedError = error
             } catch {
                 isAddingFeed = false
-                feedError = .unknown(error.localizedDescription)
+                feedError = ErrorUtils.toAppError(error)
             }
         }
     }

@@ -15,7 +15,7 @@ import UIKit
 enum FeedItemsState: Equatable {
     case loading
     case loaded([FeedItem])
-    case error(RSSViewError)
+    case error(AppError)
     case empty
 }
 
@@ -31,7 +31,7 @@ public class FeedItemsViewModel: Identifiable {
 
     var state: FeedItemsState = .loading
 
-    private var loadTask: Task<Void, Never>?
+    var loadTask: Task<Void, Never>?
 
     public init(feedURL: URL, feedTitle: String) {
         self.feedURL = feedURL
@@ -52,7 +52,7 @@ public class FeedItemsViewModel: Identifiable {
                     state = .loaded(items)
                 }
             } catch {
-                state = .error(RSSErrorMapper.map(error))
+                state = .error(ErrorUtils.toAppError(error))
             }
         }
     }
