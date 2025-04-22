@@ -11,19 +11,19 @@ Built with Swift and SwiftUI, using MVVM for handling logic within the packages 
 ## Screenshots
 
 <p align="center">
-  <img src="Screenshots/Main%20feeds.png" width="200" alt="Feed List">
-  <img src="Screenshots/Main%20feeds%20edit%20mode.png" width="200" alt="Edit Mode">
-  <img src="Screenshots/Add%20feed.png" width="200" alt="Add Feed">
+  <img src="RSSReader/Screenshots/Main%20feeds.png" width="200" alt="Feed List">
+  <img src="RSSReader/Screenshots/Main%20feeds%20edit%20mode.png" width="200" alt="Edit Mode">
+  <img src="RSSReader/Screenshots/Add%20feed.png" width="200" alt="Add Feed">
 </p>
 
 <p align="center">
-  <img src="Screenshots/Favorites.png" width="200" alt="Favorites">
-  <img src="Screenshots/Explore%20feeds.png" width="200" alt="Explore">
-  <img src="Screenshots/Notification%20debug.png" width="200" alt="Debug">
+  <img src="RSSReader/Screenshots/Favorites.png" width="200" alt="Favorites">
+  <img src="RSSReader/Screenshots/Explore%20feeds.png" width="200" alt="Explore">
+  <img src="RSSReader/Screenshots/Notification%20debug.png" width="200" alt="Debug">
 </p>
 
 <p align="center">
-  <img src="Screenshots/Duplicate%20feed%20check.png" width="200" alt="Duplicate Feed Error">
+  <img src="RSSReader/Screenshots/Duplicate%20feed%20check.png" width="200" alt="Duplicate Feed Error">
 </p>
 
 ## Assignment Requirements
