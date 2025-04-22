@@ -13,24 +13,23 @@ import ExploreClient
 import PersistenceClient
 import Observation
 
-@MainActor
-@Observable public class ExploreViewModel {
+enum ExploreState: Equatable {
+    case loading
+    case loaded([ExploreFeed])
+    case error(AppError)
+}
+
+@MainActor @Observable
+class ExploreViewModel {
     @ObservationIgnored
     @Dependency(\.exploreClient) private var exploreClient
-
     @ObservationIgnored
-    @Dependency(\.persistenceClient) private var persistenceClient
+    @Dependency(\.persistenceClient.loadFeeds) private var loadSavedFeeds
 
-    enum State: Equatable {
-        case loading
-        case loaded([ExploreFeed])
-        case error(RSSViewError)
-    }
-
-    var state: State = .loading
+    var state: ExploreState = .loading
     var isAddingFeed = false
     var selectedFeed: ExploreFeed?
-    var feedError: RSSViewError?
+    var feedError: AppError?
     var addedFeedURLs: Set<String> = []
 
     private var loadTask: Task<Void, Never>?
@@ -44,17 +43,15 @@ import Observation
 
         loadTask = Task {
             do {
-                // Load feeds from JSON
                 let feeds = try await exploreClient.loadExploreFeeds()
 
-                // Load saved feeds to check which ones are already added
-                let savedFeeds = try await persistenceClient.loadFeeds()
+                let savedFeeds = try await loadSavedFeeds()
                 let savedURLs = Set(savedFeeds.map { $0.url.absoluteString })
 
                 self.addedFeedURLs = savedURLs
                 self.state = .loaded(feeds)
             } catch {
-                state = .error(RSSErrorMapper.map(error))
+                state = .error(ErrorUtils.toAppError(error))
             }
         }
     }
@@ -85,14 +82,10 @@ import Observation
             do {
                 _ = try await exploreClient.addFeed(exploreFeed)
                 isAddingFeed = false
-                // Mark this feed as added
                 addedFeedURLs.insert(exploreFeed.url)
-            } catch let error as RSSViewError {
-                isAddingFeed = false
-                feedError = error
             } catch {
                 isAddingFeed = false
-                feedError = .unknown(error.localizedDescription)
+                feedError = ErrorUtils.toAppError(error)
             }
         }
     }

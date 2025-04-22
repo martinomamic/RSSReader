@@ -4,7 +4,7 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>com.maminjo.feedrefresh</string>
+		<string>hr.maminjo.RSSReader.feedrefresh</string>
 	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
@@ -14,7 +14,6 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
-		<string>processing</string>
 	</array>
 </dict>
 </plist>

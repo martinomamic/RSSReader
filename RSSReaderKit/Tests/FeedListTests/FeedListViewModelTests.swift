@@ -40,22 +40,24 @@ import Common
         return viewModel
     }
     
-//    @Test("Load feeds successfully")
-//    func testDisplayFeeds() async throws {
-//        let mockFeed = testFeed()
-//        let viewModel = await createViewModelWithFeeds(feeds: [mockFeed])
-//        
-//        await withDependencies {
-//            $0.persistenceClient.loadFeeds = { [mockFeed] }
-//        } operation: {
-//            await viewModel.loadFeeds()
-//            
-//            #expect(await viewModel.feeds.count == 0)
-//            #expect(await viewModel.feeds[0].feed.title == "Test Feed")
-//            #expect(await viewModel.feeds[0].feed.url.absoluteString == "https://example.com")
-//            #expect(await viewModel.state == .idle)
-//        }
-//    }
+    @Test("Load feeds successfully")
+    func testDisplayFeeds() async throws {
+        let mockFeed = testFeed()
+        let viewModel = await createViewModelWithFeeds(feeds: [mockFeed])
+        
+        await withDependencies {
+            $0.persistenceClient.loadFeeds = { [mockFeed] }
+        } operation: {
+            await viewModel.loadFeeds()
+            
+            await viewModel.waitForLoadToFinish()
+            
+            #expect(await viewModel.feeds.count == 1)
+            #expect(await viewModel.feeds[0].feed.title == "Test Feed")
+            #expect(await viewModel.feeds[0].feed.url.absoluteString == "https://example.com")
+            #expect(await viewModel.state == .idle)
+        }
+    }
     
     @Test("Filter favorite feeds correctly")
     func testFavoriteFeeds() async throws {
@@ -102,6 +104,23 @@ import Common
         } operation: {
             #expect(await viewModel.feeds.count == 1)
             await viewModel.removeFeed(at: IndexSet(integer: 0))
+            await viewModel.waitForDeleteToFinish()
+            #expect(await viewModel.feeds.isEmpty)
+        }
+    }
+    
+    @Test("Remove feed from favorites successfully")
+    func testRemoveFeedFromFavoites() async throws {
+        let mockFeed = testFeed(isFavorite: true)
+        let viewModel = await createViewModelWithFeeds(feeds: [mockFeed])
+
+        await withDependencies {
+            $0.persistenceClient.loadFeeds = { [mockFeed] }
+            $0.persistenceClient.deleteFeed = { _ in }
+        } operation: {
+            #expect(await viewModel.feeds.count == 1)
+            await viewModel.removeFeed(at: IndexSet(integer: 0))
+            await viewModel.waitForDeleteToFinish()
             #expect(await viewModel.feeds.isEmpty)
         }
     }

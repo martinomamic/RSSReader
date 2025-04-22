@@ -59,7 +59,7 @@ import Common
         let feed = testFeed()
         let feedViewModel = makeFeedViewModel(
             feed: feed,
-            state: .error(RSSViewError.networkError("Network connection failed"))
+            state: .error(AppError.networkError)
         )
         
         let view = FeedView(viewModel: feedViewModel)

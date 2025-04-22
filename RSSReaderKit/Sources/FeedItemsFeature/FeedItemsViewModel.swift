@@ -12,19 +12,26 @@ import RSSClient
 import SharedModels
 import UIKit
 
-@Observable @MainActor
+enum FeedItemsState: Equatable {
+    case loading
+    case loaded([FeedItem])
+    case error(AppError)
+    case empty
+}
+
+@MainActor @Observable
 public class FeedItemsViewModel: Identifiable {
     @ObservationIgnored
-    @Dependency(\.rssClient) private var rssClient
-    @ObservationIgnored
     @Dependency(\.openURL) private var openURL
+    @ObservationIgnored
+    @Dependency(\.rssClient.fetchFeedItems) private var fetchFeedItems
 
-    public let feedURL: URL
     public let feedTitle: String
+    public let feedURL: URL
 
     var state: FeedItemsState = .loading
 
-    private var loadTask: Task<Void, Never>?
+    var loadTask: Task<Void, Never>?
 
     public init(feedURL: URL, feedTitle: String) {
         self.feedURL = feedURL
@@ -37,7 +44,7 @@ public class FeedItemsViewModel: Identifiable {
 
         loadTask = Task {
             do {
-                let items = try await rssClient.fetchFeedItems(feedURL)
+                let items = try await fetchFeedItems(feedURL)
 
                 if items.isEmpty {
                     state = .empty
@@ -45,7 +52,7 @@ public class FeedItemsViewModel: Identifiable {
                     state = .loaded(items)
                 }
             } catch {
-                state = .error(RSSErrorMapper.map(error))
+                state = .error(ErrorUtils.toAppError(error))
             }
         }
     }

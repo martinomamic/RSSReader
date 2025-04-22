@@ -36,8 +36,8 @@ import Testing
             let feed1 = createTestFeed()
             let feed2 = createTestFeed(url: "https://example.com/feed2", title: "Test Feed 2")
 
-            try await client.addFeed(feed1)
-            try await client.addFeed(feed2)
+            try await client.saveFeed(feed1)
+            try await client.saveFeed(feed2)
 
             let loadedFeeds = try await client.loadFeeds()
 
@@ -54,7 +54,7 @@ import Testing
         try await withDependencies { _ in }
         operation: {
             let feed = createTestFeed(isFavorite: false)
-            try await client.addFeed(feed)
+            try await client.saveFeed(feed)
 
             var loadedFeeds = try await client.loadFeeds()
             #expect(loadedFeeds.count == 1)
@@ -77,8 +77,8 @@ import Testing
             let feed1 = createTestFeed()
             let feed2 = createTestFeed(url: "https://example.com/feed2", title: "Test Feed 2")
 
-            try await client.addFeed(feed1)
-            try await client.addFeed(feed2)
+            try await client.saveFeed(feed1)
+            try await client.saveFeed(feed2)
 
             var loadedFeeds = try await client.loadFeeds()
             #expect(loadedFeeds.count == 2)

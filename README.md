@@ -1,7 +1,30 @@
 # RSS Reader
 
+![Swift](https://img.shields.io/badge/Swift-6.0-orange.svg)
+![Platforms](https://img.shields.io/badge/Platform-iOS%2017-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+![Coverage](https://img.shields.io/badge/Coverage-64%25-yellow.svg)
+
 An iOS application for reading and managing RSS feeds, a project that follows a modular architecture using a Swift Package core with clean architecture principles.
 Built with Swift and SwiftUI, using MVVM for handling logic within the packages modules. 
+
+## Screenshots
+
+<p align="center">
+  <img src="Screenshots/Main%20feeds.png" width="200" alt="Feed List">
+  <img src="Screenshots/Main%20feeds%20edit%20mode.png" width="200" alt="Edit Mode">
+  <img src="Screenshots/Add%20feed.png" width="200" alt="Add Feed">
+</p>
+
+<p align="center">
+  <img src="Screenshots/Favorites.png" width="200" alt="Favorites">
+  <img src="Screenshots/Explore%20feeds.png" width="200" alt="Explore">
+  <img src="Screenshots/Notification%20debug.png" width="200" alt="Debug">
+</p>
+
+<p align="center">
+  <img src="Screenshots/Duplicate%20feed%20check.png" width="200" alt="Duplicate Feed Error">
+</p>
 
 ## Assignment Requirements
 
@@ -23,7 +46,7 @@ Built with Swift and SwiftUI, using MVVM for handling logic within the packages 
 - Currently it works by using the debug meenu option to trigger the task manually, shows notifications for new articles in the subscribed feeds
 
 ### Potential Improvements
-- Raise coverage to 80% and maintain it
+- Raise coverage to 80% (currently at ca 64%) and maintain it
 - Handling background tasks better (maybe creating a proper modern async wrapper), current solution is still buggy
 - Deep linking from the notifications to the articles
 - Enable opening feed items in webview and disabling navigation within
@@ -93,4 +116,3 @@ The project implements:
 ### Development Tools
 
 The project includes a Makefile with various commands to simplify development, and can be used to run them locally, like swiftlint.
-

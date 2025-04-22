@@ -310,12 +310,12 @@ private extension NotificationDebugView {
             isRefreshing = true
             refreshResult = "Testing feed parsing..."
 
-            @Dependency(\.persistenceClient) var persistenceClient
-            @Dependency(\.rssClient) var rssClient
+            @Dependency(\.persistenceClient.loadFeeds) var loadSavedFeeds
+            @Dependency(\.rssClient.fetchFeedItems) var fetchFeedItems
 
             do {
                 var results = ""
-                let feeds = try await persistenceClient.loadFeeds()
+                let feeds = try await loadSavedFeeds()
                 results += "📊 Stored feeds: \(feeds.count)\n"
 
                 if feeds.isEmpty {
@@ -323,7 +323,7 @@ private extension NotificationDebugView {
                 } else {
                     for (index, feed) in feeds.enumerated() {
                         do {
-                            let items = try await rssClient.fetchFeedItems(feed.url)
+                            let items = try await fetchFeedItems(feed.url)
                             let status = "✅ \(items.count) items"
                             results += "\(index + 1). \(feed.title ?? feed.url.absoluteString): \(status)\n"
                         } catch {

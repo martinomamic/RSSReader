@@ -30,6 +30,7 @@ let package = Package(
             name: "RSSClient",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                "Common",
                 "SharedModels"
             ]
         ),
@@ -49,7 +50,6 @@ let package = Package(
         .target(
             name: "Common",
             dependencies: [
-                "RSSClient",
                 "Kingfisher"
             ]
         ),
@@ -58,7 +58,10 @@ let package = Package(
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
-                "Common"
+                "Common",
+                "ExploreClient",
+                "PersistenceClient",
+                "RSSClient",
             ],
             exclude: ["__Snapshots__"]
         ),
@@ -66,6 +69,8 @@ let package = Package(
             name: "ExploreClient",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                "Common",
+                "NotificationClient",
                 "PersistenceClient",
                 "RSSClient",
                 "SharedModels"
@@ -167,6 +172,7 @@ let package = Package(
             name: "PersistenceClient",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
+                "Common",
                 "SharedModels"
             ]
         ),
