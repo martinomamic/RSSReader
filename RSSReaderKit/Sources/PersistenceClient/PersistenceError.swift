@@ -8,17 +8,14 @@
 import Common
 
 public enum PersistenceError: Error, Equatable {
-    case saveFailed(String)
-    case loadFailed(String)
+    case operationFailed(String)
 }
 
 extension PersistenceError: AppErrorConvertible {
     public func asAppError() -> AppError {
         switch self {
-        case .saveFailed(_):
-            return .unknown("Failed to save data")
-        case .loadFailed(_):
-            return .unknown("Failed to load data")
+        case let .operationFailed(message):
+            return .unknown(message)
         }
     }
 }

@@ -12,7 +12,7 @@ import SharedModels
 @Model
 final class PersistableFeed {
     @Attribute(.unique)
-    var url: URL
+    var urlString: String
     var title: String?
     var feedDescription: String?
     var imageURLString: String?
@@ -20,40 +20,18 @@ final class PersistableFeed {
     var notificationsEnabled: Bool
 
     init(
-        title: String?,
         url: URL,
+        title: String?,
         feedDescription: String?,
         imageURLString: String?,
         isFavorite: Bool,
         notificationsEnabled: Bool = false
     ) {
+        self.urlString = url.absoluteString
         self.title = title
-        self.url = url
         self.feedDescription = feedDescription
         self.imageURLString = imageURLString
         self.isFavorite = isFavorite
         self.notificationsEnabled = notificationsEnabled
-    }
-
-    convenience init(from feed: Feed) {
-        self.init(
-            title: feed.title,
-            url: feed.url,
-            feedDescription: feed.description,
-            imageURLString: feed.imageURL?.absoluteString,
-            isFavorite: feed.isFavorite,
-            notificationsEnabled: feed.notificationsEnabled
-        )
-    }
-
-    func toFeed() -> Feed {
-        Feed(
-            url: url,
-            title: title,
-            description: feedDescription,
-            imageURL: imageURLString.flatMap(URL.init(string:)),
-            isFavorite: isFavorite,
-            notificationsEnabled: notificationsEnabled
-        )
     }
 }

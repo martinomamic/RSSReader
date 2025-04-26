@@ -24,19 +24,19 @@ extension PersistenceClient {
         return PersistenceClient(
             saveFeed: { feed async throws in
                 let context = ModelContext(modelContainer)
-                let persistableFeed = PersistableFeed(from: feed)
+                let persistableFeed = FeedConverter.toPersistable(feed)
                 context.insert(persistableFeed)
 
                 do {
                     try context.save()
                 } catch {
-                    throw PersistenceError.saveFailed(error.localizedDescription)
+                    throw PersistenceError.operationFailed("Failed to save feed")
                 }
             },
             updateFeed: { feed async throws in
                 let context = ModelContext(modelContainer)
                 let feedURL = feed.url
-                let predicate = #Predicate<PersistableFeed> { $0.url == feedURL }
+                let predicate = #Predicate<PersistableFeed> { $0.urlString == feedURL.absoluteString }
                 let descriptor = FetchDescriptor<PersistableFeed>(predicate: predicate)
 
                 do {
@@ -53,12 +53,12 @@ extension PersistenceClient {
 
                     try context.save()
                 } catch {
-                    throw PersistenceError.saveFailed(error.localizedDescription)
+                    throw PersistenceError.operationFailed("Failed updating feed")
                 }
             },
             deleteFeed: { url async throws in
                 let context = ModelContext(modelContainer)
-                let predicate = #Predicate<PersistableFeed> { $0.url == url }
+                let predicate = #Predicate<PersistableFeed> { $0.urlString == url.absoluteString }
                 let descriptor = FetchDescriptor<PersistableFeed>(predicate: predicate)
 
                 do {
@@ -69,7 +69,7 @@ extension PersistenceClient {
                     context.delete(existingFeed)
                     try context.save()
                 } catch {
-                    throw PersistenceError.saveFailed(error.localizedDescription)
+                    throw PersistenceError.operationFailed("Failed deleting feed")
                 }
             },
             loadFeeds: { () async throws in
@@ -78,9 +78,9 @@ extension PersistenceClient {
 
                 do {
                     let persistableFeeds = try context.fetch(descriptor)
-                    return persistableFeeds.reversed().map { $0.toFeed() }
+                    return try persistableFeeds.reversed().map { try FeedConverter.fromPersistable($0) }
                 } catch {
-                    throw PersistenceError.loadFailed(error.localizedDescription)
+                    throw PersistenceError.operationFailed("Failed loading feeds")
                 }
             }
         )

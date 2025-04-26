@@ -95,7 +95,7 @@ import Common
     @Test("FeedListView with error state")
     func testFeedListViewError() async throws {
         withDependencies {
-            $0.persistenceClient.loadFeeds = { throw PersistenceError.loadFailed("Failed to load feeds") }
+            $0.persistenceClient.loadFeeds = { throw PersistenceError.operationFailed("Failed to load feeds") }
         } operation: {
             let view = FeedListView()
                 .frame(width: 375, height: 600)
