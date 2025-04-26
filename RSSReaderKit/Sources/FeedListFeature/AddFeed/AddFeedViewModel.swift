@@ -8,8 +8,6 @@
 import Common
 import Dependencies
 import Foundation
-import PersistenceClient
-import RSSClient
 import SharedModels
 import SwiftUI
 
@@ -28,44 +26,39 @@ enum ExampleURL {
 @MainActor @Observable
 class AddFeedViewModel {
     @ObservationIgnored
-    @Dependency(\.persistenceClient.saveFeed) private var saveFeed
-    @ObservationIgnored
-    @Dependency(\.rssClient.fetchFeed) private var fetchFeed
-
-    private var feeds: Binding<[FeedViewModel]>
+    @Dependency(\.feedRepository) private var feedRepository
+    
     private var addFeedTask: Task<Void, Never>?
-
+    
     var urlString: String = ""
     var state: AddFeedState = .idle
-
-    init(feeds: Binding<[FeedViewModel]>) {
-        self.feeds = feeds
-    }
-
+    
+    init() {}
+    
     var isAddButtonDisabled: Bool {
         !isValidURL || state == .adding
     }
-
+    
     var isLoading: Bool {
         state == .adding
     }
-
+    
     var shouldDismiss: Bool {
         state == .success
     }
-
+    
     var errorAlertBinding: Binding<Bool> {
         .init(
             get: { if case .error = self.state { return true } else { return false } },
             set: { show in if !show { self.dismissError() } }
         )
     }
-
+    
     private var isValidURL: Bool {
         guard !urlString.isEmpty else { return false }
         return URL(string: urlString) != nil
     }
-
+    
     func setExampleURL(_ example: ExampleURL) {
         switch example {
         case .bbc:
@@ -74,32 +67,23 @@ class AddFeedViewModel {
             urlString = Constants.URLs.nbcNews
         }
     }
-
+    
     func dismissError() {
         state = .idle
     }
-
+    
     func addFeed() {
         guard let url = URL(string: urlString) else {
             state = .error(.invalidURL)
             return
         }
-
-        guard !feeds.wrappedValue.contains(where: { $0.url == url }) else {
-            state = .error(AppError.duplicateFeed)
-            return
-        }
-
+        
         addFeedTask?.cancel()
         state = .adding
-
+        
         addFeedTask = Task {
             do {
-                let feed = try await fetchFeed(url)
-                let feedViewModel = FeedViewModel(url: url, feed: feed)
-                feedViewModel.state = .loaded(feed)
-                feeds.wrappedValue.insert(feedViewModel, at: 0)
-                try await saveFeed(feed)
+                try await feedRepository.add(url)
                 state = .success
             } catch {
                 state = .error(ErrorUtils.toAppError(error))

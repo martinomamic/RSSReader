@@ -35,9 +35,6 @@ public struct FeedListView: View {
             }
         }
         .testId(viewModel.listAccessibilityId(showOnlyFavorites: showOnlyFavorites))
-        .onAppear {
-            viewModel.loadFeeds()
-        }
         .navigationTitle(viewModel.navigationTitle(showOnlyFavorites: showOnlyFavorites))
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: FeedViewModel.self) { feed in
@@ -64,7 +61,7 @@ public struct FeedListView: View {
             }
         }
         .sheet(isPresented: $showingAddFeed) {
-            AddFeedView(feeds: $viewModel.feeds)
+            AddFeedView()
         }
         .overlay {
             if viewModel.displayedFeeds(showOnlyFavorites: showOnlyFavorites).isEmpty {

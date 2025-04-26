@@ -6,13 +6,13 @@
 //
 
 import Common
-import Foundation
-import SwiftUI
-import PersistenceClient
-import SharedModels
 import Dependencies
-import Observation
 import FeedItemsFeature
+import FeedRepository
+import Foundation
+import Observation
+import SharedModels
+import SwiftUI
 
 enum FeedListState: Equatable {
     case idle
@@ -23,13 +23,16 @@ enum FeedListState: Equatable {
 @MainActor @Observable
 public class FeedListViewModel {
     @ObservationIgnored
-    @Dependency(\.persistenceClient) private var persistenceClient
-
-    var feeds: [FeedViewModel] = []
+    @Dependency(\.feedRepository) private var feedRepository
+    
+    private(set) var feeds: [FeedViewModel] = []
+    
     var favoriteFeeds: [FeedViewModel] {
         feeds.filter { $0.feed.isFavorite }
     }
     var state: FeedListState = .idle
+    
+    private var feedStreamTask: Task<Void, Never>?
 
     var isEmptyState: Bool {
         displayedFeeds(showOnlyFavorites: false).isEmpty
@@ -38,25 +41,31 @@ public class FeedListViewModel {
     var showEditButton: Bool {
         !feeds.isEmpty
     }
+
+    public init() {
+        setupFeedStream()
+    }
     
-    private var loadTask: Task<Void, Never>?
-    private var updateTask: Task<Void, Never>?
-    private var deleteTask: Task<Void, Never>?
-
-    public init() {}
-
-    func loadFeeds() {
-        feeds.removeAll()
-        state = .loading
-        loadTask?.cancel()
-        loadTask = Task {
-            do {
-                let savedFeeds = try await persistenceClient.loadFeeds()
-                feeds = savedFeeds.map { feed in
-                    let viewModel = FeedViewModel(url: feed.url, feed: feed)
-                    viewModel.state = .loaded(feed)
-                    return viewModel
+    private func setupFeedStream() {
+        feedStreamTask?.cancel()
+        feedStreamTask = Task {
+            for await updatedFeeds in feedRepository.feedsStream {
+                withAnimation {
+                    self.feeds = updatedFeeds.map { feed in
+                        let viewModel = FeedViewModel(url: feed.url, feed: feed)
+                        viewModel.state = .loaded(feed)
+                        return viewModel
+                    }
                 }
+            }
+        }
+    }
+
+    func refresh() {
+        state = .loading
+        Task {
+            do {
+                try await feedRepository.refreshAll()
                 state = .idle
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
@@ -68,36 +77,26 @@ public class FeedListViewModel {
         if fromFavorites {
             let feedsToRemoveFromFavorites = indexSet.map { favoriteFeeds[$0] }
             for feed in feedsToRemoveFromFavorites {
-                if let index = feeds.firstIndex(where: { $0.url == feed.url }) {
-                    feeds[index].feed.isFavorite = false
-                    toggleFavorite(feeds[index])
-                }
+                toggleFavorite(feed)
             }
         } else {
             let feedsToDelete = indexSet.map { feeds[$0] }
             for feed in feedsToDelete {
-                deleteFeed(feed)
+                Task {
+                    do {
+                        try await feedRepository.delete(feed.url)
+                    } catch {
+                        state = .error(ErrorUtils.toAppError(error))
+                    }
+                }
             }
-            feeds.remove(atOffsets: indexSet)
         }
     }
 
     private func toggleFavorite(_ feedViewModel: FeedViewModel) {
-        updateTask?.cancel()
-        updateTask = Task {
+        Task {
             do {
-                try await persistenceClient.updateFeed(feedViewModel.feed)
-            } catch {
-                state = .error(ErrorUtils.toAppError(error))
-            }
-        }
-    }
-
-    private func deleteFeed(_ feedViewModel: FeedViewModel) {
-        deleteTask?.cancel()
-        deleteTask = Task {
-            do {
-                try await persistenceClient.deleteFeed(feedViewModel.url)
+                try await feedRepository.toggleFavorite(feedViewModel.url)
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }
@@ -144,17 +143,7 @@ public class FeedListViewModel {
 extension FeedListViewModel {
     @MainActor
     func waitForLoadToFinish() async {
-        await loadTask?.value
-    }
-    
-    @MainActor
-    func waitForUpdateToFinish() async {
-        await updateTask?.value
-    }
-    
-    @MainActor
-    func waitForDeleteToFinish() async {
-        await deleteTask?.value
+        await feedStreamTask?.value
     }
 }
 #endif

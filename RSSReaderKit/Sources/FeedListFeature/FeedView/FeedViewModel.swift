@@ -9,8 +9,6 @@ import Common
 import Dependencies
 import Foundation
 import NotificationClient
-import PersistenceClient
-import RSSClient
 import SharedModels
 
 enum FeedViewState: Equatable {
@@ -25,9 +23,7 @@ class FeedViewModel: Identifiable {
     @ObservationIgnored
     @Dependency(\.notificationClient) private var notificationClient
     @ObservationIgnored
-    @Dependency(\.rssClient.fetchFeed) private var fetchFeed
-    @ObservationIgnored
-    @Dependency(\.persistenceClient.updateFeed) private var updateFeed
+    @Dependency(\.feedRepository) private var feedRepository
 
     let url: URL
     var feed: Feed
@@ -48,9 +44,9 @@ class FeedViewModel: Identifiable {
 
         loadTask = Task {
             do {
-                let fetchedFeed = try await fetchFeed(url)
+                let fetchedFeed = try await feedRepository.fetch(url)
                 state = .loaded(fetchedFeed)
-            } catch let error {
+            } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }
         }
@@ -62,7 +58,7 @@ class FeedViewModel: Identifiable {
 
         toggleFavoriteTask = Task {
             do {
-                try await updateFeed(feed)
+                try await feedRepository.toggleFavorite(url)
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }
@@ -78,8 +74,7 @@ class FeedViewModel: Identifiable {
                     try await notificationClient.requestPermissions()
                 }
 
-                feed.notificationsEnabled.toggle()
-                try await updateFeed(feed)
+                try await feedRepository.toggleNotifications(url)
 
                 if feed.notificationsEnabled {
                     BackgroundRefreshClient.shared.scheduleAppRefresh()

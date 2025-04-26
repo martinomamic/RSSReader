@@ -13,6 +13,7 @@ let package = Package(
         .library(name: "ExploreFeature", targets: ["ExploreFeature"]),
         .library(name: "FeedItemsFeature", targets: ["FeedItemsFeature"]),
         .library(name: "FeedListFeature", targets: ["FeedListFeature"]),
+        .library(name: "FeedRepository", targets: ["FeedRepository"]),
         .library(name: "NotificationClient", targets: ["NotificationClient"]),
         .library(name: "PersistenceClient", targets: ["PersistenceClient"]),
         .library(name: "RSSClient", targets: ["RSSClient"]),
@@ -110,8 +111,8 @@ let package = Package(
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 "Common",
                 "FeedItemsFeature",
-                "PersistenceClient",
-                "RSSClient",
+                "FeedRepository",
+                "NotificationClient",
                 "SharedModels"
             ]
         ),
@@ -143,6 +144,16 @@ let package = Package(
                 "NotificationClient"
             ],
             exclude: ["__Snapshots__"]
+        ),
+        .target(
+            name: "FeedRepository",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "Common",
+                "PersistenceClient",
+                "RSSClient",
+                "SharedModels"
+            ]
         ),
         .target(
             name: "NotificationClient",

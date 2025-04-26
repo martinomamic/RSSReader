@@ -10,20 +10,20 @@ import SharedModels
 import SwiftData
 
 extension PersistenceClient {
-    public static func live() -> PersistenceClient {
-        let modelContainer: ModelContainer
-
+    private static let modelContainer: ModelContainer = {
         do {
             let schema = Schema([PersistableFeed.self])
             let modelConfiguration = ModelConfiguration(schema: schema)
-            modelContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
             fatalError("Failed to create model container: \(error.localizedDescription)")
         }
-
+    }()
+    
+    public static func live() -> PersistenceClient {
         return PersistenceClient(
             saveFeed: { feed async throws in
-                let context = ModelContext(modelContainer)
+                let context = ModelContext(Self.modelContainer)
                 let persistableFeed = PersistableFeed(from: feed)
                 context.insert(persistableFeed)
 
@@ -34,7 +34,7 @@ extension PersistenceClient {
                 }
             },
             updateFeed: { feed async throws in
-                let context = ModelContext(modelContainer)
+                let context = ModelContext(Self.modelContainer)
                 let feedURL = feed.url
                 let predicate = #Predicate<PersistableFeed> { $0.url == feedURL }
                 let descriptor = FetchDescriptor<PersistableFeed>(predicate: predicate)
@@ -43,8 +43,6 @@ extension PersistenceClient {
                     guard let existingFeed = try context.fetch(descriptor).first else {
                         return
                     }
-                    // I assumed only isFavorite can change, but maybe the feed content can be modified
-                    // if the URL changes it's a different feed, but maybe I should resolve that as well
                     existingFeed.title = feed.title
                     existingFeed.feedDescription = feed.description
                     existingFeed.imageURLString = feed.imageURL?.absoluteString
@@ -57,7 +55,7 @@ extension PersistenceClient {
                 }
             },
             deleteFeed: { url async throws in
-                let context = ModelContext(modelContainer)
+                let context = ModelContext(Self.modelContainer)
                 let predicate = #Predicate<PersistableFeed> { $0.url == url }
                 let descriptor = FetchDescriptor<PersistableFeed>(predicate: predicate)
 
@@ -73,7 +71,7 @@ extension PersistenceClient {
                 }
             },
             loadFeeds: { () async throws in
-                let context = ModelContext(modelContainer)
+                let context = ModelContext(Self.modelContainer)
                 let descriptor = FetchDescriptor<PersistableFeed>()
 
                 do {
