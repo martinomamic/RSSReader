@@ -56,8 +56,7 @@ extension FeedRepository: DependencyKey {
                 }
                 continuation.continuation.yield(feedStore.value)
             },
-            refreshAll: {
-                // In test, just yield current feeds
+            loadInitialFeeds:    {
                 continuation.continuation.yield(feedStore.value)
             }
         )

@@ -11,5 +11,5 @@ public struct FeedRepository: Sendable {
     public var update: @Sendable (Feed) async throws -> Void
     public var toggleFavorite: @Sendable (URL) async throws -> Void
     public var toggleNotifications: @Sendable (URL) async throws -> Void
-    public var refreshAll: @Sendable () async throws -> Void
+    public var loadInitialFeeds: @Sendable () async throws -> Void
 }

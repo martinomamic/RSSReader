@@ -43,7 +43,18 @@ public class FeedListViewModel {
     }
 
     public init() {
-        setupFeedStream()
+        Task {
+            do {
+                state = .loading
+                // First ensure initial feeds are loaded
+                try await feedRepository.loadInitialFeeds()
+                state = .idle
+                // Then setup stream for subsequent updates
+                setupFeedStream()
+            } catch {
+                state = .error(ErrorUtils.toAppError(error))
+            }
+        }
     }
     
     private func setupFeedStream() {
@@ -57,18 +68,6 @@ public class FeedListViewModel {
                         return viewModel
                     }
                 }
-            }
-        }
-    }
-
-    func refresh() {
-        state = .loading
-        Task {
-            do {
-                try await feedRepository.refreshAll()
-                state = .idle
-            } catch {
-                state = .error(ErrorUtils.toAppError(error))
             }
         }
     }
