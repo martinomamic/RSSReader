@@ -26,12 +26,10 @@ extension PersistenceClient {
                 let context = ModelContext(Self.modelContainer)
                 let persistableFeed = PersistableFeed(from: feed)
                 context.insert(persistableFeed)
-
-                do {
-                    try context.save()
-                } catch {
-                    throw PersistenceError.saveFailed(error.localizedDescription)
-                }
+                print("DEBUG: PersistenceClient saveFeed: Inserting \(feed.url)")
+                try context.save()
+                let allFeeds = try context.fetch(FetchDescriptor<PersistableFeed>())
+                print("DEBUG: Persistence feeds after save: \(allFeeds.map { $0.url })")
             },
             updateFeed: { feed async throws in
                 let context = ModelContext(Self.modelContainer)
@@ -39,47 +37,46 @@ extension PersistenceClient {
                 let predicate = #Predicate<PersistableFeed> { $0.url == feedURL }
                 let descriptor = FetchDescriptor<PersistableFeed>(predicate: predicate)
 
-                do {
-                    guard let existingFeed = try context.fetch(descriptor).first else {
-                        return
-                    }
-                    existingFeed.title = feed.title
-                    existingFeed.feedDescription = feed.description
-                    existingFeed.imageURLString = feed.imageURL?.absoluteString
-                    existingFeed.isFavorite = feed.isFavorite
-                    existingFeed.notificationsEnabled = feed.notificationsEnabled
+                let feedsBefore = try context.fetch(FetchDescriptor<PersistableFeed>())
+                print("DEBUG: PersistenceClient updateFeed feeds before: \(feedsBefore.map { $0.url })")
 
-                    try context.save()
-                } catch {
-                    throw PersistenceError.saveFailed(error.localizedDescription)
+                guard let existingFeed = try context.fetch(descriptor).first else {
+                    print("DEBUG: PersistenceClient updateFeed: Feed not found: \(feed.url)")
+                    return
                 }
+                existingFeed.title = feed.title
+                existingFeed.feedDescription = feed.description
+                existingFeed.imageURLString = feed.imageURL?.absoluteString
+                existingFeed.isFavorite = feed.isFavorite
+                existingFeed.notificationsEnabled = feed.notificationsEnabled
+
+                try context.save()
+                let allFeeds = try context.fetch(FetchDescriptor<PersistableFeed>())
+                print("DEBUG: Persistence feeds after update: \(allFeeds.map { "\($0.url): F:\($0.isFavorite) N:\($0.notificationsEnabled)" })")
             },
             deleteFeed: { url async throws in
                 let context = ModelContext(Self.modelContainer)
                 let predicate = #Predicate<PersistableFeed> { $0.url == url }
                 let descriptor = FetchDescriptor<PersistableFeed>(predicate: predicate)
 
-                do {
-                    guard let existingFeed = try context.fetch(descriptor).first else {
-                        return
-                    }
+                let feedsBefore = try context.fetch(FetchDescriptor<PersistableFeed>())
+                print("DEBUG: PersistenceClient deleteFeed feeds before: \(feedsBefore.map { $0.url })")
 
-                    context.delete(existingFeed)
-                    try context.save()
-                } catch {
-                    throw PersistenceError.saveFailed(error.localizedDescription)
+                guard let existingFeed = try context.fetch(descriptor).first else {
+                    print("DEBUG: PersistenceClient deleteFeed: Feed not found: \(url)")
+                    return
                 }
+                context.delete(existingFeed)
+                try context.save()
+                let allFeeds = try context.fetch(FetchDescriptor<PersistableFeed>())
+                print("DEBUG: Persistence feeds after delete: \(allFeeds.map { $0.url })")
             },
             loadFeeds: { () async throws in
                 let context = ModelContext(Self.modelContainer)
                 let descriptor = FetchDescriptor<PersistableFeed>()
-
-                do {
-                    let persistableFeeds = try context.fetch(descriptor)
-                    return persistableFeeds.reversed().map { $0.toFeed() }
-                } catch {
-                    throw PersistenceError.loadFailed(error.localizedDescription)
-                }
+                let persistableFeeds = try context.fetch(descriptor)
+                print("DEBUG: PersistenceClient loadFeeds: \(persistableFeeds.map { $0.url })")
+                return persistableFeeds.reversed().map { $0.toFeed() }
             }
         )
     }

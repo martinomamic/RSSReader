@@ -9,7 +9,6 @@ private actor FeedRepositoryActor {
     @Dependency(\.rssClient) var rssClient
     @Dependency(\.persistenceClient) var persistenceClient
     
-    // Add task tracking
     private var initialLoadTask: Task<Void, Error>?
     private var modifyingURLs: Set<URL> = []
     
@@ -18,106 +17,112 @@ private actor FeedRepositoryActor {
     }
     
     func loadInitialFeeds() async throws {
-        // Check if we already have a task
         if let existingTask = initialLoadTask {
+            print("DEBUG: Using existing initial load task")
             return try await existingTask.value
         }
         
-        // Create new task and store it
+        print("DEBUG: Creating new initial load task")
         let task = Task {
             print("DEBUG: Starting initial feeds load")
             let feeds = try await persistenceClient.loadFeeds()
-            print("DEBUG: Loaded \(feeds.count) feeds from persistence")
+            print("DEBUG: Loaded \(feeds.count) feeds from persistence: \(feeds.map(\.url))")
             continuation.yield(feeds)
-            print("DEBUG: Yielded feeds to stream")
+            print("DEBUG: Yielded feeds to stream (initial)")
         }
         
         initialLoadTask = task
-        defer { initialLoadTask = nil }
+        defer {
+            print("DEBUG: Clearing initial load task")
+            initialLoadTask = nil
+        }
         
         try await task.value
     }
     
     func add(url: URL) async throws {
         guard !modifyingURLs.contains(url) else {
-            return // Already processing this URL
+            print("DEBUG: Skipping add - URL already being modified: \(url)")
+            return
         }
-        
         modifyingURLs.insert(url)
         defer { modifyingURLs.remove(url) }
         
+        let feedsBefore = try await persistenceClient.loadFeeds()
+        print("DEBUG: Pre-add feeds: \(feedsBefore.map(\.url))")
+        if feedsBefore.contains(where: { $0.url == url }) {
+            print("DEBUG: Feed already exists: \(url)")
+            throw FeedRepositoryError.feedAlreadyExists
+        }
         let feed = try await rssClient.fetchFeed(url)
         try await persistenceClient.saveFeed(feed)
-        
         let feeds = try await persistenceClient.loadFeeds()
+        print("DEBUG: Post-add feeds: \(feeds.map(\.url))")
         continuation.yield(feeds)
     }
     
     func delete(url: URL) async throws {
         guard !modifyingURLs.contains(url) else {
-            return // Already processing this URL
+            print("DEBUG: Skipping delete - URL already being modified: \(url)")
+            return
         }
-        
         modifyingURLs.insert(url)
         defer { modifyingURLs.remove(url) }
-        
+
+        let feedsBefore = try await persistenceClient.loadFeeds()
+        print("DEBUG: Pre-delete feeds: \(feedsBefore.map(\.url))")
         try await persistenceClient.deleteFeed(url)
-        
         let feeds = try await persistenceClient.loadFeeds()
+        print("DEBUG: Post-delete feeds: \(feeds.map(\.url))")
         continuation.yield(feeds)
     }
     
     func update(feed: Feed) async throws {
-        guard !modifyingURLs.contains(feed.url) else {
-            return // Already processing this URL
-        }
-        
+        guard !modifyingURLs.contains(feed.url) else { return }
         modifyingURLs.insert(feed.url)
         defer { modifyingURLs.remove(feed.url) }
         
+        let feedsBefore = try await persistenceClient.loadFeeds()
+        print("DEBUG: Pre-update feeds: \(feedsBefore.map(\.url))")
         try await persistenceClient.updateFeed(feed)
-        
         let feeds = try await persistenceClient.loadFeeds()
+        print("DEBUG: Post-update feeds: \(feeds.map(\.url))")
         continuation.yield(feeds)
     }
     
     func toggleFavorite(url: URL) async throws {
         guard !modifyingURLs.contains(url) else {
-            return // Already processing this URL
+            print("DEBUG: Repository - Skipping, URL already being modified: \(url)")
+            return
         }
-        
         modifyingURLs.insert(url)
         defer { modifyingURLs.remove(url) }
         
-        var feeds = try await persistenceClient.loadFeeds()
-        guard var feed = feeds.first(where: { $0.url == url }) else {
-            throw FeedRepositoryError.feedNotFound
-        }
-        
+        let feedsBefore = try await persistenceClient.loadFeeds()
+        print("DEBUG: Pre-toggleFavorite feeds: \(feedsBefore.map { "\($0.url): \($0.isFavorite)" })")
+        guard var feed = feedsBefore.first(where: { $0.url == url }) else { return }
         feed.isFavorite.toggle()
         try await persistenceClient.updateFeed(feed)
-        
-        feeds = try await persistenceClient.loadFeeds()
+        let feeds = try await persistenceClient.loadFeeds()
+        print("DEBUG: Post-toggleFavorite feeds: \(feeds.map { "\($0.url): \($0.isFavorite)" })")
         continuation.yield(feeds)
     }
     
     func toggleNotifications(url: URL) async throws {
         guard !modifyingURLs.contains(url) else {
-            return // Already processing this URL
+            print("DEBUG: Repository - Skipping, URL already being modified: \(url)")
+            return
         }
-        
         modifyingURLs.insert(url)
         defer { modifyingURLs.remove(url) }
         
-        var feeds = try await persistenceClient.loadFeeds()
-        guard var feed = feeds.first(where: { $0.url == url }) else {
-            throw FeedRepositoryError.feedNotFound
-        }
-        
+        let feedsBefore = try await persistenceClient.loadFeeds()
+        print("DEBUG: Pre-toggleNotifications feeds: \(feedsBefore.map { "\($0.url): \($0.notificationsEnabled)" })")
+        guard var feed = feedsBefore.first(where: { $0.url == url }) else { return }
         feed.notificationsEnabled.toggle()
         try await persistenceClient.updateFeed(feed)
-        
-        feeds = try await persistenceClient.loadFeeds()
+        let feeds = try await persistenceClient.loadFeeds()
+        print("DEBUG: Post-toggleNotifications feeds: \(feeds.map { "\($0.url): \($0.notificationsEnabled)" })")
         continuation.yield(feeds)
     }
     

@@ -8,7 +8,7 @@
 import Foundation
 
 public struct Feed: Identifiable, Hashable, Sendable {
-    public var id: URL { url }
+    public var id: String { url.absoluteString + isFavorite.description + notificationsEnabled.description }
     public let url: URL
     public var title: String?
     public var description: String?

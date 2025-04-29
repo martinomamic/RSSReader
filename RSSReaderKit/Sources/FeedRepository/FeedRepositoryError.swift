@@ -1,6 +1,7 @@
 import Foundation
 
 public enum FeedRepositoryError: LocalizedError {
+    case feedAlreadyExists
     case failedToFetch
     case failedToSave
     case failedToDelete
@@ -19,6 +20,8 @@ public enum FeedRepositoryError: LocalizedError {
             return "Feed not found"
         case .invalidURL:
             return "Invalid URL"
+        case .feedAlreadyExists:
+            return "Feed already exists"
         }
     }
 }
