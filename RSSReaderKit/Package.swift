@@ -48,6 +48,12 @@ let package = Package(
             name: "SharedModels",
             dependencies: []
         ),
+        .testTarget(
+            name: "SharedModelsTests",
+            dependencies: [
+                "SharedModels"
+            ]
+        ),
         .target(
             name: "Common",
             dependencies: [
@@ -155,6 +161,16 @@ let package = Package(
                 "SharedModels"
             ]
         ),
+        .testTarget(
+            name: "FeedRepositoryTests",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "ConcurrencyExtras", package: "swift-concurrency-extras"),
+                "FeedRepository",
+                "RSSClient",
+                "PersistenceClient"
+            ]
+        ),
         .target(
             name: "NotificationClient",
             dependencies: [
@@ -177,6 +193,13 @@ let package = Package(
             dependencies: [
                 "ExploreFeature",
                 "FeedListFeature"
+            ]
+        ),
+        .testTarget(
+            name: "TabBarFeatureTests",
+            dependencies: [
+                "TabBarFeature",
+                "Common"
             ]
         ),
         .target(

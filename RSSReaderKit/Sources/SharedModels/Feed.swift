@@ -33,7 +33,7 @@ public struct Feed: Identifiable, Hashable, Sendable {
     }
 
     public static func == (lhs: Feed, rhs: Feed) -> Bool {
-        return lhs.id == rhs.id
+        return lhs.id == rhs.id && lhs.description == rhs.description
     }
 
     public func hash(into hasher: inout Hasher) {

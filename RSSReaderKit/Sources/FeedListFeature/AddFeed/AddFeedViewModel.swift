@@ -36,7 +36,7 @@ class AddFeedViewModel {
     init() {}
     
     var isAddButtonDisabled: Bool {
-        !isValidURL || state == .adding
+        !isValidURL
     }
     
     var isLoading: Bool {
@@ -55,8 +55,9 @@ class AddFeedViewModel {
     }
     
     private var isValidURL: Bool {
-        guard !urlString.isEmpty else { return false }
-        return URL(string: urlString) != nil
+        guard !urlString.isEmpty,
+              let url = URL(string: urlString) else { return false }
+        return UIApplication.shared.canOpenURL(url)
     }
     
     func setExampleURL(_ example: ExampleURL) {
@@ -91,3 +92,14 @@ class AddFeedViewModel {
         }
     }
 }
+
+
+#if DEBUG
+extension AddFeedViewModel {
+    @MainActor
+    func waitForAddToFinish() async {
+        await addFeedTask?.value
+    }
+}
+
+#endif

@@ -12,7 +12,6 @@ import FeedRepository
 import Foundation
 import Observation
 import SharedModels
-import SwiftUI
 
 enum FeedListState: Equatable {
     case idle
@@ -54,10 +53,8 @@ public class FeedListViewModel {
                 try await feedRepository.loadInitialFeeds()
                 
                 for await updatedFeeds in feedRepository.feedsStream {
-                    withAnimation {
-                        self.feeds = updatedFeeds
-                        self.state = .idle
-                    }
+                    self.feeds = updatedFeeds
+                    self.state = .idle
                 }
             } catch {
                 print("DEBUG: Error in setupFeeds: \(error)")

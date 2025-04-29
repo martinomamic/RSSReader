@@ -10,7 +10,7 @@ import SwiftUI
 
 struct AddFeedView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var viewModel = AddFeedViewModel()
+    @State var viewModel = AddFeedViewModel()
     
     var body: some View {
         NavigationStack {

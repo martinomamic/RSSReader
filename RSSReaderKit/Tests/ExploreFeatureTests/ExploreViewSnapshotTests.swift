@@ -37,7 +37,6 @@ import Common
             $0.persistenceClient.loadFeeds = { [] }
         } operation: {
             let view = ExploreView()
-                .frame(width: 375, height: 600)
             
             assertSnapshot(of: view, as: .image)
         }
@@ -49,7 +48,6 @@ import Common
             $0.exploreClient.loadExploreFeeds = { [] }
         } operation: {
             let view = ExploreView()
-                .frame(width: 375, height: 600)
             
             assertSnapshot(of: view, as: .image)
         }
@@ -61,7 +59,6 @@ import Common
             $0.exploreClient.loadExploreFeeds = { throw ExploreError.fileNotFound }
         } operation: {
             let view = ExploreView()
-                .frame(width: 375, height: 600)
             
             assertSnapshot(of: view, as: .image)
         }
@@ -76,7 +73,6 @@ import Common
             isAdded: false,
             onAddTapped: {}
         )
-        .frame(width: 375)
         
         assertSnapshot(of: view, as: .image)
     }
