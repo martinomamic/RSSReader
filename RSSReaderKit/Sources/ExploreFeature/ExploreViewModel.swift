@@ -5,13 +5,12 @@
 //  Created by Martino Mamić on 18.04.25.
 //
 
-import Foundation
-import Dependencies
-import SharedModels
 import Common
-import ExploreClient
-import PersistenceClient
+import Dependencies
+import FeedRepository
+import Foundation
 import Observation
+import SharedModels
 
 enum ExploreState: Equatable {
     case loading
@@ -22,9 +21,7 @@ enum ExploreState: Equatable {
 @MainActor @Observable
 class ExploreViewModel {
     @ObservationIgnored
-    @Dependency(\.exploreClient) private var exploreClient
-    @ObservationIgnored
-    @Dependency(\.persistenceClient.loadFeeds) private var loadSavedFeeds
+    @Dependency(\.feedRepository) private var feedRepository
 
     var state: ExploreState = .loading
     var isAddingFeed = false
@@ -43,12 +40,12 @@ class ExploreViewModel {
 
         loadTask = Task {
             do {
-                let feeds = try await exploreClient.loadExploreFeeds()
+                let feeds = try await feedRepository.loadExploreFeeds()
 
-                let savedFeeds = try await loadSavedFeeds()
-                let savedURLs = Set(savedFeeds.map { $0.url.absoluteString })
-
-                self.addedFeedURLs = savedURLs
+//                let savedFeeds = try await feedRepository.loadFeeds()
+//                let savedURLs = Set(savedFeeds.map { $0.url.absoluteString })
+//
+//                self.addedFeedURLs = savedURLs
                 self.state = .loaded(feeds)
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
@@ -80,7 +77,7 @@ class ExploreViewModel {
         addTask?.cancel()
         addTask = Task {
             do {
-                _ = try await exploreClient.addFeed(exploreFeed)
+                _ = try await feedRepository.addExploreFeed(exploreFeed)
                 isAddingFeed = false
                 addedFeedURLs.insert(exploreFeed.url)
             } catch {

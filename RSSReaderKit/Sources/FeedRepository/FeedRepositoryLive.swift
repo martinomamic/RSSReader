@@ -1,13 +1,22 @@
-import Foundation
-import SharedModels
+//
+//  FeedRepositoryActor.swift
+//  RSSReaderKit
+//
+//  Created by Martino Mamić on 27.04.25.
+//
+
 import Dependencies
-import RSSClient
+import ExploreClient
+import Foundation
 import PersistenceClient
+import RSSClient
+import SharedModels
 
 private actor FeedRepositoryActor {
     private let continuation: AsyncStream<[Feed]>.Continuation
     @Dependency(\.rssClient) var rssClient
     @Dependency(\.persistenceClient) var persistenceClient
+    @Dependency(\.exploreClient) private var exploreClient
     
     private var initialLoadTask: Task<Void, Error>?
     private var modifyingURLs: Set<URL> = []
@@ -68,7 +77,7 @@ private actor FeedRepositoryActor {
         }
         modifyingURLs.insert(url)
         defer { modifyingURLs.remove(url) }
-
+        
         let feedsBefore = try await persistenceClient.loadFeeds()
         print("DEBUG: Pre-delete feeds: \(feedsBefore.map(\.url))")
         try await persistenceClient.deleteFeed(url)
@@ -129,6 +138,19 @@ private actor FeedRepositoryActor {
     func fetch(url: URL) async throws -> Feed {
         return try await rssClient.fetchFeed(url)
     }
+    
+    func loadExploreFeeds() async throws -> [ExploreFeed] {
+        return try await exploreClient.loadExploreFeeds()
+    }
+    
+    func addExploreFeed(_ exploreFeed: ExploreFeed) async throws -> Feed {
+        let feed = try await exploreClient.addFeed(exploreFeed)
+        
+        let feeds = try await persistenceClient.loadFeeds()
+        continuation.yield(feeds)
+        
+        return feed
+    }
 }
 
 extension FeedRepository {
@@ -161,6 +183,12 @@ extension FeedRepository {
             },
             loadInitialFeeds: {
                 try await actor.loadInitialFeeds()
+            },
+            loadExploreFeeds: {
+                try await actor.loadExploreFeeds()
+            },
+            addExploreFeed: { exploreFeed in
+                try await actor.addExploreFeed(exploreFeed)
             }
         )
     }()
