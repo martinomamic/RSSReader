@@ -8,7 +8,7 @@
 import Foundation
 
 public struct Feed: Identifiable, Hashable, Sendable {
-    public var id: URL { url }
+    public var id: String { url.absoluteString + isFavorite.description + notificationsEnabled.description }
     public let url: URL
     public var title: String?
     public var description: String?
@@ -33,7 +33,7 @@ public struct Feed: Identifiable, Hashable, Sendable {
     }
 
     public static func == (lhs: Feed, rhs: Feed) -> Bool {
-        return lhs.id == rhs.id
+        return lhs.id == rhs.id && lhs.description == rhs.description
     }
 
     public func hash(into hasher: inout Hasher) {

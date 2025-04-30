@@ -21,23 +21,16 @@
     },
     {
       "target" : {
-        "containerPath" : "container:RSSReader.xcodeproj",
-        "identifier" : "386A8D2E2DAA864A00BCD162",
-        "name" : "RSSReaderTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:RSSReader.xcodeproj",
-        "identifier" : "386A8D382DAA864A00BCD162",
-        "name" : "RSSReaderUITests"
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "SharedModelsTests",
+        "name" : "SharedModelsTests"
       }
     },
     {
       "target" : {
         "containerPath" : "container:RSSReaderKit",
-        "identifier" : "FeedItemsTests",
-        "name" : "FeedItemsTests"
+        "identifier" : "ExploreClientTests",
+        "name" : "ExploreClientTests"
       }
     },
     {
@@ -57,8 +50,22 @@
     {
       "target" : {
         "containerPath" : "container:RSSReaderKit",
+        "identifier" : "FeedRepositoryTests",
+        "name" : "FeedRepositoryTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
         "identifier" : "CommonComponentTests",
         "name" : "CommonComponentTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "TabBarFeatureTests",
+        "name" : "TabBarFeatureTests"
       }
     },
     {
@@ -70,6 +77,20 @@
     },
     {
       "target" : {
+        "containerPath" : "container:RSSReader.xcodeproj",
+        "identifier" : "386A8D382DAA864A00BCD162",
+        "name" : "RSSReaderUITests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "FeedItemsTests",
+        "name" : "FeedItemsTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:RSSReaderKit",
         "identifier" : "RSSClientTests",
         "name" : "RSSClientTests"
@@ -77,9 +98,9 @@
     },
     {
       "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "ExploreClientTests",
-        "name" : "ExploreClientTests"
+        "containerPath" : "container:RSSReader.xcodeproj",
+        "identifier" : "386A8D2E2DAA864A00BCD162",
+        "name" : "RSSReaderTests"
       }
     }
   ],

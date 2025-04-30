@@ -6,13 +6,12 @@
 //
 
 import Common
-import Foundation
-import SwiftUI
-import PersistenceClient
-import SharedModels
 import Dependencies
-import Observation
 import FeedItemsFeature
+import FeedRepository
+import Foundation
+import Observation
+import SharedModels
 
 enum FeedListState: Equatable {
     case idle
@@ -23,41 +22,73 @@ enum FeedListState: Equatable {
 @MainActor @Observable
 public class FeedListViewModel {
     @ObservationIgnored
-    @Dependency(\.persistenceClient) private var persistenceClient
-
-    var feeds: [FeedViewModel] = []
-    var favoriteFeeds: [FeedViewModel] {
-        feeds.filter { $0.feed.isFavorite }
-    }
-    var state: FeedListState = .idle
-
-    var isEmptyState: Bool {
-        displayedFeeds(showOnlyFavorites: false).isEmpty
-    }
+    @Dependency(\.feedRepository) private var feedRepository
     
+    private(set) var feeds: [Feed] = []
+    var state: FeedListState = .loading
+    
+    private var feedStreamTask: Task<Void, Never>?
+    private var deleteTask: Task<Void, Never>?
+    private var favoritesTask: Task<Void, Never>?
+    private var notificationsTask: Task<Void, Never>?
+
+    var favoriteFeeds: [Feed] {
+        feeds.filter { $0.isFavorite }
+    }
+
     var showEditButton: Bool {
         !feeds.isEmpty
     }
-    
-    private var loadTask: Task<Void, Never>?
-    private var updateTask: Task<Void, Never>?
-    private var deleteTask: Task<Void, Never>?
 
-    public init() {}
+    public init() {
+        print("DEBUG: FeedListViewModel init")
+        setupFeeds()
+    }
 
-    func loadFeeds() {
-        feeds.removeAll()
-        state = .loading
-        loadTask?.cancel()
-        loadTask = Task {
+    private func setupFeeds() {
+        feedStreamTask?.cancel()
+        
+        feedStreamTask = Task { @MainActor in
             do {
-                let savedFeeds = try await persistenceClient.loadFeeds()
-                feeds = savedFeeds.map { feed in
-                    let viewModel = FeedViewModel(url: feed.url, feed: feed)
-                    viewModel.state = .loaded(feed)
-                    return viewModel
+                try await feedRepository.loadInitialFeeds()
+                
+                for await updatedFeeds in feedRepository.feedsStream {
+                    self.feeds = updatedFeeds
+                    self.state = .idle
                 }
-                state = .idle
+            } catch {
+                print("DEBUG: Error in setupFeeds: \(error)")
+                state = .error(ErrorUtils.toAppError(error))
+            }
+        }
+    }
+
+    private func updateFeedInPlace(_ url: URL, transform: (inout Feed) -> Void) {
+        if let index = feeds.firstIndex(where: { $0.url == url }) {
+            var updatedFeed = feeds[index]
+            transform(&updatedFeed)
+            feeds[index] = updatedFeed
+        }
+    }
+
+    func toggleNotifications(_ feed: Feed) {
+        notificationsTask?.cancel()
+        
+        notificationsTask = Task { @MainActor in
+            do {
+                try await feedRepository.toggleNotifications(feed.url)
+            } catch {
+                state = .error(ErrorUtils.toAppError(error))
+            }
+        }
+    }
+    
+    func toggleFavorite(_ feed: Feed) {
+        favoritesTask?.cancel()
+        
+        favoritesTask = Task { @MainActor in
+            do {
+                try await feedRepository.toggleFavorite(feed.url)
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }
@@ -65,47 +96,30 @@ public class FeedListViewModel {
     }
 
     func removeFeed(at indexSet: IndexSet, fromFavorites: Bool = false) {
-        if fromFavorites {
-            let feedsToRemoveFromFavorites = indexSet.map { favoriteFeeds[$0] }
-            for feed in feedsToRemoveFromFavorites {
-                if let index = feeds.firstIndex(where: { $0.url == feed.url }) {
-                    feeds[index].feed.isFavorite = false
-                    toggleFavorite(feeds[index])
-                }
-            }
-        } else {
-            let feedsToDelete = indexSet.map { feeds[$0] }
-            for feed in feedsToDelete {
-                deleteFeed(feed)
-            }
-            feeds.remove(atOffsets: indexSet)
-        }
-    }
-
-    private func toggleFavorite(_ feedViewModel: FeedViewModel) {
-        updateTask?.cancel()
-        updateTask = Task {
-            do {
-                try await persistenceClient.updateFeed(feedViewModel.feed)
-            } catch {
-                state = .error(ErrorUtils.toAppError(error))
-            }
-        }
-    }
-
-    private func deleteFeed(_ feedViewModel: FeedViewModel) {
+        let feedsToModify = fromFavorites ? favoriteFeeds : feeds
+        
         deleteTask?.cancel()
-        deleteTask = Task {
+        deleteTask = Task { @MainActor in
             do {
-                try await persistenceClient.deleteFeed(feedViewModel.url)
+                for index in indexSet {
+                    let feed = feedsToModify[index]
+                    
+                    if fromFavorites {
+                        try await feedRepository.toggleFavorite(feed.url)
+                    } else {
+                        try await feedRepository.delete(feed.url)
+                    }
+                }
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }
         }
     }
-    
-    func displayedFeeds(showOnlyFavorites: Bool) -> [FeedViewModel] {
-        showOnlyFavorites ? favoriteFeeds : feeds
+
+    func displayedFeeds(showOnlyFavorites: Bool) -> [Feed] {
+        let displayedFeeds = showOnlyFavorites ? favoriteFeeds : feeds
+        print("DEBUG: Displaying feeds - showOnlyFavorites: \(showOnlyFavorites), count: \(displayedFeeds.count)")
+        return displayedFeeds
     }
     
     func navigationTitle(showOnlyFavorites: Bool) -> String {
@@ -132,29 +146,38 @@ public class FeedListViewModel {
             LocalizedStrings.FeedList.noFeedsDescription
     }
     
-    func makeFeedItemsViewModel(for feed: FeedViewModel) -> FeedItemsViewModel {
+    func makeFeedItemsViewModel(for feed: Feed) -> FeedItemsViewModel {
         FeedItemsViewModel(
             feedURL: feed.url,
-            feedTitle: feed.feed.title ?? LocalizedStrings.FeedList.unnamedFeed
+            feedTitle: feed.title ?? LocalizedStrings.FeedList.unnamedFeed
         )
     }
+    
+    func notificationIcon(for feed: Feed) -> String {
+        let isEnabled = feeds.first(where: { $0.url == feed.url })?.notificationsEnabled ?? feed.notificationsEnabled
+        let icon = isEnabled ? Constants.Images.notificationEnabledIcon : Constants.Images.notificationDisabledIcon
+        print("DEBUG: ViewModel - Notification icon for \(feed.url): \(icon), enabled: \(isEnabled)")
+        return icon
+    }
+    
+    func favoriteIcon(for feed: Feed) -> String {
+        let isFavorite = feeds.first(where: { $0.url == feed.url })?.isFavorite ?? feed.isFavorite
+        let icon = isFavorite ? Constants.Images.isFavoriteIcon : Constants.Images.isNotFavoriteIcon
+        print("DEBUG: ViewModel - Favorite icon for \(feed.url): \(icon), favorite: \(isFavorite)")
+        return icon
+    }
+
+    func isEmptyState(showOnlyFavorites: Bool) -> Bool {
+        state == .idle && displayedFeeds(showOnlyFavorites: showOnlyFavorites).isEmpty
+    }
+
 }
 
 #if DEBUG
 extension FeedListViewModel {
     @MainActor
     func waitForLoadToFinish() async {
-        await loadTask?.value
-    }
-    
-    @MainActor
-    func waitForUpdateToFinish() async {
-        await updateTask?.value
-    }
-    
-    @MainActor
-    func waitForDeleteToFinish() async {
-        await deleteTask?.value
+        await feedStreamTask?.value
     }
 }
 #endif

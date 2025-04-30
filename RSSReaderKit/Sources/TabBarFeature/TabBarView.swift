@@ -13,6 +13,7 @@ import NotificationClient
 
 public struct TabBarView: View {
     @State private var viewModel = TabBarViewModel()
+    private let feedListViewModel = FeedListViewModel()
     
     public init() {}
     
@@ -31,6 +32,9 @@ public struct TabBarView: View {
             }
         }
         .testId(AccessibilityIdentifier.TabBar.navigationTabs)
+        .onChange(of: viewModel.selectedTab) { oldValue, newValue in
+            print("DEBUG: Tab changed from \(oldValue) to \(newValue)")
+        }
     }
     
     private func accessibilityIdForTab(_ tab: TabItem) -> String {
@@ -51,9 +55,9 @@ public struct TabBarView: View {
         NavigationStack {
             switch tab {
             case .feeds:
-                FeedListView()
+                FeedListView(viewModel: feedListViewModel)
             case .favorites:
-                FeedListView(showOnlyFavorites: true)
+                FeedListView(viewModel: feedListViewModel, showOnlyFavorites: true)
             case .explore:
                 ExploreView()
             case .debug:

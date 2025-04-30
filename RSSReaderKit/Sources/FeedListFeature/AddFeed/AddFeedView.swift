@@ -10,12 +10,8 @@ import SwiftUI
 
 struct AddFeedView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var viewModel: AddFeedViewModel
-
-    init(feeds: Binding<[FeedViewModel]>) {
-        _viewModel = State(initialValue: AddFeedViewModel(feeds: feeds))
-    }
-
+    @State var viewModel = AddFeedViewModel()
+    
     var body: some View {
         NavigationStack {
             Form {
@@ -32,13 +28,13 @@ struct AddFeedView: View {
                         Text(LocalizedStrings.AddFeed.examplesHeader)
                             .font(.footnote)
                             .foregroundColor(.secondary)
-
+                        
                         VStack(alignment: .leading, spacing: Constants.UI.exampleButtonSpacing) {
                             Button(LocalizedStrings.AddFeed.bbcNews) {
                                 viewModel.setExampleURL(.bbc)
                             }
                             .testId(AccessibilityIdentifier.AddFeed.bbcExampleButton)
-
+                            
                             Button(LocalizedStrings.AddFeed.nbcNews) {
                                 viewModel.setExampleURL(.nbc)
                             }
@@ -56,7 +52,7 @@ struct AddFeedView: View {
                     }
                     .testId(AccessibilityIdentifier.AddFeed.cancelButton)
                 }
-
+                
                 ToolbarItem(placement: .confirmationAction) {
                     Button(LocalizedStrings.General.add) {
                         viewModel.addFeed()
