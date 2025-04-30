@@ -1,35 +1,36 @@
-//
-//  FeedRepositoryTests.swift
-//  Tests/FeedRepositoryTests
-//
-//  Created by Martino Mamić on 29.04.25.
-//
-
 import Testing
 import Dependencies
 import Foundation
-import ConcurrencyExtras
-import SharedModels
-import RSSClient
+import FeedRepository
 import PersistenceClient
+import SharedModels
 
-@testable import FeedRepository
+@Suite("FeedRepository Tests")
+struct FeedRepositoryTests {
+    @Test("Initial load emits correct feeds via stream")
+    func testInitialLoadEmitsFeeds() async throws {
+        let mockFeeds = [
+            Feed(url: URL(string: "https://a.com")!, title: "A", isFavorite: false, notificationsEnabled: false),
+            Feed(url: URL(string: "https://b.com")!, title: "B", isFavorite: true, notificationsEnabled: false)
+        ]
+       
+        let repo = withDependencies {
+            $0.persistenceClient = PersistenceClient(
+                saveFeed: { _ in },
+                updateFeed: { _ in },
+                deleteFeed: { _ in },
+                loadFeeds: { mockFeeds }
+            )
+        } operation: {
+            FeedRepository.live
+        }
 
-@Suite struct FeedRepositoryTests {
-    
-    func createTestFeed(
-        url: String = "https://example.com/feed",
-        title: String = "Test Feed",
-        description: String = "Test description",
-        isFavorite: Bool = false,
-        notificationsEnabled: Bool = false
-    ) -> Feed {
-        Feed(
-            url: URL(string: url)!,
-            title: title,
-            description: description,
-            isFavorite: isFavorite,
-            notificationsEnabled: notificationsEnabled
-        )
+        try await repo.loadInitialFeeds()
+        await Task.yield()
+
+        let stream = repo.feedsStream
+        var iterator = stream.makeAsyncIterator()
+        let first = await iterator.next()
+        #expect(first == mockFeeds, "Initial stream value should match mock feeds")
     }
 }
