@@ -31,7 +31,7 @@ import Common
         // Selected tab should return filled icon
         #expect(viewModel.getIcon(for: .feeds) == "newspaper.fill")
         
-        // Unselected tab should return regular icon
+
         #expect(viewModel.getIcon(for: .explore) == "globe")
         #expect(viewModel.getIcon(for: .favorites) == "star")
         #expect(viewModel.getIcon(for: .debug) == "ladybug")
@@ -75,10 +75,8 @@ import Common
     func testTitleConsistency() {
         let viewModel = TabBarViewModel()
         
-        // Initially on feeds tab
         let feedsTitle = viewModel.getTitle(for: .feeds)
         
-        // Change to different tabs
         viewModel.selectedTab = .explore
         #expect(viewModel.getTitle(for: .feeds) == feedsTitle)
         

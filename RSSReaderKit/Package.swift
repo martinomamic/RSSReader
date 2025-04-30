@@ -198,9 +198,11 @@ let package = Package(
         .testTarget(
             name: "TabBarFeatureTests",
             dependencies: [
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
                 "TabBarFeature",
                 "Common"
-            ]
+            ],
+            exclude: ["__Snapshots__"]
         ),
         .target(
             name: "PersistenceClient",
