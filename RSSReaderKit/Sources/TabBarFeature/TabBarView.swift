@@ -12,19 +12,19 @@ import FeedListFeature
 import NotificationClient
 
 public struct TabBarView: View {
-    @State private var viewModel = TabBarViewModel()
+    @State private var selectedTab: TabItem = .feeds
     private let feedListViewModel = FeedListViewModel()
     
     public init() {}
     
     public var body: some View {
-        TabView(selection: $viewModel.selectedTab) {
+        TabView(selection: $selectedTab) {
             ForEach(TabItem.allCases, id: \.self) { tab in
                 tabContent(for: tab)
                     .tabItem {
                         Label(
-                            viewModel.getTitle(for: tab),
-                            systemImage: viewModel.getIcon(for: tab)
+                            tab.title,
+                            systemImage: tab.icon
                         )
                         .accessibilityIdentifier(accessibilityIdForTab(tab))
                     }
@@ -32,9 +32,6 @@ public struct TabBarView: View {
             }
         }
         .testId(AccessibilityIdentifier.TabBar.navigationTabs)
-        .onChange(of: viewModel.selectedTab) { oldValue, newValue in
-            print("DEBUG: Tab changed from \(oldValue) to \(newValue)")
-        }
     }
     
     private func accessibilityIdForTab(_ tab: TabItem) -> String {
