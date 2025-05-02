@@ -98,7 +98,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 "Common",
-                "ExploreClient",
+                "FeedRepository",
                 "SharedModels"
             ]
         ),
@@ -156,6 +156,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 "Common",
+                "ExploreClient",
                 "PersistenceClient",
                 "RSSClient",
                 "SharedModels"

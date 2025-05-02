@@ -5,13 +5,12 @@
 //  Created by Martino Mamić on 18.04.25.
 //
 
-import Foundation
-import Dependencies
-import SharedModels
 import Common
-import ExploreClient
-import PersistenceClient
+import Dependencies
+import FeedRepository
+import Foundation
 import Observation
+import SharedModels
 
 enum ExploreState: Equatable {
     case loading
@@ -22,9 +21,7 @@ enum ExploreState: Equatable {
 @MainActor @Observable
 class ExploreViewModel {
     @ObservationIgnored
-    @Dependency(\.exploreClient) private var exploreClient
-    @ObservationIgnored
-    @Dependency(\.persistenceClient.loadFeeds) private var loadSavedFeeds
+    @Dependency(\.feedRepository) private var feedRepository
 
     var state: ExploreState = .loading
     var isAddingFeed = false
@@ -32,10 +29,13 @@ class ExploreViewModel {
     var feedError: AppError?
     var addedFeedURLs: Set<String> = []
 
-    private var loadTask: Task<Void, Never>?
     private var addTask: Task<Void, Never>?
+    private var loadTask: Task<Void, Never>?
+    private var setupStreamTask: Task<Void, Never>?
 
-    public init() {}
+    public init() {
+        loadExploreFeeds()
+    }
 
     func loadExploreFeeds() {
         loadTask?.cancel()
@@ -43,15 +43,33 @@ class ExploreViewModel {
 
         loadTask = Task {
             do {
-                let feeds = try await exploreClient.loadExploreFeeds()
-
-                let savedFeeds = try await loadSavedFeeds()
-                let savedURLs = Set(savedFeeds.map { $0.url.absoluteString })
-
-                self.addedFeedURLs = savedURLs
-                self.state = .loaded(feeds)
+                // Dohvati explore feedove
+                let exploreFeeds = try await feedRepository.loadExploreFeeds()
+                
+                // Dohvati trenutne feedove za provjeru koje smo već dodali
+                let currentFeeds = try await feedRepository.getCurrentFeeds()
+                self.addedFeedURLs = Set(currentFeeds.map { $0.url.absoluteString })
+                
+                self.state = .loaded(exploreFeeds)
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
+            }
+        }
+    }
+
+    func addFeed(_ exploreFeed: ExploreFeed) {
+        isAddingFeed = true
+        feedError = nil
+
+        addTask?.cancel()
+        addTask = Task {
+            do {
+                _ = try await feedRepository.addExploreFeed(exploreFeed)
+                addedFeedURLs.insert(exploreFeed.url)
+                isAddingFeed = false
+            } catch {
+                isAddingFeed = false
+                feedError = ErrorUtils.toAppError(error)
             }
         }
     }
@@ -71,23 +89,6 @@ class ExploreViewModel {
     func addSelectedFeed() {
         guard let feed = selectedFeed else { return }
         addFeed(feed)
-    }
-
-    func addFeed(_ exploreFeed: ExploreFeed) {
-        isAddingFeed = true
-        feedError = nil
-
-        addTask?.cancel()
-        addTask = Task {
-            do {
-                _ = try await exploreClient.addFeed(exploreFeed)
-                isAddingFeed = false
-                addedFeedURLs.insert(exploreFeed.url)
-            } catch {
-                isAddingFeed = false
-                feedError = ErrorUtils.toAppError(error)
-            }
-        }
     }
 
     func clearError() {

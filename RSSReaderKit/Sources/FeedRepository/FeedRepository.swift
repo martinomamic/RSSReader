@@ -1,3 +1,10 @@
+//
+//  FeedListViewModel.swift
+//  RSSReaderKit
+//
+//  Created by Martino Mamić on 27.04.25.
+//
+
 import Foundation
 import SharedModels
 import Dependencies
@@ -12,4 +19,7 @@ public struct FeedRepository: Sendable {
     public var toggleFavorite: @Sendable (URL) async throws -> Void
     public var toggleNotifications: @Sendable (URL) async throws -> Void
     public var loadInitialFeeds: @Sendable () async throws -> Void
+    public var loadExploreFeeds: @Sendable () async throws -> [ExploreFeed]
+    public var addExploreFeed: @Sendable (ExploreFeed) async throws -> Feed
+    public var getCurrentFeeds: @Sendable () async throws -> [Feed]
 }

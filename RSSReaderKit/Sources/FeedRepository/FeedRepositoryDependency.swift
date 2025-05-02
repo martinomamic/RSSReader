@@ -1,5 +1,13 @@
-import Foundation
+//
+//  FeedRepository.swift
+//  RSSReaderKit
+//
+//  Created by Martino Mamić on 27.04.25.
+//
+
 import Dependencies
+import ExploreClient
+import Foundation
 import SharedModels
 
 extension FeedRepository: DependencyKey {
@@ -58,6 +66,25 @@ extension FeedRepository: DependencyKey {
             },
             loadInitialFeeds:    {
                 continuation.continuation.yield(feedStore.value)
+            },
+            loadExploreFeeds: {
+                [
+                    ExploreFeed(name: "Test Feed", url: "https://example.com/feed"),
+                    ExploreFeed(name: "Another Feed", url: "https://example.org/rss")
+                ]
+            },
+            addExploreFeed: { exploreFeed in
+                guard let url = URL(string: exploreFeed.url) else {
+                    throw ExploreError.invalidURL
+                }
+
+                return Feed(
+                    url: url,
+                    title: exploreFeed.name,
+                    description: "Test feed description"
+                )
+            }, getCurrentFeeds: {
+                feedStore.value
             }
         )
     }

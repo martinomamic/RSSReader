@@ -1,3 +1,10 @@
+//
+//  FeedRepositoryError.swift
+//  RSSReaderKit
+//
+//  Created by Martino Mamić on 27.04.25.
+//
+
 import Foundation
 
 public enum FeedRepositoryError: LocalizedError {
