@@ -21,7 +21,6 @@ public struct FeedListView: View {
     public init(viewModel: FeedListViewModel, showOnlyFavorites: Bool = false) {
         self.viewModel = viewModel
         self.showOnlyFavorites = showOnlyFavorites
-        print("DEBUG: FeedListView init - showOnlyFavorites: \(showOnlyFavorites)")
     }
 
     public var body: some View {
@@ -36,45 +35,11 @@ public struct FeedListView: View {
             }
         }
         .onChange(of: viewModel.feeds) { oldFeeds, newFeeds in
-            verifyUIState(oldFeeds: oldFeeds, newFeeds: newFeeds)
+            localFeeds = newFeeds
         }
         .onAppear {
             localFeeds = viewModel.feeds
-            print("DEBUG: FeedListView appeared - showOnlyFavorites: \(showOnlyFavorites)")
-            print("DEBUG: Current feeds state:")
-            for feed in viewModel.feeds {
-                print("DEBUG: Feed: \(feed.url)")
-                print("  - isFavorite: \(feed.isFavorite)")
-                print("  - notificationsEnabled: \(feed.notificationsEnabled)")
-                print("  - isVisible: \(viewModel.displayedFeeds(showOnlyFavorites: showOnlyFavorites).contains(feed))")
-            }
         }
-    }
-    
-    private func verifyUIState(oldFeeds: [Feed], newFeeds: [Feed]) {
-        print("DEBUG: UI State Change - \(showOnlyFavorites ? "Favorites" : "All Feeds")")
-        print("DEBUG: Old feeds count: \(oldFeeds.count), favorites: \(oldFeeds.filter(\.isFavorite).count)")
-        print("DEBUG: New feeds count: \(newFeeds.count), favorites: \(newFeeds.filter(\.isFavorite).count)")
-        
-        // Check for specific changes
-        let oldFavorites = Set(oldFeeds.filter(\.isFavorite).map(\.url))
-        let newFavorites = Set(newFeeds.filter(\.isFavorite).map(\.url))
-        
-        if oldFavorites != newFavorites {
-            print("DEBUG: Favorites changed:")
-            print("DEBUG: Removed from favorites: \(oldFavorites.subtracting(newFavorites).map { $0.absoluteString })")
-            print("DEBUG: Added to favorites: \(newFavorites.subtracting(oldFavorites).map { $0.absoluteString })")
-        }
-        
-        let oldNotifications = Set(oldFeeds.filter(\.notificationsEnabled).map(\.url))
-        let newNotifications = Set(newFeeds.filter(\.notificationsEnabled).map(\.url))
-        
-        if oldNotifications != newNotifications {
-            print("DEBUG: Notifications changed:")
-            print("DEBUG: Disabled notifications: \(oldNotifications.subtracting(newNotifications).map { $0.absoluteString })")
-            print("DEBUG: Enabled notifications: \(newNotifications.subtracting(oldNotifications).map { $0.absoluteString })")
-        }
-        localFeeds = newFeeds
     }
     
     private var feedsList: some View {
@@ -86,22 +51,11 @@ public struct FeedListView: View {
                 FeedRow(
                     feed: feed,
                     onFavoriteToggle: {
-                        let currentState = viewModel.feeds.first(where: { $0.url == feed.url })?.isFavorite ?? feed.isFavorite
-                        print("DEBUG: UI Action - Toggle favorite for \(feed.url)")
-                        print("DEBUG: Current repository state - isFavorite: \(currentState)")
-                        print("DEBUG: Feed visible in: \(showOnlyFavorites ? "favorites" : "all feeds")")
-                        
-                        // Perform update
                         var updatedFeed = feed
                         updatedFeed.isFavorite.toggle()
                          viewModel.toggleFavorite(updatedFeed)
                     },
                     onNotificationsToggle: {
-                        let currentState = viewModel.feeds.first(where: { $0.url == feed.url })?.notificationsEnabled ?? feed.notificationsEnabled
-                        print("DEBUG: UI Action - Toggle notifications for \(feed.url)")
-                        print("DEBUG: Current repository state - notificationsEnabled: \(currentState)")
-                        
-                        // Perform update
                         var updatedFeed = feed
                         updatedFeed.notificationsEnabled.toggle()
                         viewModel.toggleNotifications(updatedFeed)
@@ -112,12 +66,6 @@ public struct FeedListView: View {
                 )
             }
             .onDelete { indexSet in
-                let feeds = viewModel.displayedFeeds(showOnlyFavorites: showOnlyFavorites)
-                print("DEBUG: UI Action - Delete/Unfavorite feeds:")
-                indexSet.forEach { index in
-                    print("DEBUG: - \(feeds[index].url), favorite: \(feeds[index].isFavorite)")
-                    print("DEBUG: - visible in: \(showOnlyFavorites ? "favorites" : "all feeds")")
-                }
                 viewModel.removeFeed(at: indexSet, fromFavorites: showOnlyFavorites)
             }
         }
