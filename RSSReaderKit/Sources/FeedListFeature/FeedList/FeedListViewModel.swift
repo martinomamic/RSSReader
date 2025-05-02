@@ -41,7 +41,6 @@ public class FeedListViewModel {
     }
 
     public init() {
-        print("DEBUG: FeedListViewModel init")
         setupFeeds()
     }
 
@@ -57,7 +56,6 @@ public class FeedListViewModel {
                     self.state = .idle
                 }
             } catch {
-                print("DEBUG: Error in setupFeeds: \(error)")
                 state = .error(ErrorUtils.toAppError(error))
             }
         }
@@ -117,9 +115,7 @@ public class FeedListViewModel {
     }
 
     func displayedFeeds(showOnlyFavorites: Bool) -> [Feed] {
-        let displayedFeeds = showOnlyFavorites ? favoriteFeeds : feeds
-        print("DEBUG: Displaying feeds - showOnlyFavorites: \(showOnlyFavorites), count: \(displayedFeeds.count)")
-        return displayedFeeds
+        return showOnlyFavorites ? favoriteFeeds : feeds
     }
     
     func navigationTitle(showOnlyFavorites: Bool) -> String {
@@ -156,14 +152,12 @@ public class FeedListViewModel {
     func notificationIcon(for feed: Feed) -> String {
         let isEnabled = feeds.first(where: { $0.url == feed.url })?.notificationsEnabled ?? feed.notificationsEnabled
         let icon = isEnabled ? Constants.Images.notificationEnabledIcon : Constants.Images.notificationDisabledIcon
-        print("DEBUG: ViewModel - Notification icon for \(feed.url): \(icon), enabled: \(isEnabled)")
         return icon
     }
     
     func favoriteIcon(for feed: Feed) -> String {
         let isFavorite = feeds.first(where: { $0.url == feed.url })?.isFavorite ?? feed.isFavorite
         let icon = isFavorite ? Constants.Images.isFavoriteIcon : Constants.Images.isNotFavoriteIcon
-        print("DEBUG: ViewModel - Favorite icon for \(feed.url): \(icon), favorite: \(isFavorite)")
         return icon
     }
 
