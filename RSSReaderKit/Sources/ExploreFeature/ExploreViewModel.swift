@@ -29,10 +29,13 @@ class ExploreViewModel {
     var feedError: AppError?
     var addedFeedURLs: Set<String> = []
 
-    private var loadTask: Task<Void, Never>?
     private var addTask: Task<Void, Never>?
+    private var loadTask: Task<Void, Never>?
+    private var setupStreamTask: Task<Void, Never>?
 
-    public init() {}
+    public init() {
+        loadExploreFeeds()
+    }
 
     func loadExploreFeeds() {
         loadTask?.cancel()
@@ -40,15 +43,33 @@ class ExploreViewModel {
 
         loadTask = Task {
             do {
-                let feeds = try await feedRepository.loadExploreFeeds()
-
-//                let savedFeeds = try await feedRepository.loadFeeds()
-//                let savedURLs = Set(savedFeeds.map { $0.url.absoluteString })
-//
-//                self.addedFeedURLs = savedURLs
-                self.state = .loaded(feeds)
+                // Dohvati explore feedove
+                let exploreFeeds = try await feedRepository.loadExploreFeeds()
+                
+                // Dohvati trenutne feedove za provjeru koje smo već dodali
+                let currentFeeds = try await feedRepository.getCurrentFeeds()
+                self.addedFeedURLs = Set(currentFeeds.map { $0.url.absoluteString })
+                
+                self.state = .loaded(exploreFeeds)
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
+            }
+        }
+    }
+
+    func addFeed(_ exploreFeed: ExploreFeed) {
+        isAddingFeed = true
+        feedError = nil
+
+        addTask?.cancel()
+        addTask = Task {
+            do {
+                _ = try await feedRepository.addExploreFeed(exploreFeed)
+                addedFeedURLs.insert(exploreFeed.url)
+                isAddingFeed = false
+            } catch {
+                isAddingFeed = false
+                feedError = ErrorUtils.toAppError(error)
             }
         }
     }
@@ -68,23 +89,6 @@ class ExploreViewModel {
     func addSelectedFeed() {
         guard let feed = selectedFeed else { return }
         addFeed(feed)
-    }
-
-    func addFeed(_ exploreFeed: ExploreFeed) {
-        isAddingFeed = true
-        feedError = nil
-
-        addTask?.cancel()
-        addTask = Task {
-            do {
-                _ = try await feedRepository.addExploreFeed(exploreFeed)
-                isAddingFeed = false
-                addedFeedURLs.insert(exploreFeed.url)
-            } catch {
-                isAddingFeed = false
-                feedError = ErrorUtils.toAppError(error)
-            }
-        }
     }
 
     func clearError() {

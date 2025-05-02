@@ -83,6 +83,8 @@ extension FeedRepository: DependencyKey {
                     title: exploreFeed.name,
                     description: "Test feed description"
                 )
+            }, getCurrentFeeds: {
+                feedStore.value
             }
         )
     }

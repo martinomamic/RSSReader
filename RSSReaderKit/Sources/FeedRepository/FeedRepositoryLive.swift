@@ -146,10 +146,14 @@ private actor FeedRepositoryActor {
     func addExploreFeed(_ exploreFeed: ExploreFeed) async throws -> Feed {
         let feed = try await exploreClient.addFeed(exploreFeed)
         
-        let feeds = try await persistenceClient.loadFeeds()
+        let feeds = try await getCurrentFeeds()
         continuation.yield(feeds)
         
         return feed
+    }
+    
+    func getCurrentFeeds() async throws -> [Feed] {
+        return try await persistenceClient.loadFeeds()
     }
 }
 
@@ -189,6 +193,9 @@ extension FeedRepository {
             },
             addExploreFeed: { exploreFeed in
                 try await actor.addExploreFeed(exploreFeed)
+            },
+            getCurrentFeeds: {
+                try await actor.getCurrentFeeds()
             }
         )
     }()
