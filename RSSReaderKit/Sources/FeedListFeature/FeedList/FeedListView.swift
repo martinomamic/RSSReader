@@ -51,15 +51,11 @@ public struct FeedListView: View {
                 FeedRow(
                     feed: feed,
                     onFavoriteToggle: {
-                        let currentState = viewModel.feeds.first(where: { $0.url == feed.url })?.isFavorite ?? feed.isFavorite
-                       
                         var updatedFeed = feed
                         updatedFeed.isFavorite.toggle()
                          viewModel.toggleFavorite(updatedFeed)
                     },
                     onNotificationsToggle: {
-                        let currentState = viewModel.feeds.first(where: { $0.url == feed.url })?.notificationsEnabled ?? feed.notificationsEnabled
-                        
                         var updatedFeed = feed
                         updatedFeed.notificationsEnabled.toggle()
                         viewModel.toggleNotifications(updatedFeed)
@@ -70,7 +66,6 @@ public struct FeedListView: View {
                 )
             }
             .onDelete { indexSet in
-                let feeds = viewModel.displayedFeeds(showOnlyFavorites: showOnlyFavorites)
                 viewModel.removeFeed(at: indexSet, fromFavorites: showOnlyFavorites)
             }
         }

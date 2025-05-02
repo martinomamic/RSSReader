@@ -228,7 +228,7 @@ private extension NotificationDebugView {
     func requestPermissions() {
         Task {
             do {
-                try await notificationClient.requestPermissions()
+                _ = try await notificationClient.requestPermissions()
                 refreshResult = "✅ Notification permissions granted"
                 checkNotificationStatus()
             } catch {

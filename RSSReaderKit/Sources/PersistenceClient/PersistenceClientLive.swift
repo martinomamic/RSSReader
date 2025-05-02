@@ -28,7 +28,6 @@ extension PersistenceClient {
                 context.insert(persistableFeed)
 
                 try context.save()
-                let allFeeds = try context.fetch(FetchDescriptor<PersistableFeed>())
             },
             updateFeed: { feed async throws in
                 let context = ModelContext(Self.modelContainer)
@@ -46,7 +45,6 @@ extension PersistenceClient {
                 existingFeed.notificationsEnabled = feed.notificationsEnabled
 
                 try context.save()
-                let allFeeds = try context.fetch(FetchDescriptor<PersistableFeed>())
             },
             deleteFeed: { url async throws in
                 let context = ModelContext(Self.modelContainer)
@@ -58,7 +56,6 @@ extension PersistenceClient {
                 }
                 context.delete(existingFeed)
                 try context.save()
-                let allFeeds = try context.fetch(FetchDescriptor<PersistableFeed>())
             },
             loadFeeds: { () async throws in
                 let context = ModelContext(Self.modelContainer)

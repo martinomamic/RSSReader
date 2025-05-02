@@ -10,6 +10,7 @@ import Dependencies
 import FeedItemsFeature
 import FeedRepository
 import Foundation
+import NotificationClient
 import Observation
 import SharedModels
 
@@ -23,6 +24,8 @@ enum FeedListState: Equatable {
 public class FeedListViewModel {
     @ObservationIgnored
     @Dependency(\.feedRepository) private var feedRepository
+    @ObservationIgnored
+    @Dependency(\.notificationClient) private var notificationClient
     
     private(set) var feeds: [Feed] = []
     var state: FeedListState = .loading
@@ -74,6 +77,8 @@ public class FeedListViewModel {
         
         notificationsTask = Task { @MainActor in
             do {
+                let enabled = try await notificationClient.requestPermissions()
+                guard enabled else { throw AppError.permissionDenied }
                 try await feedRepository.toggleNotifications(feed.url)
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
