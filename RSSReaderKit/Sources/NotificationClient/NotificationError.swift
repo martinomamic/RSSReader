@@ -11,7 +11,7 @@ public enum NotificationError: Error {
     case permissionDenied
 }
 
-extension NotificationError {
+extension NotificationError: AppErrorConvertible {
     public func asAppError() -> AppError {
         switch self {
         case .permissionDenied:

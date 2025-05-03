@@ -62,7 +62,7 @@ struct TestableTabBarView: View {
                     .tabItem {
                         Label(
                             tab.title,
-                            systemImage: selectedTab == tab ? tab.selectedIcon : tab.icon
+                            systemImage: tab.icon
                         )
                         .accessibilityIdentifier("tab\(tab.title)")
                     }

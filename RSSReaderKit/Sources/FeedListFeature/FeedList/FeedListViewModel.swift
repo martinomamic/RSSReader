@@ -74,12 +74,23 @@ public class FeedListViewModel {
 
     func toggleNotifications(_ feed: Feed) {
         notificationsTask?.cancel()
-        
+
         notificationsTask = Task { @MainActor in
             do {
-                let enabled = try await notificationClient.requestPermissions()
-                guard enabled else { throw AppError.permissionDenied }
+                if await !NotificationClient.notificationsAuthorized() {
+                    try await notificationClient.requestPermissions()
+                }
+
                 try await feedRepository.toggleNotifications(feed.url)
+                
+                guard await NotificationClient.notificationsAuthorized() else {
+                    return
+                }
+
+                if feed.notificationsEnabled {
+                    BackgroundRefreshClient.shared.scheduleAppRefresh()
+                    try await notificationClient.checkForNewItems()
+                }
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }

@@ -67,6 +67,7 @@ let package = Package(
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
                 "Common",
                 "ExploreClient",
+                "NotificationClient",
                 "PersistenceClient",
                 "RSSClient",
             ],
@@ -77,7 +78,6 @@ let package = Package(
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 "Common",
-                "NotificationClient",
                 "PersistenceClient",
                 "RSSClient",
                 "SharedModels"
