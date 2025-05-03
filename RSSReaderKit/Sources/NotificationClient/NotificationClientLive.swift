@@ -40,7 +40,7 @@ extension NotificationClient {
         @Dependency(\.userDefaults) var userDefaults
         let lastCheckTime = userDefaults.getLastNotificationCheckTime() ?? currentTime
         
-        userDefaults.setLastNotificationCheckTime(currentTime)
+        userDefaults.setLastNotificationCheckTime(lastCheckTime)
         
         try await processFeeds(
             enabledFeeds,

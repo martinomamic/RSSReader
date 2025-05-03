@@ -228,5 +228,12 @@ let package = Package(
                 .product(name: "Dependencies", package: "swift-dependencies")
             ]
         ),
+        .testTarget(
+            name: "UserDefaultsClientTests",
+            dependencies: [
+                .product(name: "ConcurrencyExtras", package: "swift-concurrency-extras"),
+                "UserDefaultsClient",
+            ]
+        ),
     ]
 )
