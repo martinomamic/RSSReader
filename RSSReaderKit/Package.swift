@@ -19,6 +19,7 @@ let package = Package(
         .library(name: "RSSClient", targets: ["RSSClient"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
         .library(name: "TabBarFeature", targets: ["TabBarFeature"]),
+        .library(name: "UserDefaultsClient", targets: ["UserDefaultsClient"]),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-concurrency-extras", from: "1.3.1"),
@@ -180,6 +181,7 @@ let package = Package(
                 "PersistenceClient",
                 "RSSClient",
                 "SharedModels",
+                "UserDefaultsClient"
             ]
         ),
         .testTarget(
@@ -218,6 +220,12 @@ let package = Package(
             dependencies: [
                 .product(name: "ConcurrencyExtras", package: "swift-concurrency-extras"),
                 "PersistenceClient"
+            ]
+        ),
+        .target(
+            name: "UserDefaultsClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies")
             ]
         ),
     ]

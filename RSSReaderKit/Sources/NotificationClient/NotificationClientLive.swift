@@ -5,66 +5,56 @@
 import Common
 import Dependencies
 import Foundation
-import SharedModels
-@preconcurrency import UserNotifications
 import PersistenceClient
 import RSSClient
+import SharedModels
+import UserDefaultsClient
+@preconcurrency import UserNotifications
+
 
 extension NotificationClient {
     public static func live() -> NotificationClient {
         @Dependency(\.notificationCenter) var notificationCenter
-        @Dependency(\.persistenceClient.loadFeeds) var loadFeeds
-        @Dependency(\.rssClient.fetchFeedItems) var fetchFeedItems
 
         return NotificationClient(
             requestPermissions: {
                 try await notificationCenter.requestAuthorization(options: [.alert, .sound, .badge])
             },
             checkForNewItems: {
-                try await checkForNewItems(
-                    loadFeeds: loadFeeds,
-                    fetchFeedItems: fetchFeedItems
-                )
+                try await checkForNewItems()
             }
         )
     }
-
-    private static func checkForNewItems(
-        loadFeeds: @escaping () async throws -> [Feed],
-        fetchFeedItems: @escaping (URL) async throws -> [FeedItem]
-    ) async throws {
-        @Dependency(\.notificationCenter) var notificationCenter
+    
+    private static func checkForNewItems() async throws {
         guard await notificationsAuthorized() else {
             throw NotificationError.permissionDenied
         }
 
+        @Dependency(\.persistenceClient.loadFeeds) var loadFeeds
         let feeds = try await loadFeeds()
         let enabledFeeds = feeds.filter(\.notificationsEnabled)
         
-        if enabledFeeds.isEmpty {
-            return
-        }
-        
-        let defaults = UserDefaults.standard
+        guard !enabledFeeds.isEmpty else { return }
         let currentTime = Date()
-        let lastCheckTime: Date? = defaults.date(forKey: Constants.Notifications.lastNotificationCheckKey) ?? currentTime
-        defaults.set(lastCheckTime, forKey: Constants.Notifications.lastNotificationCheckKey)
-
-
+        @Dependency(\.userDefaults) var userDefaults
+        let lastCheckTime = userDefaults.getLastNotificationCheckTime() ?? currentTime
+        
+        userDefaults.setLastNotificationCheckTime(currentTime)
+        
         try await processFeeds(
             enabledFeeds,
-            lastCheckTime: lastCheckTime ?? currentTime,
-            fetchFeedItems: fetchFeedItems
+            lastCheckTime: lastCheckTime
         )
     }
 
     private static func processFeeds(
         _ feeds: [Feed],
-        lastCheckTime: Date,
-        fetchFeedItems: @escaping (URL) async throws -> [FeedItem]
+        lastCheckTime: Date
     ) async throws {
         var delayOffset = 0.5
-
+        
+        @Dependency(\.rssClient.fetchFeedItems) var fetchFeedItems
         for feed in feeds {
             do {
                 let items = try await fetchFeedItems(feed.url)
@@ -138,14 +128,5 @@ extension DependencyValues {
     var notificationCenter: UNUserNotificationCenter {
         get { self[NotificationCenterKey.self] }
         set { self[NotificationCenterKey.self] = newValue }
-    }
-}
-
-extension UserDefaults {
-    func date(forKey defaultName: String) -> Date? {
-        guard let dateString = self.string(forKey: defaultName) else {
-            return nil
-        }
-        return try? Date(dateString, strategy: .dateTime)
     }
 }
