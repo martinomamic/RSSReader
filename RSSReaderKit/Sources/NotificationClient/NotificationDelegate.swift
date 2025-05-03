@@ -28,11 +28,7 @@ public final class NotificationDelegate: NSObject, UNUserNotificationCenterDeleg
         print("⭐️ IMPORTANT: willPresent notification called for: \(notification.request.identifier)")
         print("⭐️ IMPORTANT: Notification content: \(notification.request.content.title) - \(notification.request.content.body)")
         
-        if #available(iOS 14.0, *) {
-            completionHandler([.banner, .list, .sound, .badge])
-        } else {
-            completionHandler([.alert, .sound, .badge])
-        }
+        completionHandler([.banner, .list, .sound, .badge])
     }
 
     public func userNotificationCenter(

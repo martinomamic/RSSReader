@@ -33,6 +33,7 @@ extension NotificationClient {
         loadFeeds: @escaping () async throws -> [Feed],
         fetchFeedItems: @escaping (URL) async throws -> [FeedItem]
     ) async throws {
+        @Dependency(\.notificationCenter) var notificationCenter
         guard await notificationsAuthorized() else {
             throw NotificationError.permissionDenied
         }
@@ -40,22 +41,21 @@ extension NotificationClient {
         let feeds = try await loadFeeds()
         let enabledFeeds = feeds.filter(\.notificationsEnabled)
         
-        let lastCheckTime = UserDefaults.standard.object(
-            forKey: Constants.Storage.lastNotificationCheckKey
-        ) as? Date ?? Date()
-        
-        let isFirstCheck = lastCheckTime == Date()
-        
-        let currentTime = Date()
-        UserDefaults.standard.set(currentTime, forKey: Constants.Storage.lastNotificationCheckKey)
-        
-        if !isFirstCheck {
-            try await processFeeds(
-                enabledFeeds,
-                lastCheckTime: lastCheckTime,
-                fetchFeedItems: fetchFeedItems
-            )
+        if enabledFeeds.isEmpty {
+            return
         }
+        
+        let defaults = UserDefaults.standard
+        let currentTime = Date()
+        let lastCheckTime: Date? = defaults.date(forKey: Constants.Notifications.lastNotificationCheckKey) ?? currentTime
+        defaults.set(lastCheckTime, forKey: Constants.Notifications.lastNotificationCheckKey)
+
+
+        try await processFeeds(
+            enabledFeeds,
+            lastCheckTime: lastCheckTime ?? currentTime,
+            fetchFeedItems: fetchFeedItems
+        )
     }
 
     private static func processFeeds(
@@ -70,10 +70,7 @@ extension NotificationClient {
                 let items = try await fetchFeedItems(feed.url)
 
                 let newItems = items.filter { item in
-                    guard let pubDate = item.pubDate else
-                    {
-                        return false
-                    }
+                    guard let pubDate = item.pubDate else { return false }
                     return pubDate > lastCheckTime
                 }
 
@@ -85,7 +82,9 @@ extension NotificationClient {
                     )
                     delayOffset += 0.5
                 }
-            } catch { }
+            } catch {
+                print("Error fetching items for feed \(feed.url): \(error)")
+            }
         }
     }
 
@@ -106,13 +105,15 @@ extension NotificationClient {
                 repeats: false
             )
 
+            let requestId = "notification-\(feed.url.absoluteString)-\(item.id.uuidString)"
+            
             let request = UNNotificationRequest(
-                identifier: "notification-\(UUID().uuidString)",
+                identifier: requestId,
                 content: content,
                 trigger: trigger
             )
-            @Dependency(\.notificationCenter) var notificationCenter
-            notificationCenter.add(request) { error in
+            @Dependency(\.notificationCenter) var center
+            center.add(request) { error in
                 if let error = error {
                     continuation.resume(throwing: error)
                 } else {
@@ -123,8 +124,8 @@ extension NotificationClient {
     }
     
     public static func notificationsAuthorized() async -> Bool {
-        @Dependency(\.notificationCenter) var notificationCenter
-        let settings = await notificationCenter.notificationSettings()
+        @Dependency(\.notificationCenter) var center
+        let settings = await center.notificationSettings()
         return settings.authorizationStatus == .authorized
     }
 }
@@ -137,5 +138,14 @@ extension DependencyValues {
     var notificationCenter: UNUserNotificationCenter {
         get { self[NotificationCenterKey.self] }
         set { self[NotificationCenterKey.self] = newValue }
+    }
+}
+
+extension UserDefaults {
+    func date(forKey defaultName: String) -> Date? {
+        guard let dateString = self.string(forKey: defaultName) else {
+            return nil
+        }
+        return try? Date(dateString, strategy: .dateTime)
     }
 }

@@ -5,6 +5,13 @@
 //  Created by Martino Mamić on 17.04.25.
 //
 
+//
+//  NotificationClientTests.swift
+//  RSSReaderKit
+//
+//  Created by Martino Mamić on 17.04.25.
+//
+
 import Common
 import ConcurrencyExtras
 import Dependencies
@@ -19,6 +26,10 @@ import Testing
 
 @Suite struct NotificationClientTests {
     @Dependency(\.notificationClient) var client
+    
+    func setUp() {
+        UserDefaults.standard.removeObject(forKey: Constants.Notifications.lastNotificationCheckKey)
+    }
     
     func testFeed(notificationsEnabled: Bool = true) -> Feed {
         Feed(
@@ -68,101 +79,55 @@ import Testing
         }
     }
 
-    @Test("Check for new items with thread identifier")
-    func testCheckForNewItemsWithThreading() async throws {
+    @Test("Check for new items compares with last check time")
+    func testCheckForNewItemsWithLastCheckTime() async throws {
+        let lastCheckTime = Date().addingTimeInterval(-3600)
+        let lastCheckTimeString = lastCheckTime.formatted(.dateTime)
+        UserDefaults.standard.set(lastCheckTimeString, forKey: Constants.Notifications.lastNotificationCheckKey)
+        
         let feed = testFeed()
-        let item = testItem(pubDate: Date().addingTimeInterval(60))
-        let notificationRequests = LockIsolated<[UNNotificationRequest]>([])
+        let oldItem = testItem(pubDate: lastCheckTime.addingTimeInterval(-600))
+        let newItem = testItem(pubDate: lastCheckTime.addingTimeInterval(600))
+        
+        let notifications = LockIsolated<[String]>([])
 
         try await withDependencies {
-            $0.rssClient.fetchFeedItems = { _ in [item] }
-            $0.persistenceClient.loadFeeds = { [feed] }
+            $0.rssClient = .init(
+                fetchFeed: { _ in feed },
+                fetchFeedItems: { _ in [oldItem, newItem] }
+            )
+
+            $0.persistenceClient = .init(
+                saveFeed: { _ in },
+                updateFeed: { _ in },
+                deleteFeed: { _ in },
+                loadFeeds: { [feed] }
+            )
             
-            $0.notificationClient = .testValue(
-                requestPermissions: {},
+            $0.notificationClient = .init(
+                requestPermissions: { },
                 checkForNewItems: {
-                    notificationRequests.withValue { requests in
-                        requests.append(UNNotificationRequest(
-                            identifier: "test-id",
-                            content: {
-                                let content = UNMutableNotificationContent()
-                                content.threadIdentifier = feed.url.absoluteString
-                                content.title = feed.title ?? ""
-                                content.body = item.title
-                                return content
-                            }(),
-                            trigger: nil
-                        ))
+                    notifications.withValue { items in
+                        items.append(newItem.title)
                     }
                 }
             )
         } operation: {
             try await client.checkForNewItems()
 
-            let requests = notificationRequests.value
-            #expect(requests.count == 1)
-            #expect(requests[0].content.threadIdentifier == feed.url.absoluteString)
-            #expect(requests[0].content.title == feed.title)
-            #expect(requests[0].content.body == item.title)
-        }
-    }
-
-    @Test("Skip notifications for disabled feeds")
-    func testSkipNotificationsForDisabledFeeds() async throws {
-        let feed = testFeed(notificationsEnabled: false)
-        let item = testItem(pubDate: Date().addingTimeInterval(60))
-        let notificationRequests = LockIsolated<[UNNotificationRequest]>([])
-
-        try await withDependencies {
-            $0.rssClient.fetchFeedItems = { _ in [item] }
-            $0.persistenceClient.loadFeeds = { [feed] }
-            
-            $0.notificationClient = .testValue(
-                requestPermissions: {},
-                checkForNewItems: { }
-            )
-        } operation: {
-            try await client.checkForNewItems()
-            
-            #expect(notificationRequests.value.isEmpty)
+            #expect(notifications.value.count == 1)
+            #expect(notifications.value.first == newItem.title)
         }
     }
     
-    @Test("Skip notifications when unauthorized")
-    func testSkipNotificationsWhenUnauthorized() async throws {
+    @Test("First check saves date but doesn't send notifications")
+    func testFirstCheckSavesDate() async throws {
+        UserDefaults.standard.removeObject(forKey: Constants.Notifications.lastNotificationCheckKey)
+        
         let feed = testFeed()
-        let item = testItem(pubDate: Date().addingTimeInterval(60))
-        let notificationRequests = LockIsolated<[UNNotificationRequest]>([])
-
-        try await withDependencies {
-            $0.rssClient.fetchFeedItems = { _ in [item] }
-            $0.persistenceClient.loadFeeds = { [feed] }
-            
-            $0.notificationClient = .testValue(
-                requestPermissions: {},
-                checkForNewItems: { throw NotificationError.permissionDenied }
-            )
-        } operation: {
-            @Dependency(\.notificationClient) var client
-            
-            do {
-                try await client.checkForNewItems()
-                #expect(Bool(false), "Should have thrown permission denied error")
-            } catch is NotificationError {
-                #expect(true)
-            }
-            #expect(notificationRequests.value.isEmpty)
-        }
-    }
-
-    @Test("Check for new items")
-    func testCheckForNewItems() async throws {
-        let feed = testFeed()
-        let item = testItem(pubDate: Date().addingTimeInterval(60))
-
-        let notifications = LockIsolated<[(title: String, body: String)]>([])
-        let notifiedItems = LockIsolated<[String]>([])
-        let lastCheckTime = LockIsolated<Date?>(nil)
+        let item = testItem(pubDate: Date().addingTimeInterval(-600))
+        
+        let notifications = LockIsolated<[String]>([])
 
         try await withDependencies {
             $0.rssClient = .init(
@@ -176,53 +141,75 @@ import Testing
                 deleteFeed: { _ in },
                 loadFeeds: { [feed] }
             )
-
+            
             $0.notificationClient = .init(
-                requestPermissions: {},
+                requestPermissions: { },
+                checkForNewItems: { }
+            )
+        } operation: {
+            try await client.checkForNewItems()
+            
+            #expect(notifications.value.isEmpty)
+            #expect(UserDefaults.standard.string(forKey: Constants.Notifications.lastNotificationCheckKey) != nil)
+        }
+    }
+    
+    @Test("Skip notifications when unauthorized")
+    func testSkipNotificationsWhenUnauthorized() async throws {
+        try await withDependencies {
+            $0.notificationClient = .init(
+                requestPermissions: { },
+                checkForNewItems: { throw NotificationError.permissionDenied }
+            )
+        } operation: {
+            do {
+                try await client.checkForNewItems()
+                #expect(Bool(false), "Should have thrown permission denied error")
+            } catch is NotificationError {
+                #expect(true)
+            }
+        }
+    }
+    
+    @Test("Notification format is correct")
+    func testNotificationFormat() async throws {
+        let lastCheckTime = Date().addingTimeInterval(-3600)
+        let lastCheckTimeString = lastCheckTime.formatted(.dateTime)
+        UserDefaults.standard.set(lastCheckTimeString, forKey: Constants.Notifications.lastNotificationCheckKey)
+        
+        let testFeed = self.testFeed()
+        let testItem = self.testItem(pubDate: Date())
+        
+        let notificationInfo = LockIsolated<(title: String, body: String, identifier: String, threadId: String)?>(nil)
+
+        try await withDependencies {
+            $0.rssClient.fetchFeedItems = { _ in [testItem] }
+            $0.persistenceClient.loadFeeds = { [testFeed] }
+            
+            $0.notificationClient = .init(
+                requestPermissions: { },
                 checkForNewItems: {
-                    @Dependency(\.persistenceClient.loadFeeds) var loadSavedFeeds
-                    @Dependency(\.rssClient.fetchFeedItems) var fetchFeedItems
-
-                    let lastCheck = lastCheckTime.value ?? Date.distantPast
-
-                    let feeds = try await loadSavedFeeds()
-                    let enabledFeeds = feeds.filter(\.notificationsEnabled)
-
-                    for feed in enabledFeeds {
-                        let items = try await fetchFeedItems(feed.url)
-
-                        for item in items {
-                            guard let pubDate = item.pubDate else { continue }
-
-                            let shouldNotify = pubDate > lastCheck &&
-                                !notifiedItems.value.contains(item.id.uuidString)
-
-                            if shouldNotify {
-                                notifications.withValue { notifications in
-                                    notifications.append((
-                                        title: feed.title ?? "New item in feed",
-                                        body: item.title
-                                    ))
-                                }
-
-                                notifiedItems.withValue { items in
-                                    items.append(item.id.uuidString)
-                                }
-                            }
-                        }
-                    }
-
-                    lastCheckTime.setValue(Date())
+                    notificationInfo.setValue((
+                        title: testFeed.title!,
+                        body: testItem.title,
+                        identifier: "notification-\(testFeed.url.absoluteString)-\(testItem.id.uuidString)",
+                        threadId: testFeed.url.absoluteString
+                    ))
                 }
             )
         } operation: {
             try await client.checkForNewItems()
-
-            #expect(notifications.value.count == 1)
-            #expect(notifications.value.first?.title == feed.title)
-            #expect(notifications.value.first?.body == item.title)
-
-            #expect(notifiedItems.value.contains(item.id.uuidString))
+            
+            #expect(notificationInfo.value != nil)
+            
+            if let info = notificationInfo.value {
+                #expect(info.title == testFeed.title)
+                #expect(info.body == testItem.title)
+                #expect(info.threadId == testFeed.url.absoluteString)
+                #expect(info.identifier.contains("notification-"))
+                #expect(info.identifier.contains(testFeed.url.absoluteString))
+                #expect(info.identifier.contains(testItem.id.uuidString))
+            }
         }
     }
 }

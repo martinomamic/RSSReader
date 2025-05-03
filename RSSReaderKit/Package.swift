@@ -67,6 +67,7 @@ let package = Package(
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
                 "Common",
                 "ExploreClient",
+                "NotificationClient",
                 "PersistenceClient",
                 "RSSClient",
             ],

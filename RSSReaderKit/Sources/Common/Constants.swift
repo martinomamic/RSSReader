@@ -68,13 +68,7 @@ public enum Constants {
         public static let isNotFavoriteIcon = "star"
     }
 
-    public enum Storage {
-        public static let lastNotificationCheckKey = "lastNotificationCheck"
-        public static let notifiedItemsKey = "notifiedItems"
-    }
-
     public enum Notifications {
-        public static let maxStoredNotificationIDs = 100
-        public static let pruneToCount = 50
+        public static let lastNotificationCheckKey = "lastNotificationCheck"
     }
 }
