@@ -8,8 +8,6 @@
 import Common
 import Dependencies
 import SwiftUI
-import UIKit
-@preconcurrency import UserNotifications
 
 @MainActor
 public struct NotificationDebugView: View {
@@ -23,7 +21,7 @@ public struct NotificationDebugView: View {
     @State private var refreshResult = ""
     @State private var notificationStatus = "Unknown"
     @Environment(\.scenePhase) private var scenePhase
-    @Dependency(\.notificationClient) private var notificationClient
+    @Dependency(\.notificationRepository) private var notificationRepository
 
     public init() {}
 
@@ -46,7 +44,6 @@ public struct NotificationDebugView: View {
     }
 }
 
-// MARK: - View Components
 private extension NotificationDebugView {
     var header: some View {
         Text("Notification Debug")
@@ -204,23 +201,16 @@ private extension NotificationDebugView {
 
     func checkNotificationStatus() {
         Task {
-            let center = UNUserNotificationCenter.current()
-            let settings = await center.notificationSettings()
-            notificationStatus = settings.authorizationStatus.description
-
-            if settings.authorizationStatus == .authorized {
-                listScheduledNotifications()
-            }
+            notificationStatus = await notificationRepository.getNotificationStatus()
+            listScheduledNotifications()
         }
     }
 
     func listScheduledNotifications() {
         Task {
-            let center = UNUserNotificationCenter.current()
-            let pendingRequests = await center.pendingNotificationRequests()
-            print("Pending notifications: \(pendingRequests.count)")
+            let pendingRequests = await notificationRepository.getPendingNotifications()
             for (index, request) in pendingRequests.enumerated() {
-                print("[\(index)] \(request.identifier): \(request.content.title)")
+                print("[\(index)] \(request)")
             }
         }
     }
@@ -228,7 +218,7 @@ private extension NotificationDebugView {
     func requestPermissions() {
         Task {
             do {
-                _ = try await notificationClient.requestPermissions()
+                _ = try await notificationRepository.requestPermissions()
                 refreshResult = "✅ Notification permissions granted"
                 checkNotificationStatus()
             } catch {
@@ -242,36 +232,24 @@ private extension NotificationDebugView {
             isRefreshing = true
             refreshResult = "Refreshing..."
 
-            let success = await BackgroundRefreshClient.shared.manuallyTriggerBackgroundRefresh()
+            let success = await notificationRepository.manuallyTriggerBackgroundRefresh()
 
             isRefreshing = false
             if success {
                 let timestamp = Date().formatted(date: .numeric, time: .standard)
                 refreshResult = "✅ Background refresh triggered successfully at \(timestamp)"
-                try? await sendConfirmationNotification("Background refresh executed")
             } else {
                 refreshResult = "❌ Background refresh failed"
             }
         }
     }
-}
-
-// MARK: - Notification Handling
-private extension NotificationDebugView {
+    
     func sendDelayedNotification() {
         Task {
             do {
-                let content = UNMutableNotificationContent()
-                content.title = "Delayed Test Notification"
-                content.body = "This notification was scheduled \(Int(Constants.UI.debugDelayedNotificationTime)) seconds ago"
-                content.sound = .default
-
-                let trigger = UNTimeIntervalNotificationTrigger(
-                    timeInterval: Constants.UI.debugDelayedNotificationTime,
-                    repeats: false
+                try await notificationRepository.sendDelayedNotification(
+                    Int(Constants.UI.debugDelayedNotificationTime)
                 )
-
-                try await scheduleTestNotification(content: content, trigger: trigger)
                 refreshResult = "✅ Delayed notification scheduled"
                 listScheduledNotifications()
             } catch {
@@ -279,70 +257,20 @@ private extension NotificationDebugView {
             }
         }
     }
-
-    func sendConfirmationNotification(_ context: String) async throws {
-        let content = UNMutableNotificationContent()
-        content.title = "Test Notification: \(context)"
-        content.body = "Test notification sent at \(Date().formatted(date: .numeric, time: .standard))"
-        content.sound = .default
-
-        try await scheduleTestNotification(content: content, trigger: nil)
-        listScheduledNotifications()
-    }
-
-    func scheduleTestNotification(
-        content: UNMutableNotificationContent,
-        trigger: UNNotificationTrigger?
-    ) async throws {
-        let request = UNNotificationRequest(
-            identifier: "test-\(UUID().uuidString)",
-            content: content,
-            trigger: trigger
-        )
-        try await UNUserNotificationCenter.current().add(request)
-    }
-}
-
-// MARK: - Feed Testing
-private extension NotificationDebugView {
+    
     func testFeedParsing() {
         Task {
             isRefreshing = true
             refreshResult = "Testing feed parsing..."
-
-            @Dependency(\.persistenceClient.loadFeeds) var loadSavedFeeds
-            @Dependency(\.rssClient.fetchFeedItems) var fetchFeedItems
-
-            do {
-                var results = ""
-                let feeds = try await loadSavedFeeds()
-                results += "📊 Stored feeds: \(feeds.count)\n"
-
-                if feeds.isEmpty {
-                    results += "ℹ️ No stored feeds to test\n"
-                } else {
-                    for (index, feed) in feeds.enumerated() {
-                        do {
-                            let items = try await fetchFeedItems(feed.url)
-                            let status = "✅ \(items.count) items"
-                            results += "\(index + 1). \(feed.title ?? feed.url.absoluteString): \(status)\n"
-                        } catch {
-                            results += "\(index + 1). \(feed.title ?? feed.url.absoluteString): ❌ Error: \(error)\n"
-                        }
-                    }
-                }
-
-                refreshResult = results
-            } catch {
-                refreshResult = "❌ Error testing feeds: \(error.localizedDescription)"
-            }
-
+            
+            let results = await notificationRepository.testFeedParsing()
+            refreshResult = results
+            
             isRefreshing = false
         }
     }
 }
 
-// MARK: - UNAuthorizationStatus Description
 private extension UNAuthorizationStatus {
     var description: String {
         switch self {

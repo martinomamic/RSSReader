@@ -4,7 +4,11 @@
       "id" : "1485DAD2-E71C-465A-AC36-CF89D5C717FA",
       "name" : "Test Scheme Action",
       "options" : {
-
+        "addressSanitizer" : {
+          "enabled" : false
+        },
+        "threadSanitizerEnabled" : false,
+        "undefinedBehaviorSanitizerEnabled" : true
       }
     }
   ],
@@ -13,6 +17,9 @@
   },
   "testTargets" : [
     {
+      "selectedTags" : {
+        "includeXCTests" : true
+      },
       "target" : {
         "containerPath" : "container:RSSReaderKit",
         "identifier" : "PersistenceClientTests",
@@ -20,13 +27,9 @@
       }
     },
     {
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "NotificationClientTests",
-        "name" : "NotificationClientTests"
-      }
-    },
-    {
+      "selectedTags" : {
+        "includeXCTests" : true
+      },
       "target" : {
         "containerPath" : "container:RSSReaderKit",
         "identifier" : "FeedRepositoryTests",
@@ -34,6 +37,9 @@
       }
     },
     {
+      "selectedTags" : {
+        "includeXCTests" : true
+      },
       "target" : {
         "containerPath" : "container:RSSReader.xcodeproj",
         "identifier" : "386A8D2E2DAA864A00BCD162",
@@ -41,6 +47,9 @@
       }
     },
     {
+      "selectedTags" : {
+        "includeXCTests" : true
+      },
       "target" : {
         "containerPath" : "container:RSSReaderKit",
         "identifier" : "CommonComponentTests",
@@ -48,6 +57,9 @@
       }
     },
     {
+      "selectedTags" : {
+        "includeXCTests" : true
+      },
       "target" : {
         "containerPath" : "container:RSSReaderKit",
         "identifier" : "UserDefaultsClientTests",
@@ -55,6 +67,9 @@
       }
     },
     {
+      "selectedTags" : {
+        "includeXCTests" : true
+      },
       "target" : {
         "containerPath" : "container:RSSReaderKit",
         "identifier" : "SharedModelsTests",
@@ -62,6 +77,9 @@
       }
     },
     {
+      "selectedTags" : {
+        "includeXCTests" : true
+      },
       "target" : {
         "containerPath" : "container:RSSReaderKit",
         "identifier" : "ExploreClientTests",
@@ -69,6 +87,9 @@
       }
     },
     {
+      "selectedTags" : {
+        "includeXCTests" : true
+      },
       "target" : {
         "containerPath" : "container:RSSReaderKit",
         "identifier" : "RSSClientTests",
@@ -76,6 +97,9 @@
       }
     },
     {
+      "selectedTags" : {
+        "includeXCTests" : true
+      },
       "target" : {
         "containerPath" : "container:RSSReaderKit",
         "identifier" : "TabBarFeatureTests",
@@ -83,6 +107,9 @@
       }
     },
     {
+      "selectedTags" : {
+        "includeXCTests" : true
+      },
       "target" : {
         "containerPath" : "container:RSSReaderKit",
         "identifier" : "FeedItemsTests",
@@ -90,6 +117,9 @@
       }
     },
     {
+      "selectedTags" : {
+        "includeXCTests" : true
+      },
       "target" : {
         "containerPath" : "container:RSSReaderKit",
         "identifier" : "FeedListTests",
@@ -97,6 +127,9 @@
       }
     },
     {
+      "selectedTags" : {
+        "includeXCTests" : true
+      },
       "target" : {
         "containerPath" : "container:RSSReader.xcodeproj",
         "identifier" : "386A8D382DAA864A00BCD162",
@@ -104,6 +137,9 @@
       }
     },
     {
+      "selectedTags" : {
+        "includeXCTests" : true
+      },
       "target" : {
         "containerPath" : "container:RSSReaderKit",
         "identifier" : "ExploreFeatureTests",

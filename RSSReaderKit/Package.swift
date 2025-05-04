@@ -8,13 +8,14 @@ let package = Package(
         .iOS(.v17)
     ],
     products: [
+        .library(name: "BackgroundRefreshClient", targets: ["BackgroundRefreshClient"]),
         .library(name: "Common", targets: ["Common"]),
         .library(name: "ExploreClient", targets: ["ExploreClient"]),
         .library(name: "ExploreFeature", targets: ["ExploreFeature"]),
         .library(name: "FeedItemsFeature", targets: ["FeedItemsFeature"]),
         .library(name: "FeedListFeature", targets: ["FeedListFeature"]),
         .library(name: "FeedRepository", targets: ["FeedRepository"]),
-        .library(name: "NotificationClient", targets: ["NotificationClient"]),
+        .library(name: "NotificationRepository", targets: ["NotificationRepository"]),
         .library(name: "PersistenceClient", targets: ["PersistenceClient"]),
         .library(name: "RSSClient", targets: ["RSSClient"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
@@ -28,6 +29,18 @@ let package = Package(
         .package(url: "https://github.com/onevcat/Kingfisher.git", from: "8.3.2"),
     ],
     targets: [
+        .target(
+            name: "BackgroundRefreshClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "Common",
+                "SharedModels",
+                "PersistenceClient",
+                "FeedRepository",
+                "UserNotificationClient",
+                "UserDefaultsClient"
+            ]
+        ),
         .target(
             name: "RSSClient",
             dependencies: [
@@ -68,7 +81,7 @@ let package = Package(
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
                 "Common",
                 "ExploreClient",
-                "NotificationClient",
+                "NotificationRepository",
                 "PersistenceClient",
                 "RSSClient",
             ],
@@ -119,7 +132,7 @@ let package = Package(
                 "Common",
                 "FeedItemsFeature",
                 "FeedRepository",
-                "NotificationClient",
+                "NotificationRepository",
                 "SharedModels"
             ]
         ),
@@ -129,7 +142,7 @@ let package = Package(
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
                 "FeedListFeature",
-                "NotificationClient"
+                "NotificationRepository"
             ],
             exclude: ["__Snapshots__"]
         ),
@@ -148,7 +161,7 @@ let package = Package(
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
                 "FeedItemsFeature",
-                "NotificationClient"
+                "NotificationRepository"
             ],
             exclude: ["__Snapshots__"]
         ),
@@ -174,21 +187,13 @@ let package = Package(
             ]
         ),
         .target(
-            name: "NotificationClient",
+            name: "NotificationRepository",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 "Common",
-                "PersistenceClient",
-                "RSSClient",
-                "SharedModels",
-                "UserDefaultsClient"
-            ]
-        ),
-        .testTarget(
-            name: "NotificationClientTests",
-            dependencies: [
-                .product(name: "ConcurrencyExtras", package: "swift-concurrency-extras"),
-                "NotificationClient",
+                "BackgroundRefreshClient",
+                "UserNotificationClient"
+                
             ]
         ),
         .target(
@@ -233,6 +238,12 @@ let package = Package(
             dependencies: [
                 .product(name: "ConcurrencyExtras", package: "swift-concurrency-extras"),
                 "UserDefaultsClient",
+            ]
+        ),
+        .target(
+            name: "UserNotificationClient",
+            dependencies: [
+                .product(name: "Dependencies", package: "swift-dependencies")
             ]
         ),
     ]

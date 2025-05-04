@@ -22,4 +22,5 @@ public struct FeedRepository: Sendable {
     public var loadExploreFeeds: @Sendable () async throws -> [ExploreFeed]
     public var addExploreFeed: @Sendable (ExploreFeed) async throws -> Feed
     public var getCurrentFeeds: @Sendable () async throws -> [Feed]
+    public var fetchItems: @Sendable (Feed) async throws -> [FeedItem]
 }

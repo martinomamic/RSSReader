@@ -85,6 +85,10 @@ extension FeedRepository: DependencyKey {
                 )
             }, getCurrentFeeds: {
                 feedStore.value
+            }, fetchItems: { feed in
+                [
+                    FeedItem(feedID: UUID(), title: "Test Item", link: URL(string: "https://example.com/feed")!)
+                ]
             }
         )
     }
