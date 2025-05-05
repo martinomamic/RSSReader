@@ -5,16 +5,47 @@
 //  Created by Martino Mamić on 17.04.25.
 //
 
-import NotificationClient
+import BackgroundRefreshClient
+import Dependencies
 import UIKit
+import UserNotificationClient
 
 class AppDelegate: NSObject, UIApplicationDelegate {
+    @Dependency(\.userNotifications) var userNotifications
+    @Dependency(\.backgroundRefresh) var backgroundRefresh
+    
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        NotificationDelegate.shared.setup()
-        BackgroundRefreshClient.shared.configure()
+        userNotifications.setDelegate()
+        backgroundRefresh.configure()
         return true
+    }
+    
+    // Handle background fetch results
+    func application(
+        _ application: UIApplication,
+        handleEventsForBackgroundURLSession identifier: String,
+        completionHandler: @escaping () -> Void
+    ) {
+        completionHandler()
+    }
+    
+    // Handle notification interactions
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        completionHandler()
+    }
+    
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .sound])
     }
 }

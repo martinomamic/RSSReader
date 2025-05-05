@@ -7,14 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		382CFC172DAFA4F600CFBB7D /* Common in Frameworks */ = {isa = PBXBuildFile; productRef = 382CFC162DAFA4F600CFBB7D /* Common */; };
-		382CFC192DAFA4F600CFBB7D /* FeedItemsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 382CFC182DAFA4F600CFBB7D /* FeedItemsFeature */; };
+		185780322DC663E600AA34ED /* UserDefaultsClient in Frameworks */ = {isa = PBXBuildFile; productRef = 185780312DC663E600AA34ED /* UserDefaultsClient */; };
+		185780342DC6642100AA34ED /* BackgroundRefreshClient in Frameworks */ = {isa = PBXBuildFile; productRef = 185780332DC6642100AA34ED /* BackgroundRefreshClient */; };
 		382CFC1B2DAFA4F600CFBB7D /* PersistenceClient in Frameworks */ = {isa = PBXBuildFile; productRef = 382CFC1A2DAFA4F600CFBB7D /* PersistenceClient */; };
-		386201412DB137FF00613CA2 /* NotificationClient in Frameworks */ = {isa = PBXBuildFile; productRef = 386201402DB137FF00613CA2 /* NotificationClient */; };
 		3882B1C32DAFE47B0069A7E1 /* TabBarFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 3882B1C22DAFE47B0069A7E1 /* TabBarFeature */; };
-		388B93BF2DAD202C0096CB2E /* FeedListFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 388B93BE2DAD202C0096CB2E /* FeedListFeature */; };
 		38C352E32DABF64F008FA670 /* RSSClient in Frameworks */ = {isa = PBXBuildFile; productRef = 38C352E22DABF64F008FA670 /* RSSClient */; };
-		38C352E52DABF64F008FA670 /* SharedModels in Frameworks */ = {isa = PBXBuildFile; productRef = 38C352E42DABF64F008FA670 /* SharedModels */; };
 		38C7436A2DB6CD7A00983997 /* Common in Frameworks */ = {isa = PBXBuildFile; productRef = 38C743692DB6CD7A00983997 /* Common */; };
 /* End PBXBuildFile section */
 
@@ -81,14 +78,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				386201412DB137FF00613CA2 /* NotificationClient in Frameworks */,
 				38C352E32DABF64F008FA670 /* RSSClient in Frameworks */,
 				3882B1C32DAFE47B0069A7E1 /* TabBarFeature in Frameworks */,
-				388B93BF2DAD202C0096CB2E /* FeedListFeature in Frameworks */,
-				38C352E52DABF64F008FA670 /* SharedModels in Frameworks */,
+				185780342DC6642100AA34ED /* BackgroundRefreshClient in Frameworks */,
+				185780322DC663E600AA34ED /* UserDefaultsClient in Frameworks */,
 				382CFC1B2DAFA4F600CFBB7D /* PersistenceClient in Frameworks */,
-				382CFC192DAFA4F600CFBB7D /* FeedItemsFeature in Frameworks */,
-				382CFC172DAFA4F600CFBB7D /* Common in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -163,13 +157,10 @@
 			name = RSSReader;
 			packageProductDependencies = (
 				38C352E22DABF64F008FA670 /* RSSClient */,
-				38C352E42DABF64F008FA670 /* SharedModels */,
-				388B93BE2DAD202C0096CB2E /* FeedListFeature */,
-				382CFC162DAFA4F600CFBB7D /* Common */,
-				382CFC182DAFA4F600CFBB7D /* FeedItemsFeature */,
 				382CFC1A2DAFA4F600CFBB7D /* PersistenceClient */,
 				3882B1C22DAFE47B0069A7E1 /* TabBarFeature */,
-				386201402DB137FF00613CA2 /* NotificationClient */,
+				185780312DC663E600AA34ED /* UserDefaultsClient */,
+				185780332DC6642100AA34ED /* BackgroundRefreshClient */,
 			);
 			productName = RSSReader;
 			productReference = 386A8D1E2DAA864900BCD162 /* RSSReader.app */;
@@ -454,6 +445,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"RSSReader/Preview Content\"";
+				DEVELOPMENT_TEAM = XN7Z6B8T32;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RSSReader/Info.plist;
@@ -493,6 +485,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"RSSReader/Preview Content\"";
+				DEVELOPMENT_TEAM = XN7Z6B8T32;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RSSReader/Info.plist;
@@ -529,6 +522,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = XN7Z6B8T32;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
@@ -553,6 +547,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = XN7Z6B8T32;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
@@ -576,6 +571,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = XN7Z6B8T32;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
@@ -599,6 +595,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = XN7Z6B8T32;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
@@ -658,37 +655,25 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		382CFC162DAFA4F600CFBB7D /* Common */ = {
+		185780312DC663E600AA34ED /* UserDefaultsClient */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = Common;
+			productName = UserDefaultsClient;
 		};
-		382CFC182DAFA4F600CFBB7D /* FeedItemsFeature */ = {
+		185780332DC6642100AA34ED /* BackgroundRefreshClient */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = FeedItemsFeature;
+			productName = BackgroundRefreshClient;
 		};
 		382CFC1A2DAFA4F600CFBB7D /* PersistenceClient */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = PersistenceClient;
 		};
-		386201402DB137FF00613CA2 /* NotificationClient */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = NotificationClient;
-		};
 		3882B1C22DAFE47B0069A7E1 /* TabBarFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TabBarFeature;
 		};
-		388B93BE2DAD202C0096CB2E /* FeedListFeature */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = FeedListFeature;
-		};
 		38C352E22DABF64F008FA670 /* RSSClient */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RSSClient;
-		};
-		38C352E42DABF64F008FA670 /* SharedModels */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = SharedModels;
 		};
 		38C743692DB6CD7A00983997 /* Common */ = {
 			isa = XCSwiftPackageProductDependency;

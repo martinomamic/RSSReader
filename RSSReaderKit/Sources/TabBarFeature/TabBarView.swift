@@ -9,7 +9,7 @@ import Common
 import SwiftUI
 import ExploreFeature
 import FeedListFeature
-import NotificationClient
+import NotificationRepository
 
 public struct TabBarView: View {
     @State private var selectedTab: TabItem = .feeds

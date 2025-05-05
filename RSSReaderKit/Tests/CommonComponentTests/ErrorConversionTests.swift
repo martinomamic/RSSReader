@@ -8,7 +8,7 @@
 import Testing
 import Common
 import RSSClient
-import NotificationClient
+import NotificationRepository
 import ExploreClient
 import PersistenceClient
 import Foundation

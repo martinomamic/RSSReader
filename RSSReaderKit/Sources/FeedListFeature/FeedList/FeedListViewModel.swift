@@ -10,7 +10,7 @@ import Dependencies
 import FeedItemsFeature
 import FeedRepository
 import Foundation
-import NotificationClient
+import NotificationRepository
 import Observation
 import SharedModels
 
@@ -25,7 +25,7 @@ public class FeedListViewModel {
     @ObservationIgnored
     @Dependency(\.feedRepository) private var feedRepository
     @ObservationIgnored
-    @Dependency(\.notificationClient) private var notificationClient
+    @Dependency(\.notificationRepository) private var notificationRepository
     
     private(set) var feeds: [Feed] = []
     var state: FeedListState = .loading
@@ -34,19 +34,19 @@ public class FeedListViewModel {
     private var deleteTask: Task<Void, Never>?
     private var favoritesTask: Task<Void, Never>?
     private var notificationsTask: Task<Void, Never>?
-
+    
     var favoriteFeeds: [Feed] {
         feeds.filter { $0.isFavorite }
     }
-
+    
     var showEditButton: Bool {
         !feeds.isEmpty
     }
-
+    
     public init() {
         setupFeeds()
     }
-
+    
     private func setupFeeds() {
         feedStreamTask?.cancel()
         
@@ -63,7 +63,7 @@ public class FeedListViewModel {
             }
         }
     }
-
+    
     private func updateFeedInPlace(_ url: URL, transform: (inout Feed) -> Void) {
         if let index = feeds.firstIndex(where: { $0.url == url }) {
             var updatedFeed = feeds[index]
@@ -71,26 +71,22 @@ public class FeedListViewModel {
             feeds[index] = updatedFeed
         }
     }
-
+    
     func toggleNotifications(_ feed: Feed) {
         notificationsTask?.cancel()
-
+        
         notificationsTask = Task { @MainActor in
             do {
-                if await !NotificationClient.notificationsAuthorized() {
-                    try await notificationClient.requestPermissions()
+                if await !notificationRepository.notificationsAuthorized() {
+                    try await notificationRepository.requestPermissions()
                 }
-
+                
                 try await feedRepository.toggleNotifications(feed.url)
                 
-                guard await NotificationClient.notificationsAuthorized() else {
-                    return
-                }
-
-                if feed.notificationsEnabled {
-                    BackgroundRefreshClient.shared.scheduleAppRefresh()
-                    try await notificationClient.checkForNewItems()
-                }
+                guard await notificationRepository.notificationsAuthorized(),
+                      feed.notificationsEnabled else { return }
+                    try await notificationRepository.checkForNewItems()
+                
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }
@@ -108,7 +104,7 @@ public class FeedListViewModel {
             }
         }
     }
-
+    
     func removeFeed(at indexSet: IndexSet, fromFavorites: Bool = false) {
         let feedsToModify = fromFavorites ? favoriteFeeds : feeds
         
@@ -129,33 +125,33 @@ public class FeedListViewModel {
             }
         }
     }
-
+    
     func displayedFeeds(showOnlyFavorites: Bool) -> [Feed] {
         return showOnlyFavorites ? favoriteFeeds : feeds
     }
     
     func navigationTitle(showOnlyFavorites: Bool) -> String {
         showOnlyFavorites ?
-            LocalizedStrings.FeedList.favoriteFeeds :
-            LocalizedStrings.FeedList.rssFeeds
+        LocalizedStrings.FeedList.favoriteFeeds :
+        LocalizedStrings.FeedList.rssFeeds
     }
     
     func listAccessibilityId(showOnlyFavorites: Bool) -> String {
         showOnlyFavorites ?
-            AccessibilityIdentifier.FeedList.favoritesList :
-            AccessibilityIdentifier.FeedList.feedsList
+        AccessibilityIdentifier.FeedList.favoritesList :
+        AccessibilityIdentifier.FeedList.feedsList
     }
     
     func emptyStateTitle(showOnlyFavorites: Bool) -> String {
         showOnlyFavorites ?
-            LocalizedStrings.FeedList.noFavorites :
-            LocalizedStrings.FeedList.noFeeds
+        LocalizedStrings.FeedList.noFavorites :
+        LocalizedStrings.FeedList.noFeeds
     }
     
     func emptyStateDescription(showOnlyFavorites: Bool) -> String {
         showOnlyFavorites ?
-            LocalizedStrings.FeedList.noFavoritesDescription :
-            LocalizedStrings.FeedList.noFeedsDescription
+        LocalizedStrings.FeedList.noFavoritesDescription :
+        LocalizedStrings.FeedList.noFeedsDescription
     }
     
     func makeFeedItemsViewModel(for feed: Feed) -> FeedItemsViewModel {
@@ -176,11 +172,11 @@ public class FeedListViewModel {
         let icon = isFavorite ? Constants.Images.isFavoriteIcon : Constants.Images.isNotFavoriteIcon
         return icon
     }
-
+    
     func isEmptyState(showOnlyFavorites: Bool) -> Bool {
         state == .idle && displayedFeeds(showOnlyFavorites: showOnlyFavorites).isEmpty
     }
-
+    
 }
 
 #if DEBUG

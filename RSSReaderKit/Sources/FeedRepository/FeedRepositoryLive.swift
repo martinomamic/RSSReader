@@ -107,11 +107,11 @@ private actor FeedRepositoryActor {
     }
     
     func fetch(url: URL) async throws -> Feed {
-        return try await rssClient.fetchFeed(url)
+        try await rssClient.fetchFeed(url)
     }
     
     func loadExploreFeeds() async throws -> [ExploreFeed] {
-        return try await exploreClient.loadExploreFeeds()
+        try await exploreClient.loadExploreFeeds()
     }
     
     func addExploreFeed(_ exploreFeed: ExploreFeed) async throws -> Feed {
@@ -124,7 +124,11 @@ private actor FeedRepositoryActor {
     }
     
     func getCurrentFeeds() async throws -> [Feed] {
-        return try await persistenceClient.loadFeeds()
+        try await persistenceClient.loadFeeds()
+    }
+    
+    func fetchFeedItems(_ url: URL) async throws -> [FeedItem] {
+        try await rssClient.fetchFeedItems(url)
     }
 }
 
@@ -167,6 +171,8 @@ extension FeedRepository {
             },
             getCurrentFeeds: {
                 try await actor.getCurrentFeeds()
+            }, fetchItems: { feed in
+                try await actor.fetchFeedItems(feed.url)
             }
         )
     }()
