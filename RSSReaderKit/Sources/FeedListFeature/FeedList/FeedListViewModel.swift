@@ -13,12 +13,7 @@ import Foundation
 import NotificationRepository
 import Observation
 import SharedModels
-
-enum FeedListState: Equatable {
-    case idle
-    case loading
-    case error(AppError)
-}
+import SharedUI
 
 @MainActor @Observable
 public class FeedListViewModel {
@@ -28,7 +23,7 @@ public class FeedListViewModel {
     @Dependency(\.notificationRepository) private var notificationRepository
     
     private(set) var feeds: [Feed] = []
-    var state: FeedListState = .loading
+    var state: ViewState<[Feed]> = .loading
     
     private var feedStreamTask: Task<Void, Never>?
     private var deleteTask: Task<Void, Never>?
@@ -40,14 +35,14 @@ public class FeedListViewModel {
     }
     
     var showEditButton: Bool {
-        !feeds.isEmpty
+        !feeds.isEmpty && !feeds.allSatisfy(\.isFavorite)
     }
     
     public init() {
         setupFeeds()
     }
     
-    private func setupFeeds() {
+    func setupFeeds() {
         feedStreamTask?.cancel()
         
         feedStreamTask = Task { @MainActor in
@@ -55,20 +50,12 @@ public class FeedListViewModel {
                 try await feedRepository.loadInitialFeeds()
                 
                 for await updatedFeeds in feedRepository.feedsStream {
-                    self.feeds = updatedFeeds
-                    self.state = .idle
+                    feeds = updatedFeeds
+                    state = feeds.isEmpty ? .empty : .content(feeds)
                 }
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }
-        }
-    }
-    
-    private func updateFeedInPlace(_ url: URL, transform: (inout Feed) -> Void) {
-        if let index = feeds.firstIndex(where: { $0.url == url }) {
-            var updatedFeed = feeds[index]
-            transform(&updatedFeed)
-            feeds[index] = updatedFeed
         }
     }
     
@@ -119,6 +106,7 @@ public class FeedListViewModel {
                         try await feedRepository.delete(feed.url)
                     }
                 }
+                state = feedsToModify.isEmpty ? .empty : .content(feedsToModify)
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }
@@ -170,10 +158,6 @@ public class FeedListViewModel {
         let isFavorite = feeds.first(where: { $0.url == feed.url })?.isFavorite ?? feed.isFavorite
         let icon = isFavorite ? Constants.Images.isFavoriteIcon : Constants.Images.isNotFavoriteIcon
         return icon
-    }
-    
-    func isEmptyState(showOnlyFavorites: Bool) -> Bool {
-        state == .idle && displayedFeeds(showOnlyFavorites: showOnlyFavorites).isEmpty
     }
 }
 

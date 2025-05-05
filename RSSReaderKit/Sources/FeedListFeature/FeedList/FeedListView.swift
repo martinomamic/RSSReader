@@ -26,14 +26,27 @@ public struct FeedListView: View {
     }
 
     public var body: some View {
-        Group {
+        VStack {
             switch viewModel.state {
             case .loading:
                 ProgressView()
-            case .error(let error):
-                Text(error.errorDescription)
-            case .idle:
+                
+            case .content:
                 feedsList
+                
+            case .error(let error):
+                ErrorStateView(error: error) {
+                    viewModel.setupFeeds()
+                }
+                
+            case .empty:
+                EmptyStateView(
+                    title: viewModel.emptyStateTitle(showOnlyFavorites: showOnlyFavorites),
+                    systemImage: Constants.Images.noItemsIcon,
+                    description: viewModel.emptyStateDescription(showOnlyFavorites: showOnlyFavorites),
+                    primaryAction: showOnlyFavorites ? nil : { showingAddFeed = true },
+                    primaryActionLabel: showOnlyFavorites ? nil : LocalizedStrings.FeedList.addFeed
+                )
             }
         }
         .onChange(of: viewModel.feeds) { _, newFeeds in
@@ -69,7 +82,9 @@ public struct FeedListView: View {
                     }
             }
             .onDelete { indexSet in
-                viewModel.removeFeed(at: indexSet, fromFavorites: showOnlyFavorites)
+                if viewModel.showEditButton {
+                    viewModel.removeFeed(at: indexSet, fromFavorites: showOnlyFavorites)
+                }
             }
         }
         .testId(viewModel.listAccessibilityId(showOnlyFavorites: showOnlyFavorites))
@@ -86,31 +101,20 @@ public struct FeedListView: View {
                     EditButton()
                         .testId(AccessibilityIdentifier.FeedList.editButton)
                 }
-            }
-            
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    showingAddFeed = true
-                } label: {
-                    Label(LocalizedStrings.FeedList.addFeed,
-                          systemImage: Constants.Images.addIcon)
+                
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        showingAddFeed = true
+                    } label: {
+                        Label(LocalizedStrings.FeedList.addFeed,
+                              systemImage: Constants.Images.addIcon)
+                    }
+                    .testId(AccessibilityIdentifier.FeedList.addFeedButton)
                 }
-                .testId(AccessibilityIdentifier.FeedList.addFeedButton)
             }
         }
         .sheet(isPresented: $showingAddFeed) {
             AddFeedView()
-        }
-        .overlay {
-            if viewModel.isEmptyState(showOnlyFavorites: showOnlyFavorites) {
-                EmptyStateView(
-                    title: viewModel.emptyStateTitle(showOnlyFavorites: showOnlyFavorites),
-                    systemImage: Constants.Images.noItemsIcon,
-                    description: viewModel.emptyStateDescription(showOnlyFavorites: showOnlyFavorites),
-                    primaryAction: showOnlyFavorites ? nil : { showingAddFeed = true },
-                    primaryActionLabel: showOnlyFavorites ? nil : LocalizedStrings.FeedList.addFeed
-                )
-            }
         }
     }
 }

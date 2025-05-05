@@ -33,9 +33,6 @@ public enum LocalizedStrings {
         public static let title = String(localized: "add_feed_title")
         public static let urlPlaceholder = String(localized: "add_feed_url_placeholder")
         public static let urlHeader = String(localized: "add_feed_url_header")
-        public static let examplesHeader = String(localized: "add_feed_examples_header")
-        public static let bbcNews = String(localized: "add_feed_example_bbc")
-        public static let nbcNews = String(localized: "add_feed_example_nbc")
         public static let errorTitle = String(localized: "add_feed_error_title")
     }
 

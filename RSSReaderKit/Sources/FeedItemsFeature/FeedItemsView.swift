@@ -19,13 +19,13 @@ public struct FeedItemsView: View {
     }
 
     public var body: some View {
-        Group {
+        VStack {
             switch viewModel.state {
             case .loading:
                 ProgressView(LocalizedStrings.LoadingStates.loading)
                     .testId(AccessibilityIdentifier.FeedItems.loadingView)
 
-            case .loaded(let items):
+            case .content(let items):
                 List {
                     ForEach(items) { item in
                         Button {

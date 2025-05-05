@@ -11,13 +11,6 @@ import Foundation
 import SharedModels
 import SwiftUI
 
-enum AddFeedState: Equatable {
-    case idle
-    case adding
-    case error(AppError)
-    case success
-}
-
 enum ExampleURL {
     case bbc
     case nbc
@@ -31,7 +24,7 @@ class AddFeedViewModel {
     private var addFeedTask: Task<Void, Never>?
     
     var urlString: String = ""
-    var state: AddFeedState = .idle
+    var state: ViewState<Bool> = .idle
     
     init() {}
     
@@ -40,18 +33,13 @@ class AddFeedViewModel {
     }
     
     var isLoading: Bool {
-        state == .adding
+        if case .loading = state { return true }
+        return false
     }
     
     var shouldDismiss: Bool {
-        state == .success
-    }
-    
-    var errorAlertBinding: Binding<Bool> {
-        .init(
-            get: { if case .error = self.state { return true } else { return false } },
-            set: { show in if !show { self.dismissError() } }
-        )
+        if case .content(true) = state { return true }
+        return false
     }
     
     private var isValidURL: Bool {
@@ -60,32 +48,19 @@ class AddFeedViewModel {
         return UIApplication.shared.canOpenURL(url)
     }
     
-    func setExampleURL(_ example: ExampleURL) {
-        switch example {
-        case .bbc:
-            urlString = Constants.URLs.bbcNews
-        case .nbc:
-            urlString = Constants.URLs.nbcNews
-        }
-    }
-    
-    func dismissError() {
-        state = .idle
-    }
-    
     func addFeed() {
         guard let url = URL(string: urlString) else {
-            state = .error(.invalidURL)
+            state = .error(AppError.invalidURL)
             return
         }
         
         addFeedTask?.cancel()
-        state = .adding
+        state = .loading
         
         addFeedTask = Task {
             do {
                 try await feedRepository.add(url)
-                state = .success
+                state = .content(true)
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }
@@ -100,5 +75,4 @@ extension AddFeedViewModel {
         await addFeedTask?.value
     }
 }
-
 #endif

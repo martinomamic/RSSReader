@@ -16,13 +16,13 @@ public struct ExploreView: View {
     public init() {}
 
     public var body: some View {
-        Group {
+        VStack {
             switch viewModel.state {
             case .loading:
                 ProgressView()
                     .testId(AccessibilityIdentifier.Explore.loadingView)
 
-            case .loaded(let feeds):
+            case .content(let feeds):
                 List {
                     ForEach(feeds) { feed in
                         ExploreFeedRow(
@@ -36,6 +36,12 @@ public struct ExploreView: View {
                 }
                 .testId(AccessibilityIdentifier.Explore.feedsList)
 
+            case .error(let error):
+                ErrorStateView(error: error) {
+                    viewModel.loadExploreFeeds()
+                }
+                .testId(AccessibilityIdentifier.Explore.errorView)
+                
             case .empty:
                 EmptyStateView(
                     title: LocalizedStrings.Explore.noFeedsTitle,
@@ -43,33 +49,10 @@ public struct ExploreView: View {
                     description: LocalizedStrings.Explore.noFeedsDescription
                 )
                 .testId(AccessibilityIdentifier.Explore.emptyView)
-
-            case .error(let error):
-                ErrorStateView(error: error) {
-                    viewModel.loadExploreFeeds()
-                }
-                .testId(AccessibilityIdentifier.Explore.errorView)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle(LocalizedStrings.Explore.title)
-        .alert(item: .init(
-            get: { viewModel.feedError },
-            set: { if $0 == nil { viewModel.clearError() } }
-        )) { error in
-            Alert(
-                title: Text(LocalizedStrings.Explore.errorAddingFeed),
-                message: Text(error.errorDescription),
-                dismissButton: .default(Text(LocalizedStrings.General.ok)) {
-                    viewModel.clearError()
-                }
-            )
-        }
-        .overlay {
-            if viewModel.isAddingFeed {
-                ProgressView()
-            }
-        }
         .task {
             viewModel.loadExploreFeeds()
         }

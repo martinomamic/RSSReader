@@ -43,7 +43,7 @@ public class FeedItemsViewModel: Identifiable {
                 if items.isEmpty {
                     state = .empty
                 } else {
-                    state = .loaded(items)
+                    state = .content(items)
                 }
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
