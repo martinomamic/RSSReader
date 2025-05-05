@@ -35,7 +35,7 @@ public struct FeedListView: View {
                 feedsList
             }
         }
-        .onChange(of: viewModel.feeds) { oldFeeds, newFeeds in
+        .onChange(of: viewModel.feeds) { _, newFeeds in
             localFeeds = newFeeds
         }
         .onAppear {
@@ -49,7 +49,6 @@ public struct FeedListView: View {
               viewModel.displayedFeeds(showOnlyFavorites: showOnlyFavorites),
               id: \.id
             ) { feed in
-                
                     FeedRow(
                         feed: feed,
                         onFavoriteToggle: {
@@ -61,7 +60,6 @@ public struct FeedListView: View {
                             var updatedFeed = feed
                             updatedFeed.notificationsEnabled.toggle()
                             viewModel.toggleNotifications(updatedFeed)
-                            
                         },
                         notificationIcon: viewModel.notificationIcon(for: feed),
                         favoriteIcon: viewModel.favoriteIcon(for: feed)

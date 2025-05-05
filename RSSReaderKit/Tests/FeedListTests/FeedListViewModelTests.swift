@@ -16,7 +16,6 @@ import FeedRepository
 
 @MainActor
 @Suite struct FeedListViewModelTests {
-    
     func createTestFeed(
         url: String = "https://example.com/feed",
         title: String = "Test Feed",

@@ -11,7 +11,6 @@ import Foundation
 public struct UserDefaultsClient: Sendable {
     public var getLastNotificationCheckTime: @Sendable () -> Date?
     public var setLastNotificationCheckTime: @Sendable (Date) -> Void
- 
     
     public init(
         getLastNotificationCheckTime: @escaping @Sendable () -> Date?,

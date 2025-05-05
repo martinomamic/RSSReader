@@ -14,7 +14,6 @@ import Common
 
 @MainActor
 @Suite struct AddFeedViewSnapshotTests {
-    
     @Test("AddFeedView initial state")
     func testAddFeedViewInitial() async throws {
         let model = AddFeedViewModel()

@@ -8,7 +8,6 @@ import SharedModels
 
 @Suite("FeedRepository Tests")
 struct FeedRepositoryTests {
-
     @Test("Initial load emits correct feeds via stream")
     func testInitialLoadEmitsFeeds() async throws {
         let mockFeeds = [
@@ -46,10 +45,9 @@ struct FeedRepositoryTests {
         
         var repo = FeedRepository.testValue
         
-        
         repo.feedsStream = continuation.stream
        
-        repo.add = { url in
+        repo.add = { _ in
                 let feed = testFeed
                 feedStore.withValue { feeds in
                     feeds.append(feed)
@@ -66,7 +64,6 @@ struct FeedRepositoryTests {
                 }
             }
         }
-        
 
         try await repo.add(testURL)
 

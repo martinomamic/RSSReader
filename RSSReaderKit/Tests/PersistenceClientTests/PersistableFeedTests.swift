@@ -13,7 +13,6 @@ import Foundation
 @testable import SharedModels
 
 @Suite struct PersistableFeedTests {
-    
     @Test("PersistableFeed init sets properties correctly")
     func testPersistableFeedInit() {
         let url = URL(string: "https://example.com/feed")!

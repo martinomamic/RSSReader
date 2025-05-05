@@ -7,7 +7,7 @@ XCODE_PROJECT := $(PROJECT_NAME).xcodeproj
 
 .PHONY: test lint lint-fix format clean install-tools setup open project init-packages reset-packages
 
-project: setup open
+project: install-tools setup open
 
 setup: init-packages
 	@echo "Project dependencies resolved successfully!"

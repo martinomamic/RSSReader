@@ -15,7 +15,6 @@ import SharedModels
 
 @MainActor
 @Suite struct FeedRowSnapshotTests {
-    
     func createTestFeed(
         url: String = "https://example.com/feed",
         title: String = "Test Feed",

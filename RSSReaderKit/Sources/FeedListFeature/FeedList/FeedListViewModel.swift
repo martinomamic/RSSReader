@@ -86,7 +86,6 @@ public class FeedListViewModel {
                 guard await notificationRepository.notificationsAuthorized(),
                       feed.notificationsEnabled else { return }
                     try await notificationRepository.checkForNewItems()
-                
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }
@@ -176,7 +175,6 @@ public class FeedListViewModel {
     func isEmptyState(showOnlyFavorites: Bool) -> Bool {
         state == .idle && displayedFeeds(showOnlyFavorites: showOnlyFavorites).isEmpty
     }
-    
 }
 
 #if DEBUG

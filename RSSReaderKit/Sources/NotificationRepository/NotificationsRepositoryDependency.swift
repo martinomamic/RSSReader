@@ -12,7 +12,7 @@ import SharedModels
 extension NotificationRepository: DependencyKey {
     public static let liveValue: NotificationRepository = .live()
 
-    public static let testValue: NotificationRepository = NotificationRepository(
+    public static let testValue = NotificationRepository(
         requestPermissions: {},
         checkForNewItems: {},
         notificationsAuthorized: { true },

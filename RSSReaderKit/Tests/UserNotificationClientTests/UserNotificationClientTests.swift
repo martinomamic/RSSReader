@@ -4,7 +4,6 @@ import Foundation
 @testable import UserNotificationClient
 
 @Suite struct UserNotificationClientTests {
-    
     @Test("Request authorization returns correct value")
     func testRequestAuthorization() async throws {
         let client = UserNotificationClient.testValue
