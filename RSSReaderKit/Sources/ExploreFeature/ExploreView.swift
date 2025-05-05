@@ -5,9 +5,10 @@
 //  Created by Martino Mamić on 18.04.25.
 //
 
-import SwiftUI
 import Common
 import SharedModels
+import SharedUI
+import SwiftUI
 
 public struct ExploreView: View {
     @State var viewModel = ExploreViewModel()

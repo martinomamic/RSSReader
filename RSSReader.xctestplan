@@ -98,36 +98,8 @@
     {
       "target" : {
         "containerPath" : "container:RSSReaderKit",
-        "identifier" : "SharedModelsTests",
-        "name" : "SharedModelsTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "FeedItemsTests",
-        "name" : "FeedItemsTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "NotificationRepositoryTests",
-        "name" : "NotificationRepositoryTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
         "identifier" : "FeedRepositoryTests",
         "name" : "FeedRepositoryTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "CommonComponentTests",
-        "name" : "CommonComponentTests"
       }
     },
     {
@@ -140,6 +112,20 @@
     {
       "target" : {
         "containerPath" : "container:RSSReaderKit",
+        "identifier" : "TabBarFeatureTests",
+        "name" : "TabBarFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "CommonTests",
+        "name" : "CommonTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
         "identifier" : "ExploreClientTests",
         "name" : "ExploreClientTests"
       }
@@ -147,15 +133,29 @@
     {
       "target" : {
         "containerPath" : "container:RSSReaderKit",
-        "identifier" : "PersistenceClientTests",
-        "name" : "PersistenceClientTests"
+        "identifier" : "ExploreFeatureTests",
+        "name" : "ExploreFeatureTests"
       }
     },
     {
       "target" : {
         "containerPath" : "container:RSSReaderKit",
-        "identifier" : "ExploreFeatureTests",
-        "name" : "ExploreFeatureTests"
+        "identifier" : "FeedItemsTests",
+        "name" : "FeedItemsTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "SharedUITests",
+        "name" : "SharedUITests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "UserDefaultsClientTests",
+        "name" : "UserDefaultsClientTests"
       }
     },
     {
@@ -175,15 +175,15 @@
     {
       "target" : {
         "containerPath" : "container:RSSReaderKit",
-        "identifier" : "BackgroundRefreshClientTests",
-        "name" : "BackgroundRefreshClientTests"
+        "identifier" : "UserNotificationClientTests",
+        "name" : "UserNotificationClientTests"
       }
     },
     {
       "target" : {
         "containerPath" : "container:RSSReaderKit",
-        "identifier" : "TabBarFeatureTests",
-        "name" : "TabBarFeatureTests"
+        "identifier" : "BackgroundRefreshClientTests",
+        "name" : "BackgroundRefreshClientTests"
       }
     },
     {
@@ -196,15 +196,22 @@
     {
       "target" : {
         "containerPath" : "container:RSSReaderKit",
-        "identifier" : "UserNotificationClientTests",
-        "name" : "UserNotificationClientTests"
+        "identifier" : "PersistenceClientTests",
+        "name" : "PersistenceClientTests"
       }
     },
     {
       "target" : {
         "containerPath" : "container:RSSReaderKit",
-        "identifier" : "UserDefaultsClientTests",
-        "name" : "UserDefaultsClientTests"
+        "identifier" : "SharedModelsTests",
+        "name" : "SharedModelsTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "NotificationRepositoryTests",
+        "name" : "NotificationRepositoryTests"
       }
     }
   ],

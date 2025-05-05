@@ -8,6 +8,7 @@
 import Common
 import RSSClient
 import SharedModels
+import SharedUI
 import SwiftUI
 
 public struct FeedItemsView: View {
@@ -58,6 +59,7 @@ public struct FeedItemsView: View {
         }
     }
 }
+
 
 #if DEBUG
 import Dependencies

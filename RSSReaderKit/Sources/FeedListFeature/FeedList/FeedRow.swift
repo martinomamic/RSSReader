@@ -6,8 +6,9 @@
 //
 
 import Common
-import SwiftUI
 import SharedModels
+import SharedUI
+import SwiftUI
 
 struct FeedRow: View, Equatable {
     let feed: Feed

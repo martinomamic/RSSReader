@@ -5,9 +5,11 @@
 //  Created by Martino Mamić on 18.04.25.
 //
 
-import SwiftUI
-import SharedModels
 import Common
+import SharedModels
+import SharedUI
+import SwiftUI
+
 
 struct ExploreFeedRow: View {
     let feed: ExploreFeed

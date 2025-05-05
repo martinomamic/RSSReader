@@ -9,6 +9,7 @@ import Common
 import FeedItemsFeature
 import RSSClient
 import SharedModels
+import SharedUI
 import SwiftUI
 
 public struct FeedListView: View {

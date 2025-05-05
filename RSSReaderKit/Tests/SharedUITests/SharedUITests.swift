@@ -1,5 +1,5 @@
 //
-//  CommonComponentsSnapshotTests.swift
+//  SharedUITests.swift
 //  RSSReaderKit
 //
 //  Created by Martino Mamić on 21.04.25.
@@ -8,10 +8,11 @@
 import Testing
 import SnapshotTesting
 import SwiftUI
-import Common
+
+@testable import SharedUI
 
 @MainActor
-@Suite struct CommonComponentsSnapshotTests {
+@Suite struct SharedUITests {
     @Test("EmptyStateView")
     func testEmptyStateView() async throws {
         let emptyView = EmptyStateView(
