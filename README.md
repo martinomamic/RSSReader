@@ -5,8 +5,19 @@
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Coverage](https://img.shields.io/badge/Coverage-64%25-yellow.svg)
 
-An iOS application for reading and managing RSS feeds, a project that follows a modular architecture using a Swift Package core with clean architecture principles.
-Built with Swift and SwiftUI, using MVVM for handling logic within the packages modules. 
+An iOS application for reading and managing RSS feeds, built with a focus on clean architecture, testability, and modern iOS development practices. The project is structured as a modular Swift Package with clear separation of concerns.
+
+## Features
+
+- Add, remove and manage RSS feeds 
+- View feed items with rich content support (images, descriptions)
+- Background refresh and notifications for new items
+- Favorite feeds management
+- Explore curated feed suggestions
+- Debug panel for notifications and background tasks
+- SwiftData persistence
+- Comprehensive test coverage
+- Clean, modular architecture
 
 ## Screenshots
 
@@ -27,98 +38,131 @@ Built with Swift and SwiftUI, using MVVM for handling logic within the packages 
   <em>Left: Favorites tab showing starred feeds - Middle: Explore tab with suggested feeds to add(from local JSON) - Right: Debug panel for testing notifications and background tasks</em>
 </p>
 
-## Assignment Requirements
+## Dependencies
 
-### Core Requirements ✅
-- ✅ Add RSS feeds by specifying an RSS feed URL
-- ✅ Remove RSS feeds 
-- ✅ View added RSS feeds with name, image (if available), and description
-- ✅ Select a feed to view its items with image (if available), title, and description
-- ✅ Open feed items in the device browser (webview branch is not finished, also not really nice with the webviews not optimised)
+### Core Dependencies
+- **[swift-dependencies](https://github.com/pointfreeco/swift-dependencies)**: Dependency management
+- **[swift-concurrency-extras](https://github.com/pointfreeco/swift-concurrency-extras)**: Utilities for concurrent code
+- **[swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing)**: Snapshot testing framework
+- **[Kingfisher](https://github.com/onevcat/Kingfisher)**: Image downloading and caching
 
-### Optional Requirements ✅
-- ✅ Add RSS feeds to Favorites
-- ✅ Additional functionality: Explore tab with suggested feeds (loaded from a local JSON file) for more convenient adding the feeds
-- ✅ Debug tab and view for testing notifications and background tasks (can be switched to Settings tab)
-
-### Optional Requirements still in progress
-- ✅ Turn on notifications for new feed items for subscribed RSS feeds
-- Background task logic for fetching new items is still buggy and needs improvement
-- Currently it works by using the debug meenu option to trigger the task manually, shows notifications for new articles in the subscribed feeds
-
-### Potential Improvements
-- Raise coverage to 80% (currently at ca 64%) and maintain it
-- Handling background tasks better (maybe creating a proper modern async wrapper), current solution is still buggy
-- Deep linking from the notifications to the articles
-- Enable opening feed items in webview and disabling navigation within
-- Switching between webview and safari in a settings tab
-- Displaying top 5 or 10 feeds which are not already in the feeds list from explore in add view 
-- Finish enabling the PR templates for feature, bugfix, task and release branches
-- Handle HTML in feed articles (and reuse the KFImage wrapper or create a simple cache - but I'm pro battle tested solutions)
-- Consider pagination for the news items
-- Retrying setting up CI (current max Xcode version in Github Actions runners is 15.4, requires a lot of compromising)
-- Use Codecov or similar to handle coverage and add it as part of pipelines
-- Use Sonarqube or similar to handle code quality
-- Use tuist for project and resources generation
-- Use POEditor or similar for localization
-- Handle scroll to top and navigation path resetting for iOS17
-- Add crash and non fatals tracking tool
-- Use a standardized state enum pattern, maybe a generic ViewState<T>
-- Separate UI elements from the Common module into SharedUI or similar
-- Add a styleguide module, containing fonts, colors, font styles, button styles etc
-- Add a schema migration strategy for SwiftData to handle future model changes
-- Standardize dependency injection approach across the codebase
-- Implement feed refresh indicators and pull-to-refresh functionality
-- Add feed search/filtering capability within the app
-- Create a reading history feature to track read/unread items
-- Add dark mode theme optimization (or improve design in general as it is pretty basic right now)
-- Create widget extensions for quick access to favorite feeds
-- Add share sheet extension for adding feeds from websites
-- Support for importing/exporting OPML feed lists
- 
+### Development Tools
+- **[SwiftLint](https://github.com/realm/SwiftLint)**: Code style and conventions enforcement
+- **[swift-format](https://github.com/apple/swift-format)**: Code formatting
 
 ## Architecture
 
-This project uses a clean architecture approach with the following components:
+### Core Components
 
-- **RSSReaderKit**: Swift Package containing all the core modules
-- **RSSClient**: Core module for fetching and parsing RSS feeds
-- **SharedModels**: Common models used across modules
-- **PersistenceClient**: SwiftData-based persistence layer
-- **NotificationClient**: Handles notification permissions and delivery
-- **Common**: Reusable UI components and utilities
-- **FeedListFeature**: UI components for displaying and managing feeds
-- **FeedItemsFeature**: UI for displaying feed items
-- **ExploreFeature**: Discovery interface for finding new feeds
+The project is built as a Swift Package (RSSReaderKit) containing multiple modules:
+
+#### Features
+- **FeedListFeature**: Main feed management UI
+- **FeedItemsFeature**: Feed items display
+- **ExploreFeature**: Feed discovery interface
 - **TabBarFeature**: Main navigation structure
 
-The project implements:
-- Dependency injection using swift-dependencies
-- Swift Concurrency with async/await
-- Protocol-oriented programming for testability
-- SwiftUI with the Observation framework
-- Comprehensive test coverage with snapshot tests and unit tests
-- SwiftData for persistent storage
-- Background notifications for feed updates
+#### Repositories
+- **FeedRepository**: Handles feed related logic, fetching, parsing and persisting them locally
+- **NotificationRepository**: Handles notifications and background refresh coordination
 
-## Getting Started
+#### Core Services
+- **RSSClient**: RSS feed fetching and parsing
+- **PersistenceClient**: SwiftData-based storage
+- **BackgroundRefreshClient**: Background task scheduling and execution
+- **UserNotificationClient**: System notification handling
+
+#### Support
+- **Common**: Shared UI components, utilities, and constants
+- **SharedModels**: Data models used across modules
+
+### Key Technical Aspects
+
+- **Dependency Injection**: Using [Point-Free's Dependencies](https://github.com/pointfreeco/swift-dependencies)
+- **Modern Concurrency**: Leveraging async/await and actors
+- **Repository Pattern**: Abstracting data sources behind clean interfaces
+- **SwiftUI**: Modern declarative UI with Observation framework
+- **Testing**: Comprehensive unit and snapshot tests
+- **SwiftData**: Native persistence with modern Swift data modeling
+
+## Development
 
 ### Requirements
 - iOS 17+
 - Swift 6+
 - Xcode 16+
 
-### Installation
+### Getting Started
 
 1. Clone the repository
-2. Open the project in Xcode
-3. Build and run
+2. Run `make project` to initialize dependencies
+3. Open `RSSReader.xcodeproj`
+4. Build and run
 
-Makefile can be leverage as well, run from root: `make project`
+### Makefile Commands
+
+The project includes a comprehensive Makefile for development tasks:
+
+bash
+make project         # Runs install-tools, setup and open
+make renew           # Runs xcode-clean, clean, reset-packages, project
+make setup           # Initial project setup
+make open            # Open project in Xcode
+make init-packages   # Initialize local package dependencies
+make reset-packages  # Reset package caches
+make lint            # Run SwiftLint
+make lint-fix        # Fix SwiftLint violations
+make format          # Run swift-format
+make clean           # Clean build artifacts
+make install-tools   # Install required development tools
 
 ### Development Tools
 
-The project includes a Makefile with various commands to simplify development, and can be used to run them locally, like swiftlint and swiftformat.
+- **SwiftLint**: Code style and conventions enforcement
+- **swift-format**: Code formatting
+- **SwiftTesting**: Unit and UI testing
+- **SnapshotTesting**: UI testing through snapshots
 
+## Potential Improvements
 
+### Technical Enhancements
+- Increase test coverage to 80%
+- Optimize background task handling
+- Add direct deep linking to articles
+- Implement in-app webview with proper navigation
+- Add settings for webview/Safari preference
+- Implement HTML content handling
+- Add pagination for feed items
+- Set up CI/CD pipeline
+- Implement code coverage reporting
+- Add code quality metrics
 
+### Feature Additions
+- Reading history tracking
+- Feed search and filtering
+- Dark mode optimization
+- Widget extensions
+- Share sheet integration
+- OPML import/export
+- Pull-to-refresh
+- Unread item tracking
+
+### Architecture & Development
+- Standardize state management
+- Split UI components into dedicated module
+- Add style guide system
+- Implement SwiftData migration strategy
+- Add crash reporting
+- Improve localization support
+
+## Getting Help
+
+For any questions please contact me via martino.mamich@gmail.com.
+
+Check the debug tab in the app for testing notifications and background tasks. The app includes comprehensive logging and debugging tools for development.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+Copyright (c) 2025 Martino Mamić
