@@ -7,7 +7,6 @@ import UserNotificationClient
 @testable import NotificationRepository
 
 @Suite struct NotificationRepositoryTests {
-    
     @Test("Request permissions successfully")
     func testRequestPermissionsSuccess() async throws {
         await withDependencies {

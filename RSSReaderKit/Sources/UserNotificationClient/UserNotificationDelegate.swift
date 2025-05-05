@@ -32,7 +32,6 @@ public final class UserNotificationDelegate: NSObject, UNUserNotificationCenterD
            let itemURL = userInfo["itemURL"] as? String,
            let feedURL = URL(string: feedURL),
            let itemURL = URL(string: itemURL) {
-            
             print("User opened a notification for a feed: \(feedURL), item URL: \(itemURL)")
         }
     }

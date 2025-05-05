@@ -11,7 +11,6 @@ import Foundation
 @testable import SharedModels
 
 @Suite struct SharedModelsTests {
-    
     @Test("Feed init sets properties correctly")
     func testFeedInit() {
         let url = URL(string: "https://example.com/feed")!

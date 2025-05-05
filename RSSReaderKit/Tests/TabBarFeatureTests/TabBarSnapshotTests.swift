@@ -14,7 +14,6 @@ import Common
 
 @MainActor
 @Suite struct TabBarSnapshotTests {
-    
     @Test("TabBarView shows correct tabs")
     func testTabBarView() async throws {
         let tabBarView = TabBarView()

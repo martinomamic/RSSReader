@@ -20,7 +20,7 @@ extension ExploreError: AppErrorConvertible {
         switch self {
         case .fileNotFound:
             return .unknown("Feeds file not found")
-        case .decodingFailed(_):
+        case .decodingFailed:
             return .parsingError
         case .invalidURL:
             return .invalidURL

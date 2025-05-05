@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		185780322DC663E600AA34ED /* UserDefaultsClient in Frameworks */ = {isa = PBXBuildFile; productRef = 185780312DC663E600AA34ED /* UserDefaultsClient */; };
 		185780342DC6642100AA34ED /* BackgroundRefreshClient in Frameworks */ = {isa = PBXBuildFile; productRef = 185780332DC6642100AA34ED /* BackgroundRefreshClient */; };
+		18B962CF2DC8CD9000C85343 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 18B962CE2DC8CD9000C85343 /* LICENSE */; };
 		382CFC1B2DAFA4F600CFBB7D /* PersistenceClient in Frameworks */ = {isa = PBXBuildFile; productRef = 382CFC1A2DAFA4F600CFBB7D /* PersistenceClient */; };
 		3882B1C32DAFE47B0069A7E1 /* TabBarFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 3882B1C22DAFE47B0069A7E1 /* TabBarFeature */; };
 		38C352E32DABF64F008FA670 /* RSSClient in Frameworks */ = {isa = PBXBuildFile; productRef = 38C352E22DABF64F008FA670 /* RSSClient */; };
@@ -33,6 +34,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		18B962CE2DC8CD9000C85343 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		386A8D1E2DAA864900BCD162 /* RSSReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RSSReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		386A8D2F2DAA864A00BCD162 /* RSSReaderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RSSReaderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		386A8D392DAA864A00BCD162 /* RSSReaderUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RSSReaderUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -107,6 +109,7 @@
 		386A8D152DAA864900BCD162 = {
 			isa = PBXGroup;
 			children = (
+				18B962CE2DC8CD9000C85343 /* LICENSE */,
 				38C744242DB78E1300983997 /* Makefile */,
 				38C744252DB78E2600983997 /* README.md */,
 				38C352CA2DABC4F1008FA670 /* RSSReader.xctestplan */,
@@ -262,6 +265,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18B962CF2DC8CD9000C85343 /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

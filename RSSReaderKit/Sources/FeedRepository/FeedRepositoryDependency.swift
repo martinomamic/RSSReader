@@ -64,7 +64,7 @@ extension FeedRepository: DependencyKey {
                 }
                 continuation.continuation.yield(feedStore.value)
             },
-            loadInitialFeeds:    {
+            loadInitialFeeds: {
                 continuation.continuation.yield(feedStore.value)
             },
             loadExploreFeeds: {
@@ -85,7 +85,7 @@ extension FeedRepository: DependencyKey {
                 )
             }, getCurrentFeeds: {
                 feedStore.value
-            }, fetchItems: { feed in
+            }, fetchItems: { _ in
                 [
                     FeedItem(feedID: UUID(), title: "Test Item", link: URL(string: "https://example.com/feed")!)
                 ]

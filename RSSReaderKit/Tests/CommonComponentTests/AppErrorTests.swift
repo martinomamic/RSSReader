@@ -11,7 +11,6 @@ import Foundation
 @testable import Common
 
 @Suite struct AppErrorTests {
-    
     @Test("AppError has correct error descriptions")
     func testErrorDescriptions() {
         #expect(AppError.invalidURL.errorDescription == "Please enter a valid URL")

@@ -17,7 +17,6 @@ import SharedModels
 
 @MainActor
 @Suite struct AddFeedViewModelTests {
-    
     @Test("Initial state is idle")
     func testInitialState() {
         let viewModel = AddFeedViewModel()
@@ -97,7 +96,7 @@ import SharedModels
         let testURL = URL(string: "https://example.com")!
         
         await withDependencies {
-            $0.feedRepository.add = { url in
+            $0.feedRepository.add = { _ in
                 throw FeedRepositoryError.feedAlreadyExists
             }
         } operation: {
@@ -113,7 +112,6 @@ import SharedModels
             }
         }
     }
-    
    
     @Test("Dismiss error sets state to idle")
     func testDismissError() {

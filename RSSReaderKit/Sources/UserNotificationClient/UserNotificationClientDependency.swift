@@ -20,7 +20,7 @@ extension UserNotificationClient: DependencyKey {
         removeAllPendingNotificationRequests: {},
         removePendingNotificationRequests: { _ in },
         setDelegate: {},
-        sendTestNotification: { _,_,_  in },
+        sendTestNotification: { _, _, _  in },
         getNotificationStatusDescription: { "testStatus" }
     )
 }

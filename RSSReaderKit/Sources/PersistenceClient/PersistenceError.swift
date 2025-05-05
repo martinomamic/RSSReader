@@ -15,9 +15,9 @@ public enum PersistenceError: Error, Equatable {
 extension PersistenceError: AppErrorConvertible {
     public func asAppError() -> AppError {
         switch self {
-        case .saveFailed(_):
+        case .saveFailed:
             return .unknown("Failed to save data")
-        case .loadFailed(_):
+        case .loadFailed:
             return .unknown("Failed to load data")
         }
     }

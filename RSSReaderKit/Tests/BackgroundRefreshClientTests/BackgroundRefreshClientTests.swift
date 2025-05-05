@@ -9,7 +9,6 @@ import SharedModels
 @testable import FeedRepository
 
 @Suite struct BackgroundRefreshClientTests {
-    
     @Test("Configure sets up background tasks")
     func testConfigure() async throws {
         let client = BackgroundRefreshClient.testValue
