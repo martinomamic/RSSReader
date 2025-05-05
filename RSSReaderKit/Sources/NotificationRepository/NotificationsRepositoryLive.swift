@@ -59,7 +59,7 @@ extension NotificationRepository {
                             delayOffset += 0.5
                         }
                     } catch {
-                        print("Error fetching items for feed \(feed.url): \(error)")
+                        throw error
                     }
                 }
             },

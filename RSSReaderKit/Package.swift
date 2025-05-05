@@ -246,5 +246,26 @@ let package = Package(
                 .product(name: "Dependencies", package: "swift-dependencies")
             ]
         ),
+        .testTarget(
+                    name: "NotificationRepositoryTests",
+                    dependencies: [
+                        "NotificationRepository",
+                        .product(name: "Dependencies", package: "swift-dependencies")
+                    ]
+                ),
+                .testTarget(
+                    name: "BackgroundRefreshClientTests",
+                    dependencies: [
+                        "BackgroundRefreshClient",
+                        .product(name: "Dependencies", package: "swift-dependencies")
+                    ]
+                ),
+                .testTarget(
+                    name: "UserNotificationClientTests",
+                    dependencies: [
+                        "UserNotificationClient",
+                        .product(name: "Dependencies", package: "swift-dependencies")
+                    ]
+                ),
     ]
 )

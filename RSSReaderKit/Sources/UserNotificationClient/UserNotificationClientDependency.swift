@@ -21,7 +21,7 @@ extension UserNotificationClient: DependencyKey {
         removePendingNotificationRequests: { _ in },
         setDelegate: {},
         sendTestNotification: { _,_,_  in },
-        getNotificationStatusDescription: { "" }
+        getNotificationStatusDescription: { "testStatus" }
     )
 }
 

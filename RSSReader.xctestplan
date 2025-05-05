@@ -7,69 +7,95 @@
         "addressSanitizer" : {
           "enabled" : false
         },
+        "codeCoverage" : {
+          "targets" : [
+            {
+              "containerPath" : "container:RSSReaderKit",
+              "identifier" : "BackgroundRefreshClient",
+              "name" : "BackgroundRefreshClient"
+            },
+            {
+              "containerPath" : "container:RSSReaderKit",
+              "identifier" : "Common",
+              "name" : "Common"
+            },
+            {
+              "containerPath" : "container:RSSReaderKit",
+              "identifier" : "ExploreClient",
+              "name" : "ExploreClient"
+            },
+            {
+              "containerPath" : "container:RSSReaderKit",
+              "identifier" : "ExploreFeature",
+              "name" : "ExploreFeature"
+            },
+            {
+              "containerPath" : "container:RSSReaderKit",
+              "identifier" : "FeedItemsFeature",
+              "name" : "FeedItemsFeature"
+            },
+            {
+              "containerPath" : "container:RSSReaderKit",
+              "identifier" : "FeedListFeature",
+              "name" : "FeedListFeature"
+            },
+            {
+              "containerPath" : "container:RSSReaderKit",
+              "identifier" : "FeedRepository",
+              "name" : "FeedRepository"
+            },
+            {
+              "containerPath" : "container:RSSReaderKit",
+              "identifier" : "NotificationRepository",
+              "name" : "NotificationRepository"
+            },
+            {
+              "containerPath" : "container:RSSReaderKit",
+              "identifier" : "PersistenceClient",
+              "name" : "PersistenceClient"
+            },
+            {
+              "containerPath" : "container:RSSReaderKit",
+              "identifier" : "RSSClient",
+              "name" : "RSSClient"
+            },
+            {
+              "containerPath" : "container:RSSReaderKit",
+              "identifier" : "SharedModels",
+              "name" : "SharedModels"
+            },
+            {
+              "containerPath" : "container:RSSReaderKit",
+              "identifier" : "TabBarFeature",
+              "name" : "TabBarFeature"
+            },
+            {
+              "containerPath" : "container:RSSReaderKit",
+              "identifier" : "UserDefaultsClient",
+              "name" : "UserDefaultsClient"
+            },
+            {
+              "containerPath" : "container:RSSReaderKit",
+              "identifier" : "UserNotificationClient",
+              "name" : "UserNotificationClient"
+            }
+          ]
+        },
         "threadSanitizerEnabled" : false,
         "undefinedBehaviorSanitizerEnabled" : true
       }
     }
   ],
   "defaultOptions" : {
-
+    "codeCoverage" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:RSSReader.xcodeproj",
+      "identifier" : "RSSReader",
+      "name" : "RSSReader"
+    }
   },
   "testTargets" : [
     {
-      "selectedTags" : {
-        "includeXCTests" : true
-      },
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "PersistenceClientTests",
-        "name" : "PersistenceClientTests"
-      }
-    },
-    {
-      "selectedTags" : {
-        "includeXCTests" : true
-      },
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "FeedRepositoryTests",
-        "name" : "FeedRepositoryTests"
-      }
-    },
-    {
-      "selectedTags" : {
-        "includeXCTests" : true
-      },
-      "target" : {
-        "containerPath" : "container:RSSReader.xcodeproj",
-        "identifier" : "386A8D2E2DAA864A00BCD162",
-        "name" : "RSSReaderTests"
-      }
-    },
-    {
-      "selectedTags" : {
-        "includeXCTests" : true
-      },
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "CommonComponentTests",
-        "name" : "CommonComponentTests"
-      }
-    },
-    {
-      "selectedTags" : {
-        "includeXCTests" : true
-      },
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "UserDefaultsClientTests",
-        "name" : "UserDefaultsClientTests"
-      }
-    },
-    {
-      "selectedTags" : {
-        "includeXCTests" : true
-      },
       "target" : {
         "containerPath" : "container:RSSReaderKit",
         "identifier" : "SharedModelsTests",
@@ -77,39 +103,6 @@
       }
     },
     {
-      "selectedTags" : {
-        "includeXCTests" : true
-      },
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "ExploreClientTests",
-        "name" : "ExploreClientTests"
-      }
-    },
-    {
-      "selectedTags" : {
-        "includeXCTests" : true
-      },
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "RSSClientTests",
-        "name" : "RSSClientTests"
-      }
-    },
-    {
-      "selectedTags" : {
-        "includeXCTests" : true
-      },
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "TabBarFeatureTests",
-        "name" : "TabBarFeatureTests"
-      }
-    },
-    {
-      "selectedTags" : {
-        "includeXCTests" : true
-      },
       "target" : {
         "containerPath" : "container:RSSReaderKit",
         "identifier" : "FeedItemsTests",
@@ -117,9 +110,27 @@
       }
     },
     {
-      "selectedTags" : {
-        "includeXCTests" : true
-      },
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "NotificationRepositoryTests",
+        "name" : "NotificationRepositoryTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "FeedRepositoryTests",
+        "name" : "FeedRepositoryTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "CommonComponentTests",
+        "name" : "CommonComponentTests"
+      }
+    },
+    {
       "target" : {
         "containerPath" : "container:RSSReaderKit",
         "identifier" : "FeedListTests",
@@ -127,9 +138,34 @@
       }
     },
     {
-      "selectedTags" : {
-        "includeXCTests" : true
-      },
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "ExploreClientTests",
+        "name" : "ExploreClientTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "PersistenceClientTests",
+        "name" : "PersistenceClientTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "ExploreFeatureTests",
+        "name" : "ExploreFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReader.xcodeproj",
+        "identifier" : "386A8D2E2DAA864A00BCD162",
+        "name" : "RSSReaderTests"
+      }
+    },
+    {
       "target" : {
         "containerPath" : "container:RSSReader.xcodeproj",
         "identifier" : "386A8D382DAA864A00BCD162",
@@ -137,13 +173,38 @@
       }
     },
     {
-      "selectedTags" : {
-        "includeXCTests" : true
-      },
       "target" : {
         "containerPath" : "container:RSSReaderKit",
-        "identifier" : "ExploreFeatureTests",
-        "name" : "ExploreFeatureTests"
+        "identifier" : "BackgroundRefreshClientTests",
+        "name" : "BackgroundRefreshClientTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "TabBarFeatureTests",
+        "name" : "TabBarFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "RSSClientTests",
+        "name" : "RSSClientTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "UserNotificationClientTests",
+        "name" : "UserNotificationClientTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "UserDefaultsClientTests",
+        "name" : "UserDefaultsClientTests"
       }
     }
   ],

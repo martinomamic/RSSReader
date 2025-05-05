@@ -33,7 +33,7 @@ public final class UserNotificationDelegate: NSObject, UNUserNotificationCenterD
            let feedURL = URL(string: feedURL),
            let itemURL = URL(string: itemURL) {
             
-            print("Korisnik je otvorio obavijest za feed: \(feedURL), članak: \(itemURL)")
+            print("User opened a notification for a feed: \(feedURL), item URL: \(itemURL)")
         }
     }
 }

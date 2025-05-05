@@ -20,7 +20,6 @@ struct RSSReaderApp: App {
         .onChange(of: scenePhase) { oldPhase, newPhase in
             if newPhase == .background {
                 Task {
-                    print("Did enter background")
                     await appDelegate.backgroundRefresh.scheduleAppRefresh()
                 }
             }

@@ -81,13 +81,11 @@ public class FeedListViewModel {
                     try await notificationRepository.requestPermissions()
                 }
                 
-                print("toggling notifications for \(String(describing: feed.title)) at \(feed.url.absoluteString)")
                 try await feedRepository.toggleNotifications(feed.url)
                 
-                if await notificationRepository.notificationsAuthorized(),
-                   feed.notificationsEnabled {
+                guard await notificationRepository.notificationsAuthorized(),
+                      feed.notificationsEnabled else { return }
                     try await notificationRepository.checkForNewItems()
-                }
                 
             } catch {
                 state = .error(ErrorUtils.toAppError(error))

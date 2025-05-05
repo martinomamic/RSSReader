@@ -6,57 +6,46 @@
 //
 
 import Dependencies
-import Foundation
 import FeedRepository
+import Foundation
 import SharedModels
-import UserNotificationClient
 import UserDefaultsClient
+import UserNotificationClient
 
 @preconcurrency import BackgroundTasks
-import OSLog
-import Swift
 
 actor BackgroundRefreshService {
     private let taskIdentifier = "hr.maminjo.RSSReader.feedrefresh"
-    private let refreshInterval: TimeInterval = 15 * 60 // 15 minutes
+    private let refreshInterval: TimeInterval = 15 * 60
     private let maxRetries = 3
     private let isConfigured = LockIsolated(false)
     private let schedulingNeeded = LockIsolated(false)
     private var activeTask: Task<Void, Never>?
-    private let logger = Logger(subsystem: "hr.maminjo.RSSReader", category: "BackgroundRefresh")
     private let lastScheduleAttempt = LockIsolated<Date?>(nil)
-    private let debounceInterval: TimeInterval = 3 // seconds
+    private let debounceInterval: TimeInterval = 3
     
     nonisolated
     func configureOnLaunch() {
-        logger.info("Attempting to configure background refresh during launch")
-        
         BGTaskScheduler.shared.register(
             forTaskWithIdentifier: taskIdentifier,
             using: nil
         ) { [weak self] task in
             guard let bgTask = task as? BGAppRefreshTask else {
-                self?.logger.error("Invalid task type received")
                 return
             }
             
-            self?.logger.info("Background task started: \(bgTask.identifier)")
-            
             let completeTask: @Sendable (Bool) -> Void = { success in
                 Task { @MainActor in
-                    self?.logger.info("Completing background task with success: \(success)")
                     bgTask.setTaskCompleted(success: success)
                 }
             }
             
             let expireTask: @Sendable () -> Void = {
-                Task { @MainActor in
-                    self?.logger.warning("Background task expired")
+                Task {
                     bgTask.expirationHandler?()
                 }
             }
             
-            // Set expiration handler first
             bgTask.expirationHandler = expireTask
             
             Task { @MainActor [weak self] in
@@ -69,9 +58,6 @@ actor BackgroundRefreshService {
         }
         
         isConfigured.setValue(true)
-        logger.info("Background task scheduler configured")
-        
-        // Initial scheduling
         Task {
             await scheduleAppRefreshIfNeeded()
         }
@@ -81,24 +67,17 @@ actor BackgroundRefreshService {
     func scheduleAppRefresh() {
         let now = Date()
         if let last = lastScheduleAttempt.value, now.timeIntervalSince(last) < debounceInterval {
-            logger.info("Debounced background refresh request (too soon since last: \(now.timeIntervalSince(last)))")
             return
         }
         lastScheduleAttempt.setValue(now)
 
-        // Only proceed if we are not already scheduling
-        guard !schedulingNeeded.value else {
-            logger.info("Scheduling already in progress, skipping duplicate call")
-            return
-        }
-        logger.info("scheduleAppRefresh called - marking scheduling needed")
+        guard !schedulingNeeded.value else { return }
         schedulingNeeded.setValue(true)
         Task { await attemptScheduling() }
     }
     
     private func attemptScheduling() async {
         guard isConfigured.value else {
-            logger.warning("Cannot schedule refresh - service not configured")
             return
         }
         @Dependency(\.feedRepository) var repository
@@ -108,32 +87,26 @@ actor BackgroundRefreshService {
             let enabledFeeds = feeds.filter(\.notificationsEnabled)
             
             guard !enabledFeeds.isEmpty else {
-                logger.info("No feeds with notifications enabled, clearing scheduling needed flag")
                 schedulingNeeded.setValue(false)
                 return
             }
             
             let requests = await BGTaskScheduler.shared.pendingTaskRequests()
-            if requests.contains(where: { $0.identifier == taskIdentifier }) {
-                logger.info("A BGAppRefreshTaskRequest is already pending, skipping scheduling.")
+            guard !requests.contains(where: { $0.identifier == taskIdentifier }) else {
                 schedulingNeeded.setValue(false)
                 return
             }
             
-            // Cancel existing tasks first
             BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: taskIdentifier)
             
             try await MainActor.run {
                 let request = BGAppRefreshTaskRequest(identifier: taskIdentifier)
-                request.earliestBeginDate = Date(timeIntervalSinceNow: 60) // Start with 1 minute for testing
+                request.earliestBeginDate = Date(timeIntervalSinceNow: refreshInterval)
                 
-                logger.info("Submitting BGTask request")
                 try BGTaskScheduler.shared.submit(request)
-                logger.info("Successfully scheduled background refresh")
                 schedulingNeeded.setValue(false)
             }
         } catch {
-            logger.error("Failed to schedule background refresh: \(error)")
             schedulingNeeded.setValue(false)
         }
     }
@@ -150,13 +123,10 @@ actor BackgroundRefreshService {
                 try await refreshFeeds()
                 complete(true)
                 
-                // Schedule next refresh
                 scheduleAppRefresh()
             } catch {
-                logger.error("Feed refresh failed: \(error)")
                 complete(false)
                 
-                // Still try to schedule next refresh even on failure
                 scheduleAppRefresh()
             }
         }
@@ -206,12 +176,10 @@ actor BackgroundRefreshService {
                         )
                         delayOffset += 0.5
                     } catch {
-                        logger.error("Failed to send notification for item: \(error)")
                         errorCount += 1
                     }
                 }
             } catch {
-                logger.error("Failed to fetch items for feed \(feed.url): \(error)")
                 errorCount += 1
             }
         }
@@ -235,12 +203,7 @@ actor BackgroundRefreshService {
     }
     
     func sceneDidEnterBackground() {
-        logger.info("Scene entered background - checking if scheduling is needed")
-        
-        guard schedulingNeeded.value else {
-            logger.info("No scheduling needed")
-            return
-        }
+        guard schedulingNeeded.value else { return }
         
         Task {
             await attemptScheduling()
@@ -248,50 +211,28 @@ actor BackgroundRefreshService {
     }
     
     func scheduleAppRefreshIfNeeded() async {
-        guard isConfigured.value else {
-            logger.warning("Cannot schedule refresh - service not configured")
-            return
-        }
+        guard isConfigured.value else { return }
         
         @Dependency(\.feedRepository) var repository
         
         do {
             let feeds = try await repository.getCurrentFeeds()
             let enabledFeeds = feeds.filter(\.notificationsEnabled)
-            logger.info("Scheduling check - Total feeds: \(feeds.count), Enabled: \(enabledFeeds.count)")
             
-            for feed in feeds {
-                logger.info("Feed \(feed.url.absoluteString): notifications \(feed.notificationsEnabled ? "enabled" : "disabled")")
-            }
-            
-            guard !enabledFeeds.isEmpty else {
-                logger.info("No feeds with notifications enabled, skipping refresh schedule")
-                return
-            }
-            
-            // Remove any existing scheduled tasks first
+            guard !enabledFeeds.isEmpty else { return }
+
             BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: taskIdentifier)
-            logger.info("Cancelled existing scheduled tasks")
             
             let request = BGAppRefreshTaskRequest(identifier: taskIdentifier)
-            // Use a shorter interval for initial schedule
-            request.earliestBeginDate = Date(timeIntervalSinceNow: 60)
-            
-            logger.info("Attempting to submit BGTask request with date: \(request.earliestBeginDate?.description ?? "nil")")
-            
-            // Ensure we're fully on MainActor and give time for app to stabilize
+            request.earliestBeginDate = Date(timeIntervalSinceNow: refreshInterval)
+        
             try await MainActor.run {
                 try BGTaskScheduler.shared.submit(request)
-                logger.info("Successfully scheduled background refresh")
             }
         } catch {
-            logger.error("Failed to schedule background refresh: \(error)")
-            if let nsError = error as NSError? {
-                logger.error("Error details - Domain: \(nsError.domain), Code: \(nsError.code), Description: \(nsError.localizedDescription)")
-                if let underlyingError = nsError.userInfo[NSUnderlyingErrorKey] as? Error {
-                    logger.error("Underlying error: \(underlyingError)")
-                }
-            }
+            #if DEBUG
+            print("Failed to schedule background refresh: \(error)")
+            #endif
         }
     }
     

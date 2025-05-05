@@ -13,7 +13,14 @@ extension BackgroundRefreshClient: DependencyKey {
     public static var liveValue: BackgroundRefreshClient { .live() }
 
     public static var testValue: BackgroundRefreshClient {
-        .live()
+        BackgroundRefreshClient(
+            configure: {},
+            scheduleAppRefresh: {},
+            sceneDidEnterBackground: {},
+            manuallyTriggerBackgroundRefresh: { true },
+            testFeedParsing: { "Test parsing completed" },
+            getBackgroundTaskStatus: { "Background task configured" }
+        )
     }
 }
 
