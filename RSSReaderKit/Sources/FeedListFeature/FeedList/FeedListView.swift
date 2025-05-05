@@ -14,6 +14,7 @@ import SwiftUI
 public struct FeedListView: View {
     @State private var showingAddFeed = false
     @State private var localFeeds: [Feed] = []
+    @State private var selectedFeed: Feed?
     
     let viewModel: FeedListViewModel
     private let showOnlyFavorites: Bool
@@ -48,22 +49,25 @@ public struct FeedListView: View {
               viewModel.displayedFeeds(showOnlyFavorites: showOnlyFavorites),
               id: \.id
             ) { feed in
-                FeedRow(
-                    feed: feed,
-                    onFavoriteToggle: {
-                        var updatedFeed = feed
-                        updatedFeed.isFavorite.toggle()
-                         viewModel.toggleFavorite(updatedFeed)
-                    },
-                    onNotificationsToggle: {
-                        var updatedFeed = feed
-                        updatedFeed.notificationsEnabled.toggle()
-                        viewModel.toggleNotifications(updatedFeed)
-                        
-                    },
-                    notificationIcon: viewModel.notificationIcon(for: feed),
-                    favoriteIcon: viewModel.favoriteIcon(for: feed)
-                )
+                
+                    FeedRow(
+                        feed: feed,
+                        onFavoriteToggle: {
+                            var updatedFeed = feed
+                            updatedFeed.isFavorite.toggle()
+                             viewModel.toggleFavorite(updatedFeed)
+                        },
+                        onNotificationsToggle: {
+                            var updatedFeed = feed
+                            updatedFeed.notificationsEnabled.toggle()
+                            viewModel.toggleNotifications(updatedFeed)
+                            
+                        },
+                        notificationIcon: viewModel.notificationIcon(for: feed),
+                        favoriteIcon: viewModel.favoriteIcon(for: feed)
+                    ).background {
+                        NavigationLink(value: feed) {}.opacity(0)
+                    }
             }
             .onDelete { indexSet in
                 viewModel.removeFeed(at: indexSet, fromFavorites: showOnlyFavorites)
