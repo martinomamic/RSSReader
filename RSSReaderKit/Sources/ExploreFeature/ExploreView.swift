@@ -23,27 +23,26 @@ public struct ExploreView: View {
                     .testId(AccessibilityIdentifier.Explore.loadingView)
 
             case .loaded(let feeds):
-                if feeds.isEmpty {
-                    EmptyStateView(
-                        title: LocalizedStrings.Explore.noFeedsTitle,
-                        systemImage: Constants.Images.noItemsIcon,
-                        description: LocalizedStrings.Explore.noFeedsDescription
-                    )
-                    .testId(AccessibilityIdentifier.Explore.emptyView)
-                } else {
-                    List {
-                        ForEach(feeds) { feed in
-                            ExploreFeedRow(
-                                feed: feed,
-                                isAdded: viewModel.isFeedAdded(feed),
-                                onAddTapped: {
-                                    viewModel.addFeed(feed)
-                                }
-                            )
-                        }
+                List {
+                    ForEach(feeds) { feed in
+                        ExploreFeedRow(
+                            feed: feed,
+                            isAdded: viewModel.isFeedAdded(feed),
+                            onAddTapped: {
+                                viewModel.addFeed(feed)
+                            }
+                        )
                     }
-                    .testId(AccessibilityIdentifier.Explore.feedsList)
                 }
+                .testId(AccessibilityIdentifier.Explore.feedsList)
+
+            case .empty:
+                EmptyStateView(
+                    title: LocalizedStrings.Explore.noFeedsTitle,
+                    systemImage: Constants.Images.noItemsIcon,
+                    description: LocalizedStrings.Explore.noFeedsDescription
+                )
+                .testId(AccessibilityIdentifier.Explore.emptyView)
 
             case .error(let error):
                 ErrorStateView(error: error) {

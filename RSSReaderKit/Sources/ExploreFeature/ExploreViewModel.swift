@@ -11,19 +11,14 @@ import FeedRepository
 import Foundation
 import Observation
 import SharedModels
-
-enum ExploreState: Equatable {
-    case loading
-    case loaded([ExploreFeed])
-    case error(AppError)
-}
+import SharedUI
 
 @MainActor @Observable
 class ExploreViewModel {
     @ObservationIgnored
     @Dependency(\.feedRepository) private var feedRepository
 
-    var state: ExploreState = .loading
+    var state: ViewState<[ExploreFeed]> = .loading
     var isAddingFeed = false
     var selectedFeed: ExploreFeed?
     var feedError: AppError?
@@ -43,14 +38,16 @@ class ExploreViewModel {
 
         loadTask = Task {
             do {
-                // Dohvati explore feedove
                 let exploreFeeds = try await feedRepository.loadExploreFeeds()
                 
-                // Dohvati trenutne feedove za provjeru koje smo već dodali
                 let currentFeeds = try await feedRepository.getCurrentFeeds()
                 self.addedFeedURLs = Set(currentFeeds.map { $0.url.absoluteString })
                 
-                self.state = .loaded(exploreFeeds)
+                if exploreFeeds.isEmpty {
+                    self.state = .empty
+                } else {
+                    self.state = .loaded(exploreFeeds)
+                }
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }
