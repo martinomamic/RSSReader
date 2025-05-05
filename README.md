@@ -103,7 +103,7 @@ The project is built as a Swift Package (RSSReaderKit) containing multiple modul
 
 The project includes a comprehensive Makefile for development tasks:
 
-bash
+<pre> <code>```bash
 make project         # Runs install-tools, setup and open
 make renew           # Runs xcode-clean, clean, reset-packages, project
 make setup           # Initial project setup
@@ -115,13 +115,7 @@ make lint-fix        # Fix SwiftLint violations
 make format          # Run swift-format
 make clean           # Clean build artifacts
 make install-tools   # Install required development tools
-
-### Development Tools
-
-- **SwiftLint**: Code style and conventions enforcement
-- **swift-format**: Code formatting
-- **SwiftTesting**: Unit and UI testing
-- **SnapshotTesting**: UI testing through snapshots
+```</code> </pre>
 
 ## Potential Improvements
 
