@@ -12,6 +12,7 @@ import Foundation
 public struct BackgroundRefreshClient: Sendable {
     public var configure: @Sendable () -> Void
     public var scheduleAppRefresh: @Sendable () async -> Void
+    public var sceneDidEnterBackground: @Sendable () async -> Void
     
     public var manuallyTriggerBackgroundRefresh: @Sendable () async -> Bool
     public var testFeedParsing: @Sendable () async -> String
@@ -19,13 +20,15 @@ public struct BackgroundRefreshClient: Sendable {
     
     public init(
         configure: @escaping @Sendable () -> Void,
-        scheduleAppRefresh: @escaping @Sendable () -> Void,
+        scheduleAppRefresh: @escaping @Sendable () async -> Void,
+        sceneDidEnterBackground: @escaping @Sendable () async -> Void,
         manuallyTriggerBackgroundRefresh: @escaping @Sendable () async -> Bool,
         testFeedParsing: @escaping @Sendable () async -> String,
         getBackgroundTaskStatus: @escaping @Sendable () async -> String
     ) {
         self.configure = configure
         self.scheduleAppRefresh = scheduleAppRefresh
+        self.sceneDidEnterBackground = sceneDidEnterBackground
         
         self.manuallyTriggerBackgroundRefresh = manuallyTriggerBackgroundRefresh
         self.testFeedParsing = testFeedParsing

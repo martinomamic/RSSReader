@@ -17,9 +17,10 @@ extension BackgroundRefreshClient {
                 service.configureOnLaunch()
             },
             scheduleAppRefresh: {
-                Task {
-                    await service.scheduleAppRefreshIfNeeded()
-                }
+                service.scheduleAppRefresh()
+            },
+            sceneDidEnterBackground: {
+                await service.sceneDidEnterBackground()
             },
             manuallyTriggerBackgroundRefresh: {
                 await service.manuallyTriggerBackgroundRefresh()

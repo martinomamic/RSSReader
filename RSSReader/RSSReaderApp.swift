@@ -11,10 +11,19 @@ import TabBarFeature
 @main
 struct RSSReaderApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
         WindowGroup {
             TabBarView()
+        }
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            if newPhase == .background {
+                Task {
+                    print("Did enter background")
+                    await appDelegate.backgroundRefresh.scheduleAppRefresh()
+                }
+            }
         }
     }
 }

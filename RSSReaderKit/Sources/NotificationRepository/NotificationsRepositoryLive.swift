@@ -25,10 +25,7 @@ extension NotificationRepository {
         
         return NotificationRepository(
             requestPermissions: {
-                let authorized = try await userNotifications.requestAuthorization([.alert, .sound, .badge])
-                if authorized {
-                    await backgroundRefresh.scheduleAppRefresh()
-                }
+               _ = try await userNotifications.requestAuthorization([.alert, .sound, .badge])
             },
             checkForNewItems: {
                 let settings = await userNotifications.getNotificationSettings()

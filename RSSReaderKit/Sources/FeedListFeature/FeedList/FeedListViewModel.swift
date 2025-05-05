@@ -77,19 +77,17 @@ public class FeedListViewModel {
         
         notificationsTask = Task { @MainActor in
             do {
-                               if await !notificationRepository.notificationsAuthorized() {
-                try await notificationRepository.requestPermissions()
-                               }
+                if await !notificationRepository.notificationsAuthorized() {
+                    try await notificationRepository.requestPermissions()
+                }
                 
+                print("toggling notifications for \(String(describing: feed.title)) at \(feed.url.absoluteString)")
                 try await feedRepository.toggleNotifications(feed.url)
                 
-                               guard await notificationRepository.notificationsAuthorized() else {
-                return
-                                }
-                
-                guard feed.notificationsEnabled else { return }
-                await notificationRepository.activateBackgroundRefresh()
-                try await notificationRepository.checkForNewItems()
+                if await notificationRepository.notificationsAuthorized(),
+                   feed.notificationsEnabled {
+                    try await notificationRepository.checkForNewItems()
+                }
                 
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
