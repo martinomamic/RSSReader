@@ -11,22 +11,24 @@ import Foundation
 import SharedModels
 import SwiftUI
 
-enum ExampleURL {
-    case bbc
-    case nbc
-}
-
 @MainActor @Observable
 class AddFeedViewModel {
     @ObservationIgnored
     @Dependency(\.feedRepository) private var feedRepository
+    @ObservationIgnored
+    @Dependency(\.exploreClient) private var exploreClient
     
     private var addFeedTask: Task<Void, Never>?
+    private var loadExploreTask: Task<Void, Never>?
     
     var urlString: String = ""
     var state: ViewState<Bool> = .idle
+    var exploreFeeds: [ExploreFeed] = []
+    var addedFeedURLs: Set<String> = []
     
-    init() {}
+    init() {
+        loadExploreFeeds()
+    }
     
     var isAddButtonDisabled: Bool {
         !isValidURL
@@ -60,11 +62,51 @@ class AddFeedViewModel {
         addFeedTask = Task {
             do {
                 try await feedRepository.add(url)
+                loadExploreFeeds() // Aktualisiere die Liste nach dem Hinzufügen
                 state = .content(true)
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }
         }
+    }
+    
+    func addExploreFeed(_ exploreFeed: ExploreFeed) {
+        addFeedTask?.cancel()
+        state = .loading
+        
+        addFeedTask = Task {
+            do {
+                _ = try await feedRepository.addExploreFeed(exploreFeed)
+                loadExploreFeeds()
+                state = .content(true)
+            } catch {
+                state = .error(ErrorUtils.toAppError(error))
+            }
+        }
+    }
+    
+    func loadExploreFeeds() {
+        loadExploreTask?.cancel()
+        
+        loadExploreTask = Task {
+            do {
+                let allExploreFeeds = try await exploreClient.loadExploreFeeds()
+                let currentFeeds = try await feedRepository.getCurrentFeeds()
+                
+                addedFeedURLs = Set(currentFeeds.map { $0.url.absoluteString })
+                
+                exploreFeeds = allExploreFeeds
+                    .filter { !addedFeedURLs.contains($0.url) }
+                    .prefix(10)
+                    .map { $0 }
+            } catch {
+                exploreFeeds = []
+            }
+        }
+    }
+    
+    func isFeedAdded(_ feed: ExploreFeed) -> Bool {
+        addedFeedURLs.contains(feed.url)
     }
 }
 
