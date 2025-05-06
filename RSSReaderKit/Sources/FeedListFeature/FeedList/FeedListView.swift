@@ -2,7 +2,7 @@
 //  FeedListView.swift
 //  RSSReaderKit
 //
-//  Created by Martino Mamić on 13.04.25.
+//  Created by Martino Mamić on 28.04.25.
 //
 
 import Common
@@ -12,27 +12,19 @@ import SharedModels
 import SharedUI
 import SwiftUI
 
-public struct FeedListView: View {
+public struct FeedListView<ViewModel: FeedListViewModelProtocol>: View {
     @State private var showingAddFeed = false
-    @State private var localFeeds: [Feed] = []
-    @State private var selectedFeed: Feed?
+    var viewModel: ViewModel
     
-    let viewModel: FeedListViewModel
-    private let showOnlyFavorites: Bool
-
-    public init(viewModel: FeedListViewModel, showOnlyFavorites: Bool = false) {
+    public init(viewModel: ViewModel) {
         self.viewModel = viewModel
-        self.showOnlyFavorites = showOnlyFavorites
     }
-
+    
     public var body: some View {
         VStack {
             switch viewModel.state {
             case .loading:
                 ProgressView()
-                
-            case .content:
-                feedsList
                 
             case .error(let error):
                 ErrorStateView(error: error) {
@@ -41,54 +33,39 @@ public struct FeedListView: View {
                 
             case .empty:
                 EmptyStateView(
-                    title: viewModel.emptyStateTitle(showOnlyFavorites: showOnlyFavorites),
+                    title: viewModel.emptyStateTitle,
                     systemImage: Constants.Images.noItemsIcon,
-                    description: viewModel.emptyStateDescription(showOnlyFavorites: showOnlyFavorites),
-                    primaryAction: showOnlyFavorites ? nil : { showingAddFeed = true },
-                    primaryActionLabel: showOnlyFavorites ? nil : LocalizedStrings.FeedList.addFeed
+                    description: viewModel.emptyStateDescription,
+                    primaryAction: viewModel.showEditButton ? { showingAddFeed = true } : nil,
+                    primaryActionLabel: viewModel.primaryActionLabel
                 )
-            }
-        }
-        .onChange(of: viewModel.feeds) { _, newFeeds in
-            localFeeds = newFeeds
-        }
-        .onAppear {
-            localFeeds = viewModel.feeds
-        }
-    }
-    
-    private var feedsList: some View {
-        List {
-            ForEach(
-              viewModel.displayedFeeds(showOnlyFavorites: showOnlyFavorites),
-              id: \.id
-            ) { feed in
-                    FeedRow(
-                        feed: feed,
-                        onFavoriteToggle: {
-                            var updatedFeed = feed
-                            updatedFeed.isFavorite.toggle()
-                             viewModel.toggleFavorite(updatedFeed)
-                        },
-                        onNotificationsToggle: {
-                            var updatedFeed = feed
-                            updatedFeed.notificationsEnabled.toggle()
-                            viewModel.toggleNotifications(updatedFeed)
-                        },
-                        notificationIcon: viewModel.notificationIcon(for: feed),
-                        favoriteIcon: viewModel.favoriteIcon(for: feed)
-                    ).background {
-                        NavigationLink(value: feed) {}.opacity(0)
+                
+            case .content:
+                List {
+                    ForEach(viewModel.feeds, id: \.id) { feed in
+                        FeedRow(
+                            feed: feed,
+                            onFavoriteToggle: {
+                                viewModel.toggleFavorite(feed)
+                            },
+                            onNotificationsToggle: {
+                                viewModel.toggleNotifications(feed)
+                            },
+                            notificationIcon: viewModel.notificationIcon(for: feed),
+                            favoriteIcon: viewModel.favoriteIcon(for: feed)
+                        )
+                        .background {
+                            NavigationLink(value: feed) {}.opacity(0)
+                        }
                     }
-            }
-            .onDelete { indexSet in
-                if viewModel.showEditButton {
-                    viewModel.removeFeed(at: indexSet, fromFavorites: showOnlyFavorites)
+                    .onDelete { indexSet in
+                        viewModel.removeFeed(at: indexSet)
+                    }
                 }
+                .testId(viewModel.listAccessibilityId)
             }
         }
-        .testId(viewModel.listAccessibilityId(showOnlyFavorites: showOnlyFavorites))
-        .navigationTitle(viewModel.navigationTitle(showOnlyFavorites: showOnlyFavorites))
+        .navigationTitle(viewModel.navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: Feed.self) { feed in
             FeedItemsView(
@@ -101,7 +78,7 @@ public struct FeedListView: View {
                     EditButton()
                         .testId(AccessibilityIdentifier.FeedList.editButton)
                 }
-                
+            
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         showingAddFeed = true

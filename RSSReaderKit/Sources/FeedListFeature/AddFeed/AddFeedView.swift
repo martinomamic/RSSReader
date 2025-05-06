@@ -54,7 +54,6 @@ struct AddFeedView: View {
             } header: {
                 Text(LocalizedStrings.AddFeed.urlHeader)
             } footer: {
-                
             }
         }
         .navigationTitle(LocalizedStrings.AddFeed.title)

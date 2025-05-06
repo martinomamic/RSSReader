@@ -11,6 +11,7 @@ import Dependencies
 
 public struct FeedRepository: Sendable {
     public var feedsStream: AsyncStream<[Feed]>
+    public var favoriteFeedsStream: AsyncStream<[Feed]>
     
     public var fetch: @Sendable (URL) async throws -> Feed
     public var add: @Sendable (URL) async throws -> Void

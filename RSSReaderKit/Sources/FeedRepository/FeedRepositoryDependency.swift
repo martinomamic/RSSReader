@@ -5,6 +5,13 @@
 //  Created by Martino Mamić on 27.04.25.
 //
 
+//
+//  FeedRepositoryDependency.swift
+//  RSSReaderKit
+//
+//  Created by Martino Mamić on 27.04.25.
+//
+
 import Dependencies
 import ExploreClient
 import Foundation
@@ -15,10 +22,13 @@ extension FeedRepository: DependencyKey {
     
     public static var testValue: FeedRepository {
         let feedStore = LockIsolated<[Feed]>([])
-        let continuation = AsyncStream.makeStream(of: [Feed].self)
+        let allFeedsContinuation = AsyncStream.makeStream(of: [Feed].self)
+        let favoriteFeedsContinuation = AsyncStream.makeStream(of: [Feed].self)
         
         return FeedRepository(
-            feedsStream: continuation.stream,
+            feedsStream: allFeedsContinuation.stream,
+            favoriteFeedsStream: favoriteFeedsContinuation.stream,
+            
             fetch: { url in
                 guard let feed = feedStore.value.first(where: { $0.url == url }) else {
                     throw FeedRepositoryError.feedNotFound
@@ -30,13 +40,15 @@ extension FeedRepository: DependencyKey {
                 feedStore.withValue { feeds in
                     feeds.append(feed)
                 }
-                continuation.continuation.yield(feedStore.value)
+                allFeedsContinuation.continuation.yield(feedStore.value)
+                favoriteFeedsContinuation.continuation.yield(feedStore.value.filter { $0.isFavorite })
             },
             delete: { url in
                 feedStore.withValue { feeds in
                     feeds.removeAll(where: { $0.url == url })
                 }
-                continuation.continuation.yield(feedStore.value)
+                allFeedsContinuation.continuation.yield(feedStore.value)
+                favoriteFeedsContinuation.continuation.yield(feedStore.value.filter { $0.isFavorite })
             },
             update: { feed in
                 feedStore.withValue { feeds in
@@ -44,7 +56,8 @@ extension FeedRepository: DependencyKey {
                         feeds[index] = feed
                     }
                 }
-                continuation.continuation.yield(feedStore.value)
+                allFeedsContinuation.continuation.yield(feedStore.value)
+                favoriteFeedsContinuation.continuation.yield(feedStore.value.filter { $0.isFavorite })
             },
             toggleFavorite: { url in
                 feedStore.withValue { feeds in
@@ -53,7 +66,8 @@ extension FeedRepository: DependencyKey {
                     }
                     feeds[index].isFavorite.toggle()
                 }
-                continuation.continuation.yield(feedStore.value)
+                allFeedsContinuation.continuation.yield(feedStore.value)
+                favoriteFeedsContinuation.continuation.yield(feedStore.value.filter { $0.isFavorite })
             },
             toggleNotifications: { url in
                 feedStore.withValue { feeds in
@@ -62,10 +76,12 @@ extension FeedRepository: DependencyKey {
                     }
                     feeds[index].notificationsEnabled.toggle()
                 }
-                continuation.continuation.yield(feedStore.value)
+                allFeedsContinuation.continuation.yield(feedStore.value)
+                favoriteFeedsContinuation.continuation.yield(feedStore.value.filter { $0.isFavorite })
             },
             loadInitialFeeds: {
-                continuation.continuation.yield(feedStore.value)
+                allFeedsContinuation.continuation.yield(feedStore.value)
+                favoriteFeedsContinuation.continuation.yield(feedStore.value.filter { $0.isFavorite })
             },
             loadExploreFeeds: {
                 [
@@ -83,9 +99,11 @@ extension FeedRepository: DependencyKey {
                     title: exploreFeed.name,
                     description: "Test feed description"
                 )
-            }, getCurrentFeeds: {
+            },
+            getCurrentFeeds: {
                 feedStore.value
-            }, fetchItems: { _ in
+            },
+            fetchItems: { _ in
                 [
                     FeedItem(feedID: UUID(), title: "Test Item", link: URL(string: "https://example.com/feed")!)
                 ]

@@ -10,7 +10,6 @@ import SharedModels
 import SharedUI
 import SwiftUI
 
-
 struct ExploreFeedRow: View {
     let feed: ExploreFeed
     let isAdded: Bool
