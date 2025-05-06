@@ -14,6 +14,7 @@ An iOS application for reading and managing RSS feeds, built with a focus on cle
 - Background refresh and notifications for new items
 - Favorite feeds management
 - Explore curated feed suggestions
+- Enhanced feed addition with top recommendations
 - Debug panel for notifications and background tasks
 - SwiftData persistence
 - Comprehensive test coverage
@@ -21,21 +22,33 @@ An iOS application for reading and managing RSS feeds, built with a focus on cle
 
 ## Screenshots
 
+### Main Features
+
 <p align="center">
-  <img src="RSSReader/Screenshots/Main%20feeds.png" width="200" alt="Feed List">
-  <img src="RSSReader/Screenshots/Main%20feeds%20edit%20mode.png" width="200" alt="Edit Mode">
-  <img src="RSSReader/Screenshots/Add%20feed.png" width="200" alt="Add Feed">
+  <img src="RSSReader/Screenshots/main_feeds.png" width="200" alt="Feed List">
+  <img src="RSSReader/Screenshots/empty_feeds.png" width="200" alt="Empty Feed List">
+  <img src="RSSReader/Screenshots/add_feed.png" width="200" alt="Add Feed">
 </p>
 <p align="center">
-  <em>Left: Main feed list with all RSS feeds - Middle: Edit mode for deleting feeds(also simple swipe to delete) - Right: Add new feed screen with example options (Explore could be reused here)</em>
+  <em>Left: Main feed list with all RSS feeds - Middle: Empty feeds view - Right: Add new feed screen with suggested feeds</em>
 </p>
 <p align="center">
-  <img src="RSSReader/Screenshots/Favorites.png" width="200" alt="Favorites">
-  <img src="RSSReader/Screenshots/Explore%20feeds.png" width="200" alt="Explore">
-  <img src="RSSReader/Screenshots/Notification%20debug.png" width="200" alt="Debug">
+  <img src="RSSReader/Screenshots/favorites.png" width="200" alt="Favorites">
+  <img src="RSSReader/Screenshots/empty_favorites.png" width="200" alt="Empty Favorites">
+  <img src="RSSReader/Screenshots/feed_items.png" width="200" alt="Feed Items">
 </p>
 <p align="center">
-  <em>Left: Favorites tab showing starred feeds - Middle: Explore tab with suggested feeds to add(from local JSON) - Right: Debug panel for testing notifications and background tasks</em>
+  <em>Left: Favorites tab with starred feeds - Middle: Empty favorites view - Right: Feed items view showing article content</em>
+</p>
+
+## Discovery and Debugging
+
+<p align="center">
+  <img src="RSSReader/Screenshots/explore_feeds.png" width="200" alt="Explore">
+  <img src="RSSReader/Screenshots/notification_debug.png" width="200" alt="Debug">
+</p>
+<p align="center">
+  <em>Left: Explore tab with suggested feeds to add - Right: Debug panel for testing notifications and background tasks</em>
 </p>
 
 ## Dependencies
@@ -85,6 +98,17 @@ The project is built as a Swift Package (RSSReaderKit) containing multiple modul
 - **Testing**: Comprehensive unit and snapshot tests
 - **SwiftData**: Native persistence with modern Swift data modeling
 
+## New Feature: Enhanced Feed Addition
+
+The updated AddFeedView provides a seamless experience for adding new feeds:
+
+- Manual URL input at the top
+- List of top suggested feeds that haven't been added yet
+- Immediate feedback after successful feed addition
+- Simplified discovery process integrated with the add feed flow
+
+This enhancement significantly simplifies discovering and adding new feeds, providing users with a more intuitive experience.
+
 ## Development
 
 ### Requirements
@@ -103,7 +127,7 @@ The project is built as a Swift Package (RSSReaderKit) containing multiple modul
 
 The project includes a comprehensive Makefile for development tasks:
 
-<pre> <code>```bash
+```bash
 make project         # Runs install-tools, setup and open
 make renew           # Runs xcode-clean, clean, reset-packages, project
 make setup           # Initial project setup
@@ -115,7 +139,7 @@ make lint-fix        # Fix SwiftLint violations
 make format          # Run swift-format
 make clean           # Clean build artifacts
 make install-tools   # Install required development tools
-```</code> </pre>
+```
 
 ## Potential Improvements
 

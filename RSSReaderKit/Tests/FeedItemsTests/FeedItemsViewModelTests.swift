@@ -62,7 +62,7 @@ import Common
             
             await viewModel.waitForLoadToFinish()
             
-            if case .loaded(let loadedItems) = viewModel.state {
+            if case .content(let loadedItems) = viewModel.state {
                 #expect(loadedItems.count == 2)
                 #expect(loadedItems[0].title == "Item 1")
                 #expect(loadedItems[1].title == "Item 2")

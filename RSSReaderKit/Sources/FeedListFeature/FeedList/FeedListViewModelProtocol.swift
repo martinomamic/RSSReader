@@ -17,6 +17,7 @@ public protocol FeedListViewModelProtocol: Observable {
     var state: ViewState<[Feed]> { get set }
     
     var showEditButton: Bool { get }
+    var showAddButton: Bool { get }
     var navigationTitle: String { get }
     var listAccessibilityId: String { get }
     var emptyStateTitle: String { get }
@@ -33,6 +34,7 @@ public protocol FeedListViewModelProtocol: Observable {
 }
 
 extension FeedListViewModelProtocol {
+    public var showAddButton: Bool { true }
     public var showEditButton: Bool { !feeds.isEmpty }
     public var navigationTitle: String { LocalizedStrings.FeedList.rssFeeds }
     public var listAccessibilityId: String { AccessibilityIdentifier.FeedList.feedsList }

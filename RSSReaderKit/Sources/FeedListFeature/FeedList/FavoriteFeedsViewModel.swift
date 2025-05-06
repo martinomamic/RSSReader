@@ -29,6 +29,7 @@ public class FavoriteFeedsViewModel: FeedListViewModelProtocol {
     private var notificationsTask: Task<Void, Never>?
     
     public var showEditButton: Bool { false }
+    public var showAddButton: Bool { false }
     public var navigationTitle: String { LocalizedStrings.FeedList.favoriteFeeds }
     public var listAccessibilityId: String { AccessibilityIdentifier.FeedList.favoritesList }
     public var emptyStateTitle: String { LocalizedStrings.FeedList.noFavorites }
