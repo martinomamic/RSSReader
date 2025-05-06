@@ -5,6 +5,7 @@
 //  Created by Martino Mamić on 19.04.25.
 //
 
+import Common
 import SwiftUI
 
 public struct ErrorStateView: View {

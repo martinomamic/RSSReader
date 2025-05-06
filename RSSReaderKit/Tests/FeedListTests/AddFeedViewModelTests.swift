@@ -5,13 +5,13 @@
 //  Created by Martino Mamić on 29.04.25.
 //
 
-import Testing
-import Dependencies
-import Foundation
-import SwiftUI
 import Common
+import Dependencies
 import FeedRepository
+import Foundation
 import SharedModels
+import SwiftUI
+import Testing
 
 @testable import FeedListFeature
 
@@ -42,17 +42,6 @@ import SharedModels
         #expect(viewModel.isAddButtonDisabled == true)
     }
     
-    @Test("Setting example URLs works")
-    func testSetExampleURL() {
-        let viewModel = AddFeedViewModel()
-        
-        viewModel.setExampleURL(.bbc)
-        #expect(viewModel.urlString == Constants.URLs.bbcNews)
-        
-        viewModel.setExampleURL(.nbc)
-        #expect(viewModel.urlString == Constants.URLs.nbcNews)
-    }
-    
     @Test("Adding feed successfully updates state")
     func testAddFeedSuccess() async throws {
         let testURL = URL(string: "https://example.com")!
@@ -69,12 +58,11 @@ import SharedModels
             
             viewModel.addFeed()
             
-            #expect(viewModel.state == .adding)
-            #expect(viewModel.isLoading == true)
+            #expect(viewModel.state == .loading)
             
             await viewModel.waitForAddToFinish()
             
-            #expect(viewModel.state == .success)
+            #expect(viewModel.state == .content(true))
             #expect(viewModel.shouldDismiss == true)
         }
     }
@@ -111,15 +99,5 @@ import SharedModels
                 #expect(error == .unknown("Feed already exists"))
             }
         }
-    }
-   
-    @Test("Dismiss error sets state to idle")
-    func testDismissError() {
-        let viewModel = AddFeedViewModel()
-        viewModel.state = .error(.invalidURL)
-        
-        viewModel.dismissError()
-        
-        #expect(viewModel.state == .idle)
     }
 }

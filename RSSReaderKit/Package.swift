@@ -19,6 +19,7 @@ let package = Package(
         .library(name: "PersistenceClient", targets: ["PersistenceClient"]),
         .library(name: "RSSClient", targets: ["RSSClient"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
+        .library(name: "SharedUI", targets: ["SharedUI"]),
         .library(name: "TabBarFeature", targets: ["TabBarFeature"]),
         .library(name: "UserDefaultsClient", targets: ["UserDefaultsClient"]),
     ],
@@ -69,23 +70,34 @@ let package = Package(
             ]
         ),
         .target(
-            name: "Common",
+            name: "SharedUI",
             dependencies: [
+                "Common",
                 "Kingfisher"
             ]
         ),
         .testTarget(
-            name: "CommonComponentTests",
+            name: "SharedUITests",
+            dependencies: [
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+                "SharedUI"
+               
+            ],
+            exclude: ["__Snapshots__"]
+        ),
+        .target(
+            name: "Common",
+        ),
+        .testTarget(
+            name: "CommonTests",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
                 "Common",
                 "ExploreClient",
                 "NotificationRepository",
                 "PersistenceClient",
                 "RSSClient",
-            ],
-            exclude: ["__Snapshots__"]
+            ]
         ),
         .target(
             name: "ExploreClient",
@@ -113,7 +125,8 @@ let package = Package(
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 "Common",
                 "FeedRepository",
-                "SharedModels"
+                "SharedModels",
+                "SharedUI"
             ]
         ),
         .testTarget(
@@ -133,7 +146,8 @@ let package = Package(
                 "FeedItemsFeature",
                 "FeedRepository",
                 "NotificationRepository",
-                "SharedModels"
+                "SharedModels",
+                "SharedUI"
             ]
         ),
         .testTarget(
@@ -152,7 +166,8 @@ let package = Package(
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 "Common",
                 "RSSClient",
-                "SharedModels"
+                "SharedModels",
+                "SharedUI"
             ]
         ),
         .testTarget(
@@ -247,25 +262,25 @@ let package = Package(
             ]
         ),
         .testTarget(
-                    name: "NotificationRepositoryTests",
-                    dependencies: [
-                        "NotificationRepository",
-                        .product(name: "Dependencies", package: "swift-dependencies")
-                    ]
-                ),
-                .testTarget(
-                    name: "BackgroundRefreshClientTests",
-                    dependencies: [
-                        "BackgroundRefreshClient",
-                        .product(name: "Dependencies", package: "swift-dependencies")
-                    ]
-                ),
-                .testTarget(
-                    name: "UserNotificationClientTests",
-                    dependencies: [
-                        "UserNotificationClient",
-                        .product(name: "Dependencies", package: "swift-dependencies")
-                    ]
-                ),
+            name: "NotificationRepositoryTests",
+            dependencies: [
+                "NotificationRepository",
+                .product(name: "Dependencies", package: "swift-dependencies")
+            ]
+        ),
+        .testTarget(
+            name: "BackgroundRefreshClientTests",
+            dependencies: [
+                "BackgroundRefreshClient",
+                .product(name: "Dependencies", package: "swift-dependencies")
+            ]
+        ),
+        .testTarget(
+            name: "UserNotificationClientTests",
+            dependencies: [
+                "UserNotificationClient",
+                .product(name: "Dependencies", package: "swift-dependencies")
+            ]
+        ),
     ]
 )

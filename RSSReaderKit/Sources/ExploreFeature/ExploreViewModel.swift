@@ -11,27 +11,19 @@ import FeedRepository
 import Foundation
 import Observation
 import SharedModels
-
-enum ExploreState: Equatable {
-    case loading
-    case loaded([ExploreFeed])
-    case error(AppError)
-}
+import SharedUI
 
 @MainActor @Observable
 class ExploreViewModel {
     @ObservationIgnored
     @Dependency(\.feedRepository) private var feedRepository
 
-    var state: ExploreState = .loading
-    var isAddingFeed = false
+    var state: ViewState<[ExploreFeed]> = .loading
     var selectedFeed: ExploreFeed?
-    var feedError: AppError?
     var addedFeedURLs: Set<String> = []
 
     private var addTask: Task<Void, Never>?
     private var loadTask: Task<Void, Never>?
-    private var setupStreamTask: Task<Void, Never>?
 
     public init() {
         loadExploreFeeds()
@@ -43,14 +35,12 @@ class ExploreViewModel {
 
         loadTask = Task {
             do {
-                // Dohvati explore feedove
                 let exploreFeeds = try await feedRepository.loadExploreFeeds()
                 
-                // Dohvati trenutne feedove za provjeru koje smo već dodali
                 let currentFeeds = try await feedRepository.getCurrentFeeds()
-                self.addedFeedURLs = Set(currentFeeds.map { $0.url.absoluteString })
+                addedFeedURLs = Set(currentFeeds.map { $0.url.absoluteString })
                 
-                self.state = .loaded(exploreFeeds)
+                state = exploreFeeds.isEmpty ? .empty : .content(exploreFeeds)
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }
@@ -58,40 +48,20 @@ class ExploreViewModel {
     }
 
     func addFeed(_ exploreFeed: ExploreFeed) {
-        isAddingFeed = true
-        feedError = nil
-
         addTask?.cancel()
         addTask = Task {
             do {
                 _ = try await feedRepository.addExploreFeed(exploreFeed)
+                let exploreFeeds = try await feedRepository.loadExploreFeeds()
                 addedFeedURLs.insert(exploreFeed.url)
-                isAddingFeed = false
+                state = .content(exploreFeeds)
             } catch {
-                isAddingFeed = false
-                feedError = ErrorUtils.toAppError(error)
+                state = .error(ErrorUtils.toAppError(error))
             }
         }
     }
 
     func isFeedAdded(_ feed: ExploreFeed) -> Bool {
-        return addedFeedURLs.contains(feed.url)
-    }
-
-    func selectFeed(_ feed: ExploreFeed) {
-        selectedFeed = feed
-    }
-
-    func clearSelectedFeed() {
-        selectedFeed = nil
-    }
-
-    func addSelectedFeed() {
-        guard let feed = selectedFeed else { return }
-        addFeed(feed)
-    }
-
-    func clearError() {
-        feedError = nil
+        addedFeedURLs.contains(feed.url)
     }
 }

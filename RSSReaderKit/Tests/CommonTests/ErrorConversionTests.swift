@@ -5,13 +5,13 @@
 //  Created by Martino Mamić on 22.04.25.
 //
 
-import Testing
 import Common
-import RSSClient
-import NotificationRepository
 import ExploreClient
-import PersistenceClient
 import Foundation
+import NotificationRepository
+import PersistenceClient
+import RSSClient
+import Testing
 
 @Suite struct ErrorConversionTests {
     @Test("RSSError conversions")

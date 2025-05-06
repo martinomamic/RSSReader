@@ -6,81 +6,81 @@
 //
 
 import Common
+import ExploreFeature
 import SwiftUI
+import SharedUI
 
 struct AddFeedView: View {
     @Environment(\.dismiss) private var dismiss
     @State var viewModel = AddFeedViewModel()
     
     var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    TextField(LocalizedStrings.AddFeed.urlPlaceholder, text: $viewModel.urlString)
-                        .autocorrectionDisabled()
-                        .textInputAutocapitalization(.never)
-                        .keyboardType(.URL)
-                        .testId(AccessibilityIdentifier.AddFeed.urlTextField)
-                } header: {
-                    Text(LocalizedStrings.AddFeed.urlHeader)
-                } footer: {
-                    VStack(alignment: .leading, spacing: Constants.UI.footerSpacing) {
-                        Text(LocalizedStrings.AddFeed.examplesHeader)
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                        
-                        VStack(alignment: .leading, spacing: Constants.UI.exampleButtonSpacing) {
-                            Button(LocalizedStrings.AddFeed.bbcNews) {
-                                viewModel.setExampleURL(.bbc)
-                            }
-                            .testId(AccessibilityIdentifier.AddFeed.bbcExampleButton)
-                            
-                            Button(LocalizedStrings.AddFeed.nbcNews) {
-                                viewModel.setExampleURL(.nbc)
-                            }
-                            .testId(AccessibilityIdentifier.AddFeed.nbcExampleButton)
-                        }
-                    }
-                }
-            }
-            .navigationTitle(LocalizedStrings.AddFeed.title)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(LocalizedStrings.General.cancel) {
-                        dismiss()
-                    }
-                    .testId(AccessibilityIdentifier.AddFeed.cancelButton)
+        VStack {
+            switch viewModel.state {
+            case .loading:
+                ProgressView()
+                
+            case .content:
+                addFeedForm
+                
+            case .error(let error):
+                ErrorStateView(error: error) {
+                    viewModel.addFeed()
                 }
                 
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(LocalizedStrings.General.add) {
-                        viewModel.addFeed()
-                    }
-                    .disabled(viewModel.isAddButtonDisabled)
-                    .testId(AccessibilityIdentifier.AddFeed.addButton)
-                }
+            case .empty:
+                EmptyStateView(
+                    title: "Adding Views not possible",
+                    systemImage: "tray.empty",
+                    description: "No feeds to add"
+                )
             }
-            .overlay {
-                if viewModel.isLoading {
-                    ProgressView()
-                }
+        }
+        .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
+            if shouldDismiss {
+                dismiss()
             }
-            .alert(Text(LocalizedStrings.AddFeed.errorTitle),
-                   isPresented: viewModel.errorAlertBinding) {
-                Button(LocalizedStrings.General.ok) {
-                    viewModel.dismissError()
-                }
-            } message: {
-                if case .error(let error) = viewModel.state {
-                    Text(error.errorDescription)
-                }
+        }
+    }
+    
+    private var addFeedForm: some View {
+        Form {
+            Section {
+                TextField(LocalizedStrings.AddFeed.urlPlaceholder, text: $viewModel.urlString)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
+                    .keyboardType(.URL)
+                    .testId(AccessibilityIdentifier.AddFeed.urlTextField)
+            } header: {
+                Text(LocalizedStrings.AddFeed.urlHeader)
+            } footer: {
+                
             }
-            .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
-                if shouldDismiss {
-                    dismiss()
-                }
+        }
+        .navigationTitle(LocalizedStrings.AddFeed.title)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            cancelButton
+            addButton
+        }
+    }
+    
+    private var addButton: ToolbarItem<(), some View> {
+        ToolbarItem(placement: .confirmationAction) {
+            Button(LocalizedStrings.General.add) {
+                viewModel.addFeed()
             }
+            .disabled(viewModel.isAddButtonDisabled)
+            .testId(AccessibilityIdentifier.AddFeed.addButton)
+        }
+    }
+    
+    private var cancelButton: ToolbarItem<(), some View> {
+        ToolbarItem(placement: .cancellationAction) {
+            Button(LocalizedStrings.General.cancel) {
+                dismiss()
+            }
+            .testId(AccessibilityIdentifier.AddFeed.cancelButton)
         }
     }
 }
