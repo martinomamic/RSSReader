@@ -19,7 +19,6 @@ private actor FeedRepositoryActor {
 
     private var feeds: [Feed] = []
 
-    // Fixed: Now includes both allFeedsStream and favoriteFeedsStream!
     private static let allFeedsStreamPair = AsyncStream.makeStream(of: [Feed].self)
     private static let favoriteFeedsStreamPair = AsyncStream.makeStream(of: [Feed].self)
 
@@ -34,20 +33,15 @@ private actor FeedRepositoryActor {
         self.allFeedsContinuation = Self.allFeedsStreamPair.continuation
         self.favoriteFeedsStream = Self.favoriteFeedsStreamPair.stream
         self.favoriteFeedsContinuation = Self.favoriteFeedsStreamPair.continuation
-        print("FeedRepositoryActor: Initialized.")
     }
 
     private func broadcast(_ feeds: [Feed]) {
         self.feeds = feeds
-        // ADD: Logging before yielding
         let favoriteFeedsToYield = feeds.filter { $0.isFavorite }
-        print("FeedRepositoryActor: Broadcasting. All feeds count: \(feeds.count). Attempting to yield \(favoriteFeedsToYield.count) favorite feeds.")
-        
-        // Always broadcast on main actor to ensure consistent UI updates
+      
         Task { @MainActor in
             allFeedsContinuation.yield(feeds)
             favoriteFeedsContinuation.yield(favoriteFeedsToYield)
-            print("FeedRepositoryActor: Broadcast completed.")
         }
     }
 

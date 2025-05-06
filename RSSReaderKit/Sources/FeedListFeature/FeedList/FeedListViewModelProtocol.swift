@@ -33,6 +33,13 @@ public protocol FeedListViewModelProtocol: Observable {
 }
 
 extension FeedListViewModelProtocol {
+    public var showEditButton: Bool { !feeds.isEmpty }
+    public var navigationTitle: String { LocalizedStrings.FeedList.rssFeeds }
+    public var listAccessibilityId: String { AccessibilityIdentifier.FeedList.feedsList }
+    public var emptyStateTitle: String { LocalizedStrings.FeedList.noFeeds }
+    public var emptyStateDescription: String { LocalizedStrings.FeedList.noFeedsDescription }
+    public var primaryActionLabel: String? { LocalizedStrings.FeedList.addFeed }
+    
     public func makeFeedItemsViewModel(for feed: Feed) -> FeedItemsViewModel {
         FeedItemsViewModel(
             feedURL: feed.url,

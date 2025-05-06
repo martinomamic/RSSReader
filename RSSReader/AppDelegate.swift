@@ -23,7 +23,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         return true
     }
     
-    // Handle background fetch results
     func application(
         _ application: UIApplication,
         handleEventsForBackgroundURLSession identifier: String,
@@ -32,7 +31,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         completionHandler()
     }
     
-    // Handle notification interactions
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,

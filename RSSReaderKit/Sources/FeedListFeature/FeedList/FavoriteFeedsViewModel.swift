@@ -27,6 +27,13 @@ public class FavoriteFeedsViewModel: FeedListViewModelProtocol {
     private var feedStreamTask: Task<Void, Never>?
     private var favoritesTask: Task<Void, Never>?
     private var notificationsTask: Task<Void, Never>?
+    
+    public var showEditButton: Bool { false }
+    public var navigationTitle: String { LocalizedStrings.FeedList.favoriteFeeds }
+    public var listAccessibilityId: String { AccessibilityIdentifier.FeedList.favoritesList }
+    public var emptyStateTitle: String { LocalizedStrings.FeedList.noFavorites }
+    public var emptyStateDescription: String { LocalizedStrings.FeedList.noFavoritesDescription }
+    public var primaryActionLabel: String? { nil }
 
     public init() {
         guard feedStreamTask == nil else { return }
@@ -59,20 +66,6 @@ public class FavoriteFeedsViewModel: FeedListViewModelProtocol {
         }
     }
     
-    public var showEditButton: Bool { false }
-    
-    public var navigationTitle: String { LocalizedStrings.FeedList.favoriteFeeds }
-    
-    public var listAccessibilityId: String { AccessibilityIdentifier.FeedList.favoritesList }
-    
-    public var emptyStateTitle: String { LocalizedStrings.FeedList.noFavorites }
-    
-    public var emptyStateDescription: String { LocalizedStrings.FeedList.noFavoritesDescription }
-    
-    public var shouldShowAddFeedButton: Bool { false }
-    
-    public var primaryActionLabel: String? { nil }
-    
     public func toggleNotifications(_ feed: Feed) {
         notificationsTask?.cancel()
         
@@ -88,7 +81,6 @@ public class FavoriteFeedsViewModel: FeedListViewModelProtocol {
                       let updatedFeed = self.feeds.first(where: { $0.url == feed.url }),
                       updatedFeed.notificationsEnabled else { return }
                 try await notificationRepository.checkForNewItems()
-                
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }

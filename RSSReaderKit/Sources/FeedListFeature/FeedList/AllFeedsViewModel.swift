@@ -30,8 +30,12 @@ public class AllFeedsViewModel: FeedListViewModelProtocol {
     private var notificationsTask: Task<Void, Never>?
     
     public init() {
-        // Only set up stream-task ONCE per VM instance!
-        guard feedStreamTask == nil else { return }
+        setupFeeds()
+    }
+    
+    public func setupFeeds() {
+        feedStreamTask?.cancel()
+        
         feedStreamTask = Task { @MainActor in
             do {
                 try await feedRepository.loadInitialFeeds()
@@ -44,42 +48,6 @@ public class AllFeedsViewModel: FeedListViewModelProtocol {
             }
         }
     }
-    
-    public func setupFeeds() {
-        feedStreamTask?.cancel()
-        
-        feedStreamTask = Task { @MainActor in
-            do {
-                try await feedRepository.loadInitialFeeds()
-                
-                for await updatedFeeds in feedRepository.feedsStream {
-                    self.feeds = updatedFeeds
-                    
-                    if updatedFeeds.isEmpty {
-                        self.state = .empty
-                    } else {
-                        self.state = .content(updatedFeeds)
-                    }
-                }
-            } catch {
-                state = .error(ErrorUtils.toAppError(error))
-            }
-        }
-    }
-    
-    public var showEditButton: Bool { !feeds.isEmpty }
-    
-    public var navigationTitle: String { LocalizedStrings.FeedList.rssFeeds }
-    
-    public var listAccessibilityId: String { AccessibilityIdentifier.FeedList.feedsList }
-    
-    public var emptyStateTitle: String { LocalizedStrings.FeedList.noFeeds }
-    
-    public var emptyStateDescription: String { LocalizedStrings.FeedList.noFeedsDescription }
-    
-    public var shouldShowAddFeedButton: Bool { true }
-    
-    public var primaryActionLabel: String? { LocalizedStrings.FeedList.addFeed }
     
     public func toggleNotifications(_ feed: Feed) {
         notificationsTask?.cancel()
@@ -117,10 +85,8 @@ public class AllFeedsViewModel: FeedListViewModelProtocol {
         deleteTask?.cancel()
         deleteTask = Task { @MainActor in
             do {
-                let toDelete = indexSet.map { feeds[$0] }
-                for feed in toDelete {
-                    try await feedRepository.delete(feed.url)
-                }
+                guard let feed = indexSet.map({ feeds[$0] }).first else { return }
+                try await feedRepository.delete(feed.url)
             } catch {
                 self.state = .error(ErrorUtils.toAppError(error))
             }

@@ -60,7 +60,6 @@ public struct FeedItemsView: View {
     }
 }
 
-
 #if DEBUG
 import Dependencies
 

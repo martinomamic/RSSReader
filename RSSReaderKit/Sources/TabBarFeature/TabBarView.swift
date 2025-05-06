@@ -53,9 +53,9 @@ public struct TabBarView: View {
         NavigationStack {
             switch tab {
             case .feeds:
-                GenericFeedListView(viewModel: allFeedsViewModel)
+                FeedListView(viewModel: allFeedsViewModel)
             case .favorites:
-                GenericFeedListView(viewModel: favoriteFeedsViewModel)
+                FeedListView(viewModel: favoriteFeedsViewModel)
             case .explore:
                 ExploreView()
             case .debug:
