@@ -31,7 +31,7 @@ An iOS application for reading and managing RSS feeds, built with a focus on cle
   <em>Left: Main feed list with all RSS feeds - Middle: Empty feeds view - Right: Add new feed screen with suggested feeds</em>
 </p>
 <p align="center">
-  <img src="RSSReader/Screenshots/Favorites added" width="200" alt="Favorites">
+  <img src="RSSReader/Screenshots/Favorites added.png" width="200" alt="Favorites">
   <img src="RSSReader/Screenshots/Favorites empty.png" width="200" alt="Empty Favorites">
   <img src="RSSReader/Screenshots/Feed items.png" width="200" alt="Feed Items">
 </p>
