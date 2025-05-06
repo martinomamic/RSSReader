@@ -36,7 +36,7 @@ public struct FeedListView<ViewModel: FeedListViewModelProtocol>: View {
                     title: viewModel.emptyStateTitle,
                     systemImage: Constants.Images.noItemsIcon,
                     description: viewModel.emptyStateDescription,
-                    primaryAction: viewModel.showEditButton ? { showingAddFeed = true } : nil,
+                    primaryAction: viewModel.showAddButton ? { showingAddFeed = true } : nil,
                     primaryActionLabel: viewModel.primaryActionLabel
                 )
                 
@@ -78,20 +78,26 @@ public struct FeedListView<ViewModel: FeedListViewModelProtocol>: View {
                     EditButton()
                         .testId(AccessibilityIdentifier.FeedList.editButton)
                 }
+            }
             
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        showingAddFeed = true
-                    } label: {
-                        Label(LocalizedStrings.FeedList.addFeed,
-                              systemImage: Constants.Images.addIcon)
-                    }
-                    .testId(AccessibilityIdentifier.FeedList.addFeedButton)
-                }
+            if viewModel.showAddButton {
+                addButton
             }
         }
         .sheet(isPresented: $showingAddFeed) {
             AddFeedView()
+        }
+    }
+    
+    private var addButton: ToolbarItem<(), some View> {
+        ToolbarItem(placement: .primaryAction) {
+            Button {
+                showingAddFeed = true
+            } label: {
+                Label(LocalizedStrings.FeedList.addFeed,
+                      systemImage: Constants.Images.addIcon)
+            }
+            .testId(AccessibilityIdentifier.FeedList.addFeedButton)
         }
     }
 }
