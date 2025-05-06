@@ -7,15 +7,24 @@
 
 import Common
 import SharedModels
-import SharedUI
 import SwiftUI
 
-struct ExploreFeedRow: View {
-    let feed: ExploreFeed
-    let isAdded: Bool
-    let onAddTapped: () -> Void
+public struct ExploreFeedRow: View {
+    public let feed: ExploreFeed
+    public let isAdded: Bool
+    public let onAddTapped: () -> Void
+    
+    public init(
+        feed: ExploreFeed,
+        isAdded: Bool,
+        onAddTapped: @escaping () -> Void
+    ) {
+        self.feed = feed
+        self.isAdded = isAdded
+        self.onAddTapped = onAddTapped
+    }
 
-    var body: some View {
+    public var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: Constants.UI.exploreFeedRowSpacing) {
                 Text(feed.name)

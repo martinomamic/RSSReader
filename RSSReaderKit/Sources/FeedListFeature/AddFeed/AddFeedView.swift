@@ -6,7 +6,6 @@
 //
 
 import Common
-import ExploreFeature
 import SwiftUI
 import SharedUI
 
@@ -21,7 +20,14 @@ struct AddFeedView: View {
                 ProgressView()
                 
             case .content:
-                addFeedForm
+                ScrollView {
+                    VStack(spacing: 16) {
+                        urlInputSection
+                        
+                        exploreFeedsSection
+                    }
+                    .padding()
+                }
                 
             case .error(let error):
                 ErrorStateView(error: error) {
@@ -41,26 +47,49 @@ struct AddFeedView: View {
                 dismiss()
             }
         }
-    }
-    
-    private var addFeedForm: some View {
-        Form {
-            Section {
-                TextField(LocalizedStrings.AddFeed.urlPlaceholder, text: $viewModel.urlString)
-                    .autocorrectionDisabled()
-                    .textInputAutocapitalization(.never)
-                    .keyboardType(.URL)
-                    .testId(AccessibilityIdentifier.AddFeed.urlTextField)
-            } header: {
-                Text(LocalizedStrings.AddFeed.urlHeader)
-            } footer: {
-            }
-        }
         .navigationTitle(LocalizedStrings.AddFeed.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             cancelButton
             addButton
+        }
+    }
+    
+    private var urlInputSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(LocalizedStrings.AddFeed.urlHeader)
+                .font(.headline)
+            
+            TextField(LocalizedStrings.AddFeed.urlPlaceholder, text: $viewModel.urlString)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+                .keyboardType(.URL)
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(8)
+                .testId(AccessibilityIdentifier.AddFeed.urlTextField)
+        }
+    }
+    
+    private var exploreFeedsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Suggested Feeds")
+                .font(.headline)
+            
+            
+            VStack(spacing: 12) {
+                ForEach(viewModel.exploreFeeds) { feed in
+                    ExploreFeedRow(
+                        feed: feed,
+                        isAdded: viewModel.isFeedAdded(feed),
+                        onAddTapped: {
+                            viewModel.addExploreFeed(feed)
+                        }
+                    )
+                    .background(Color(.systemGray6))
+                    .cornerRadius(8)
+                }
+            }
         }
     }
     
