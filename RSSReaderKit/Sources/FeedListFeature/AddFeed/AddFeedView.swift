@@ -76,7 +76,6 @@ struct AddFeedView: View {
             Text("Suggested Feeds")
                 .font(.headline)
             
-            
             VStack(spacing: 12) {
                 ForEach(viewModel.exploreFeeds) { feed in
                     ExploreFeedRow(

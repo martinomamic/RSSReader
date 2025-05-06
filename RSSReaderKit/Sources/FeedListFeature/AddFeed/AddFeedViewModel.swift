@@ -62,7 +62,7 @@ class AddFeedViewModel {
         addFeedTask = Task {
             do {
                 try await feedRepository.add(url)
-                loadExploreFeeds() // Aktualisiere die Liste nach dem Hinzufügen
+                loadExploreFeeds()
                 state = .content(true)
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
