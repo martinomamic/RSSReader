@@ -13,7 +13,8 @@ import NotificationRepository
 
 public struct TabBarView: View {
     @State private var selectedTab: TabItem = .feeds
-    private let feedListViewModel = FeedListViewModel()
+    private var favoriteFeedsViewModel = FavoriteFeedsViewModel()
+    private var allFeedsViewModel = AllFeedsViewModel()
     
     public init() {}
     
@@ -52,9 +53,9 @@ public struct TabBarView: View {
         NavigationStack {
             switch tab {
             case .feeds:
-                FeedListView(viewModel: feedListViewModel)
+                GenericFeedListView(viewModel: allFeedsViewModel)
             case .favorites:
-                FeedListView(viewModel: feedListViewModel, showOnlyFavorites: true)
+                GenericFeedListView(viewModel: favoriteFeedsViewModel)
             case .explore:
                 ExploreView()
             case .debug:
