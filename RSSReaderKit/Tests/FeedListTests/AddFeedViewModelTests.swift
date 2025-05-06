@@ -2,97 +2,101 @@
 //  AddFeedViewModelTests.swift
 //  RSSReaderKit
 //
-//  Created by Martino Mamić on 21.04.25.
+//  Created by Martino Mamić on 29.04.25.
 //
 
-import Testing
-import Foundation
-import Dependencies
-import SharedModels
-import PersistenceClient
-import RSSClient
 import Common
+import Dependencies
+import FeedRepository
+import Foundation
+import SharedModels
 import SwiftUI
+import Testing
 
 @testable import FeedListFeature
 
+@MainActor
 @Suite struct AddFeedViewModelTests {
-    @MainActor
-    func createViewModel(
-        with feeds: [FeedViewModel] = [],
-        urlString: String = Constants.URLs.bbcNews,
-        state: AddFeedState = .idle) -> AddFeedViewModel {
-            let viewModel = AddFeedViewModel(feeds: Binding.constant(feeds))
-            viewModel.urlString = urlString
-            viewModel.state = state
-            return viewModel
-        }
-    
-    @Test("Test add button disabled with empty URL")
-    func testAddButtonDisabled() async throws {
-        var viewModel = await createViewModel()
+    @Test("Initial state is idle")
+    func testInitialState() {
+        let viewModel = AddFeedViewModel()
         
-        await #expect(viewModel.isAddButtonDisabled == false)
-        
-        viewModel = await createViewModel(urlString: "")
-        await #expect(viewModel.isAddButtonDisabled == true)
+        #expect(viewModel.state == .idle)
+        #expect(viewModel.urlString == "")
+        #expect(viewModel.isAddButtonDisabled == true)
+        #expect(viewModel.isLoading == false)
+        #expect(viewModel.shouldDismiss == false)
     }
     
-    @Test("Test example URL setting")
-    func testSetExampleURL() async throws {
-        let viewModel = await createViewModel()
+    @Test("URL validation works correctly")
+    func testURLValidation() {
+        let viewModel = AddFeedViewModel()
         
-        await viewModel.setExampleURL(.bbc)
-        await #expect(viewModel.urlString == Constants.URLs.bbcNews)
+        viewModel.urlString = ""
+        #expect(viewModel.isAddButtonDisabled == true)
         
-        await viewModel.setExampleURL(.nbc)
-        await #expect(viewModel.urlString == Constants.URLs.nbcNews)
+        viewModel.urlString = "blob"
+        #expect(viewModel.isAddButtonDisabled == true)
+        
+        viewModel.urlString = "https://google.com"
+        #expect(viewModel.isAddButtonDisabled == true)
     }
     
-    @Test("Test duplicate feed error")
-    func testAddDuplicateFeed() async throws {
-        let mockFeed = Feed(
-            url: URL(string: Constants.URLs.bbcNews)!,
-            title: "BBC News",
-            description: "Latest news from BBC"
-        )
-        
-        let feeds = await [FeedViewModel(url: mockFeed.url, feed: mockFeed)]
-        let viewModel = await createViewModel(with: feeds)
-        
-        if case .error(let error) = await viewModel.state {
-            #expect(error == .duplicateFeed)
-        }
-    }
-    
-    @Test("Test invalid URL error")
-    func testAddInvalidURL() async throws {
-        let viewModel = await createViewModel(urlString: "invalid-url")
+    @Test("Adding feed successfully updates state")
+    func testAddFeedSuccess() async throws {
+        let testURL = URL(string: "https://example.com")!
         
         await withDependencies {
-            $0.rssClient.fetchFeed = { _ in throw RSSError.invalidURL }
-        } operation: {
-            await viewModel.addFeed()
-            
-            if case .error(let error) = await viewModel.state {
-                #expect(error == .invalidURL)
+            $0.feedRepository.add = { url in
+                #expect(url == testURL)
             }
+        } operation: {
+            let viewModel = AddFeedViewModel()
+            viewModel.urlString = testURL.absoluteString
+            
+            #expect(viewModel.state == .idle)
+            
+            viewModel.addFeed()
+            
+            #expect(viewModel.state == .loading)
+            
+            await viewModel.waitForAddToFinish()
+            
+            #expect(viewModel.state == .content(true))
+            #expect(viewModel.shouldDismiss == true)
+        }
+    }
+     
+    @Test("Invalid URL shows error")
+    func testAddFeedInvalidURL() {
+        let viewModel = AddFeedViewModel()
+        viewModel.urlString = "invalid url"
+        
+        viewModel.addFeed()
+        
+        if case .error(let error) = viewModel.state {
+            #expect(error == .invalidURL)
         }
     }
     
-    @Test("Test network error handling")
-    func testNetworkError() async throws {
-        let viewModel = await createViewModel(urlString: "https://example.com")
+    @Test("Repository error is handled")
+    func testAddFeedError() async throws {
+        let testURL = URL(string: "https://example.com")!
         
         await withDependencies {
-            $0.rssClient.fetchFeed = { _ in
-                throw RSSError.networkError(NSError(domain: "test", code: -1, userInfo: nil))
+            $0.feedRepository.add = { _ in
+                throw FeedRepositoryError.feedAlreadyExists
             }
         } operation: {
-            await viewModel.addFeed()
+            let viewModel = AddFeedViewModel()
+            viewModel.urlString = testURL.absoluteString
             
-            if case .error(let error) = await viewModel.state {
-                #expect(error.errorDescription.contains("Network error"))
+            viewModel.addFeed()
+            
+            await viewModel.waitForAddToFinish()
+            
+            if case .error(let error) = viewModel.state {
+                #expect(error == .unknown("Feed already exists"))
             }
         }
     }

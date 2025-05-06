@@ -9,21 +9,23 @@ import Common
 import SwiftUI
 import ExploreFeature
 import FeedListFeature
-import NotificationClient
+import NotificationRepository
 
 public struct TabBarView: View {
-    @State private var viewModel = TabBarViewModel()
+    @State private var selectedTab: TabItem = .feeds
+    private var favoriteFeedsViewModel = FavoriteFeedsViewModel()
+    private var allFeedsViewModel = AllFeedsViewModel()
     
     public init() {}
     
     public var body: some View {
-        TabView(selection: $viewModel.selectedTab) {
+        TabView(selection: $selectedTab) {
             ForEach(TabItem.allCases, id: \.self) { tab in
                 tabContent(for: tab)
                     .tabItem {
                         Label(
-                            viewModel.getTitle(for: tab),
-                            systemImage: viewModel.getIcon(for: tab)
+                            tab.title,
+                            systemImage: tab.icon
                         )
                         .accessibilityIdentifier(accessibilityIdForTab(tab))
                     }
@@ -51,9 +53,9 @@ public struct TabBarView: View {
         NavigationStack {
             switch tab {
             case .feeds:
-                FeedListView()
+                FeedListView(viewModel: allFeedsViewModel)
             case .favorites:
-                FeedListView(showOnlyFavorites: true)
+                FeedListView(viewModel: favoriteFeedsViewModel)
             case .explore:
                 ExploreView()
             case .debug:

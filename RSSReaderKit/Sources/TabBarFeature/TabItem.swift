@@ -40,19 +40,6 @@ public enum TabItem: Int, Hashable, CaseIterable {
         }
     }
 
-    public var selectedIcon: String {
-        switch self {
-        case .feeds:
-            return "newspaper.fill"
-        case .explore:
-            return "globe.fill"
-        case .favorites:
-            return "star.fill"
-        case .debug:
-            return "ladybug.fill"
-        }
-    }
-
     public static var allCases: [TabItem] {
         #if DEBUG
         return [.feeds, .favorites, .explore, .debug]

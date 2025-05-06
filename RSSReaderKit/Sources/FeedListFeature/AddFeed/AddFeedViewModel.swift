@@ -8,102 +8,113 @@
 import Common
 import Dependencies
 import Foundation
-import PersistenceClient
-import RSSClient
 import SharedModels
 import SwiftUI
-
-enum AddFeedState: Equatable {
-    case idle
-    case adding
-    case error(AppError)
-    case success
-}
-
-enum ExampleURL {
-    case bbc
-    case nbc
-}
 
 @MainActor @Observable
 class AddFeedViewModel {
     @ObservationIgnored
-    @Dependency(\.persistenceClient.saveFeed) private var saveFeed
+    @Dependency(\.feedRepository) private var feedRepository
     @ObservationIgnored
-    @Dependency(\.rssClient.fetchFeed) private var fetchFeed
-
-    private var feeds: Binding<[FeedViewModel]>
+    @Dependency(\.exploreClient) private var exploreClient
+    
     private var addFeedTask: Task<Void, Never>?
-
+    private var loadExploreTask: Task<Void, Never>?
+    
     var urlString: String = ""
-    var state: AddFeedState = .idle
-
-    init(feeds: Binding<[FeedViewModel]>) {
-        self.feeds = feeds
+    var state: ViewState<Bool> = .idle
+    var exploreFeeds: [ExploreFeed] = []
+    var addedFeedURLs: Set<String> = []
+    
+    init() {
+        loadExploreFeeds()
     }
-
+    
     var isAddButtonDisabled: Bool {
-        !isValidURL || state == .adding
+        !isValidURL
     }
-
+    
     var isLoading: Bool {
-        state == .adding
+        if case .loading = state { return true }
+        return false
     }
-
+    
     var shouldDismiss: Bool {
-        state == .success
+        if case .content(true) = state { return true }
+        return false
     }
-
-    var errorAlertBinding: Binding<Bool> {
-        .init(
-            get: { if case .error = self.state { return true } else { return false } },
-            set: { show in if !show { self.dismissError() } }
-        )
-    }
-
+    
     private var isValidURL: Bool {
-        guard !urlString.isEmpty else { return false }
-        return URL(string: urlString) != nil
+        guard !urlString.isEmpty,
+              let url = URL(string: urlString) else { return false }
+        return UIApplication.shared.canOpenURL(url)
     }
-
-    func setExampleURL(_ example: ExampleURL) {
-        switch example {
-        case .bbc:
-            urlString = Constants.URLs.bbcNews
-        case .nbc:
-            urlString = Constants.URLs.nbcNews
-        }
-    }
-
-    func dismissError() {
-        state = .idle
-    }
-
+    
     func addFeed() {
         guard let url = URL(string: urlString) else {
-            state = .error(.invalidURL)
+            state = .error(AppError.invalidURL)
             return
         }
-
-        guard !feeds.wrappedValue.contains(where: { $0.url == url }) else {
-            state = .error(AppError.duplicateFeed)
-            return
-        }
-
+        
         addFeedTask?.cancel()
-        state = .adding
-
+        state = .loading
+        
         addFeedTask = Task {
             do {
-                let feed = try await fetchFeed(url)
-                let feedViewModel = FeedViewModel(url: url, feed: feed)
-                feedViewModel.state = .loaded(feed)
-                feeds.wrappedValue.insert(feedViewModel, at: 0)
-                try await saveFeed(feed)
-                state = .success
+                try await feedRepository.add(url)
+                loadExploreFeeds()
+                state = .content(true)
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }
         }
     }
+    
+    func addExploreFeed(_ exploreFeed: ExploreFeed) {
+        addFeedTask?.cancel()
+        state = .loading
+        
+        addFeedTask = Task {
+            do {
+                _ = try await feedRepository.addExploreFeed(exploreFeed)
+                loadExploreFeeds()
+                state = .content(true)
+            } catch {
+                state = .error(ErrorUtils.toAppError(error))
+            }
+        }
+    }
+    
+    func loadExploreFeeds() {
+        loadExploreTask?.cancel()
+        
+        loadExploreTask = Task {
+            do {
+                let allExploreFeeds = try await exploreClient.loadExploreFeeds()
+                let currentFeeds = try await feedRepository.getCurrentFeeds()
+                
+                addedFeedURLs = Set(currentFeeds.map { $0.url.absoluteString })
+                
+                exploreFeeds = allExploreFeeds
+                    .filter { !addedFeedURLs.contains($0.url) }
+                    .prefix(10)
+                    .map { $0 }
+            } catch {
+                exploreFeeds = []
+            }
+        }
+    }
+    
+    func isFeedAdded(_ feed: ExploreFeed) -> Bool {
+        addedFeedURLs.contains(feed.url)
+    }
 }
+
+#if DEBUG
+extension AddFeedViewModel {
+    @MainActor
+    func waitForAddToFinish() async {
+        await addFeedTask?.value
+    }
+}
+#endif

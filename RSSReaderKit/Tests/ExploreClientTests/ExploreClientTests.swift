@@ -35,7 +35,7 @@ import ConcurrencyExtras
         )
     }
     
-    @Test("loadExploreFeeds fetches feeds from JSON file")
+    @Test("Loading explore feeds fetches feeds from JSON file")
     func testLoadExploreFeeds() async throws {
         let mockFeeds = [
             createExploreFeed(name: "Feed 1", url: "https://example1.com/feed"),
@@ -60,7 +60,7 @@ import ConcurrencyExtras
         #expect(feeds[1].url == "https://example2.com/feed")
     }
     
-    @Test("loadExploreFeeds throws fileNotFound when file doesn't exist")
+    @Test("Loading explore feeds throws fileNotFound when file doesn't exist")
     func testLoadExploreFeedsFileNotFound() async throws {
         let client = ExploreClient(
             loadExploreFeeds: {
@@ -79,7 +79,7 @@ import ConcurrencyExtras
         }
     }
     
-    @Test("loadExploreFeeds throws decodingFailed when JSON is invalid")
+    @Test("Loading explore feeds throws decodingFailed when JSON is invalid")
     func testLoadExploreFeedsDecodingFailed() async throws {
         let client = ExploreClient(
             loadExploreFeeds: {
@@ -102,7 +102,7 @@ import ConcurrencyExtras
         }
     }
     
-    @Test("addFeed fetches and adds feed successfully")
+    @Test("Adding explore feed fetches and saves feed successfully")
     func testAddFeed() async throws {
         let exploreFeed = createExploreFeed()
         let expectedFeed = createFeed()
@@ -125,7 +125,7 @@ import ConcurrencyExtras
         #expect(result.description == expectedFeed.description)
     }
     
-    @Test("addFeed throws invalidURL when URL is invalid")
+    @Test("Adding feed throws invalidURL when URL is invalid")
     func testAddFeedInvalidURL() async throws {
         let exploreFeed = createExploreFeed(url: "invalid-url")
         
@@ -146,7 +146,7 @@ import ConcurrencyExtras
         }
     }
     
-    @Test("addFeed throws feedFetchFailed when feed fetch fails")
+    @Test("Adding feed throws feedFetchFailed when feed fetch fails")
     func testAddFeedFetchFailed() async throws {
         let exploreFeed = createExploreFeed()
         

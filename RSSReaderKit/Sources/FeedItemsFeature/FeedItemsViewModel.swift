@@ -10,14 +10,8 @@ import Dependencies
 import Foundation
 import RSSClient
 import SharedModels
+import SharedUI
 import UIKit
-
-enum FeedItemsState: Equatable {
-    case loading
-    case loaded([FeedItem])
-    case error(AppError)
-    case empty
-}
 
 @MainActor @Observable
 public class FeedItemsViewModel: Identifiable {
@@ -29,7 +23,7 @@ public class FeedItemsViewModel: Identifiable {
     public let feedTitle: String
     public let feedURL: URL
 
-    var state: FeedItemsState = .loading
+    var state: ViewState<[FeedItem]> = .loading
 
     var loadTask: Task<Void, Never>?
 
@@ -49,7 +43,7 @@ public class FeedItemsViewModel: Identifiable {
                 if items.isEmpty {
                     state = .empty
                 } else {
-                    state = .loaded(items)
+                    state = .content(items)
                 }
             } catch {
                 state = .error(ErrorUtils.toAppError(error))

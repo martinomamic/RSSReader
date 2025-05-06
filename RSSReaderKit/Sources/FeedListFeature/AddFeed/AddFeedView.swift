@@ -7,84 +7,107 @@
 
 import Common
 import SwiftUI
+import SharedUI
 
 struct AddFeedView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var viewModel: AddFeedViewModel
-
-    init(feeds: Binding<[FeedViewModel]>) {
-        _viewModel = State(initialValue: AddFeedViewModel(feeds: feeds))
-    }
-
+    @State var viewModel = AddFeedViewModel()
+    
     var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    TextField(LocalizedStrings.AddFeed.urlPlaceholder, text: $viewModel.urlString)
-                        .autocorrectionDisabled()
-                        .textInputAutocapitalization(.never)
-                        .keyboardType(.URL)
-                        .testId(AccessibilityIdentifier.AddFeed.urlTextField)
-                } header: {
-                    Text(LocalizedStrings.AddFeed.urlHeader)
-                } footer: {
-                    VStack(alignment: .leading, spacing: Constants.UI.footerSpacing) {
-                        Text(LocalizedStrings.AddFeed.examplesHeader)
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-
-                        VStack(alignment: .leading, spacing: Constants.UI.exampleButtonSpacing) {
-                            Button(LocalizedStrings.AddFeed.bbcNews) {
-                                viewModel.setExampleURL(.bbc)
-                            }
-                            .testId(AccessibilityIdentifier.AddFeed.bbcExampleButton)
-
-                            Button(LocalizedStrings.AddFeed.nbcNews) {
-                                viewModel.setExampleURL(.nbc)
-                            }
-                            .testId(AccessibilityIdentifier.AddFeed.nbcExampleButton)
+        VStack {
+            switch viewModel.state {
+            case .loading:
+                ProgressView()
+                
+            case .content:
+                ScrollView {
+                    VStack(spacing: 16) {
+                        urlInputSection
+                        
+                        exploreFeedsSection
+                    }
+                    .padding()
+                }
+                
+            case .error(let error):
+                ErrorStateView(error: error) {
+                    viewModel.addFeed()
+                }
+                
+            case .empty:
+                EmptyStateView(
+                    title: "Adding Views not possible",
+                    systemImage: "tray.empty",
+                    description: "No feeds to add"
+                )
+            }
+        }
+        .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
+            if shouldDismiss {
+                dismiss()
+            }
+        }
+        .navigationTitle(LocalizedStrings.AddFeed.title)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            cancelButton
+            addButton
+        }
+    }
+    
+    private var urlInputSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(LocalizedStrings.AddFeed.urlHeader)
+                .font(.headline)
+            
+            TextField(LocalizedStrings.AddFeed.urlPlaceholder, text: $viewModel.urlString)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+                .keyboardType(.URL)
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(8)
+                .testId(AccessibilityIdentifier.AddFeed.urlTextField)
+        }
+    }
+    
+    private var exploreFeedsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Suggested Feeds")
+                .font(.headline)
+            
+            VStack(spacing: 12) {
+                ForEach(viewModel.exploreFeeds) { feed in
+                    ExploreFeedRow(
+                        feed: feed,
+                        isAdded: viewModel.isFeedAdded(feed),
+                        onAddTapped: {
+                            viewModel.addExploreFeed(feed)
                         }
-                    }
+                    )
+                    .background(Color(.systemGray6))
+                    .cornerRadius(8)
                 }
             }
-            .navigationTitle(LocalizedStrings.AddFeed.title)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(LocalizedStrings.General.cancel) {
-                        dismiss()
-                    }
-                    .testId(AccessibilityIdentifier.AddFeed.cancelButton)
-                }
-
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(LocalizedStrings.General.add) {
-                        viewModel.addFeed()
-                    }
-                    .disabled(viewModel.isAddButtonDisabled)
-                    .testId(AccessibilityIdentifier.AddFeed.addButton)
-                }
+        }
+    }
+    
+    private var addButton: ToolbarItem<(), some View> {
+        ToolbarItem(placement: .confirmationAction) {
+            Button(LocalizedStrings.General.add) {
+                viewModel.addFeed()
             }
-            .overlay {
-                if viewModel.isLoading {
-                    ProgressView()
-                }
+            .disabled(viewModel.isAddButtonDisabled)
+            .testId(AccessibilityIdentifier.AddFeed.addButton)
+        }
+    }
+    
+    private var cancelButton: ToolbarItem<(), some View> {
+        ToolbarItem(placement: .cancellationAction) {
+            Button(LocalizedStrings.General.cancel) {
+                dismiss()
             }
-            .alert(Text(LocalizedStrings.AddFeed.errorTitle),
-                   isPresented: viewModel.errorAlertBinding) {
-                Button(LocalizedStrings.General.ok) {
-                    viewModel.dismissError()
-                }
-            } message: {
-                if case .error(let error) = viewModel.state {
-                    Text(error.errorDescription)
-                }
-            }
-            .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
-                if shouldDismiss {
-                    dismiss()
-                }
-            }
+            .testId(AccessibilityIdentifier.AddFeed.cancelButton)
         }
     }
 }
