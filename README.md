@@ -22,30 +22,26 @@ An iOS application for reading and managing RSS feeds, built with a focus on cle
 
 ## Screenshots
 
-### Main Features
-
 <p align="center">
-  <img src="RSSReader/Screenshots/main_feeds.png" width="200" alt="Feed List">
-  <img src="RSSReader/Screenshots/empty_feeds.png" width="200" alt="Empty Feed List">
-  <img src="RSSReader/Screenshots/add_feed.png" width="200" alt="Add Feed">
+  <img src="RSSReader/Screenshots/Feeds added.png" width="200" alt="Feed List">
+  <img src="RSSReader/Screenshots/Feeds empty.png" width="200" alt="Empty Feed List">
+  <img src="RSSReader/Screenshots/Add feeds with suggestions.png" width="200" alt="Add Feed">
 </p>
 <p align="center">
   <em>Left: Main feed list with all RSS feeds - Middle: Empty feeds view - Right: Add new feed screen with suggested feeds</em>
 </p>
 <p align="center">
-  <img src="RSSReader/Screenshots/favorites.png" width="200" alt="Favorites">
-  <img src="RSSReader/Screenshots/empty_favorites.png" width="200" alt="Empty Favorites">
-  <img src="RSSReader/Screenshots/feed_items.png" width="200" alt="Feed Items">
+  <img src="RSSReader/Screenshots/Favorites added.png" width="200" alt="Favorites">
+  <img src="RSSReader/Screenshots/Favorites empty.png" width="200" alt="Empty Favorites">
+  <img src="RSSReader/Screenshots/Feed items.png" width="200" alt="Feed Items">
 </p>
 <p align="center">
   <em>Left: Favorites tab with starred feeds - Middle: Empty favorites view - Right: Feed items view showing article content</em>
 </p>
 
-## Discovery and Debugging
-
 <p align="center">
-  <img src="RSSReader/Screenshots/explore_feeds.png" width="200" alt="Explore">
-  <img src="RSSReader/Screenshots/notification_debug.png" width="200" alt="Debug">
+  <img src="RSSReader/Screenshots/Explore.png" width="200" alt="Explore">
+  <img src="RSSReader/Screenshots/Debug view.png" width="200" alt="Debug">
 </p>
 <p align="center">
   <em>Left: Explore tab with suggested feeds to add - Right: Debug panel for testing notifications and background tasks</em>
@@ -84,10 +80,12 @@ The project is built as a Swift Package (RSSReaderKit) containing multiple modul
 - **PersistenceClient**: SwiftData-based storage
 - **BackgroundRefreshClient**: Background task scheduling and execution
 - **UserNotificationClient**: System notification handling
+- **UserDefaultsClient**: UserDefaults interaction
 
 #### Support
-- **Common**: Shared UI components, utilities, and constants
+- **Common**: Utilities, and constants
 - **SharedModels**: Data models used across modules
+- **SharedUI**: Shared UI components
 
 ### Key Technical Aspects
 
@@ -97,17 +95,6 @@ The project is built as a Swift Package (RSSReaderKit) containing multiple modul
 - **SwiftUI**: Modern declarative UI with Observation framework
 - **Testing**: Comprehensive unit and snapshot tests
 - **SwiftData**: Native persistence with modern Swift data modeling
-
-## New Feature: Enhanced Feed Addition
-
-The updated AddFeedView provides a seamless experience for adding new feeds:
-
-- Manual URL input at the top
-- List of top suggested feeds that haven't been added yet
-- Immediate feedback after successful feed addition
-- Simplified discovery process integrated with the add feed flow
-
-This enhancement significantly simplifies discovering and adding new feeds, providing users with a more intuitive experience.
 
 ## Development
 
