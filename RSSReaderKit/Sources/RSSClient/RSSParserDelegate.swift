@@ -61,11 +61,12 @@ public class RSSParserDelegate: NSObject, RSSParserDelegateProtocol {
         case .image:
             isInsideImage = true
         case .enclosure where isInsideItem:
-            if let url = attributeDict[RSSAttribute.url.rawValue],
+            guard let url = attributeDict[RSSAttribute.url.rawValue],
                let type = attributeDict[RSSAttribute.type.rawValue],
-               MediaType.image.matches(type) {
-                currentImageURL = url
+               MediaType.image.matches(type) else {
+                return
             }
+            currentImageURL = url
         default:
             break
         }
@@ -111,21 +112,23 @@ public class RSSParserDelegate: NSObject, RSSParserDelegateProtocol {
         case .item:
             isInsideItem = false
 
-            if let title = currentTitle, let linkString = currentLink, let link = URL(string: linkString) {
-                let pubDate = currentPubDate.flatMap { DateFormat.parseDate($0) }
-                let imageURL = currentImageURL.flatMap { URL(string: $0) }
-
-                let item = FeedItem(
-                    feedID: feedID,
-                    title: title,
-                    link: link,
-                    pubDate: pubDate,
-                    description: currentDescription,
-                    imageURL: imageURL
-                )
-
-                items.append(item)
+            guard let title = currentTitle, let linkString = currentLink,
+                let link = URL(string: linkString) else {
+                return
             }
+            let pubDate = currentPubDate.flatMap { DateFormat.parseDate($0) }
+            let imageURL = currentImageURL.flatMap { URL(string: $0) }
+
+            let item = FeedItem(
+                feedID: feedID,
+                title: title,
+                link: link,
+                pubDate: pubDate,
+                description: currentDescription,
+                imageURL: imageURL
+            )
+
+            items.append(item)
         default:
             break
         }

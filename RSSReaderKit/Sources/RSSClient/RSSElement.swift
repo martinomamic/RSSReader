@@ -43,9 +43,10 @@ public enum DateFormat: String {
 
         for format in [DateFormat.rfc822, DateFormat.iso8601] {
             formatter.dateFormat = format.rawValue
-            if let date = formatter.date(from: dateString) {
-                return date
+            guard let date = formatter.date(from: dateString) else {
+                return nil
             }
+            return date
         }
 
         return nil

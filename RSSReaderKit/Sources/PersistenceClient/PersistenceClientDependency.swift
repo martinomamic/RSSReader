@@ -24,9 +24,10 @@ extension PersistenceClient: DependencyKey {
             },
             updateFeed: { feed in
                 feedStore.withValue { feeds in
-                    if let index = feeds.firstIndex(where: { $0.url == feed.url }) {
-                        feeds[index] = feed
+                    guard let index = feeds.firstIndex(where: { $0.url == feed.url }) else {
+                        return
                     }
+                    feeds[index] = feed
                 }
             },
             deleteFeed: { url in

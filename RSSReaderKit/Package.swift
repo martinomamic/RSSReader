@@ -73,7 +73,8 @@ let package = Package(
             name: "SharedUI",
             dependencies: [
                 "Common",
-                "Kingfisher"
+                "Kingfisher",
+                "SharedModels"
             ]
         ),
         .testTarget(

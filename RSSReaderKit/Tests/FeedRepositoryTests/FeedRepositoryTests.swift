@@ -103,7 +103,6 @@ struct FeedRepositoryTests {
             continuation.continuation.yield(feedStore.value)
         }
         
-        // Inicijalno emitiraj feedove
         continuation.continuation.yield(feedStore.value)
         
         var receivedFeeds: [Feed] = []
@@ -113,7 +112,6 @@ struct FeedRepositoryTests {
             }
         }
         
-        // Izbriši feed
         try await repo.delete(testURL)
         
         let timeoutTask = Task {
@@ -124,10 +122,8 @@ struct FeedRepositoryTests {
         _ = await streamTask.result
         timeoutTask.cancel()
         
-        // Provjeri da je feed izbrisan iz lokalnog store-a
         #expect(feedStore.value.isEmpty)
         
-        // Provjeri da je ažuriranje emitirano kroz stream
         #expect(receivedFeeds.isEmpty)
     }
 
@@ -160,7 +156,6 @@ struct FeedRepositoryTests {
             }
         }
         
-        // Promijeni status favorita
         try await repo.toggleFavorite(testURL)
         
         let timeoutTask = Task {

@@ -5,12 +5,14 @@
 //  Created by Martino Mamić on 21.04.25.
 //
 
-import Testing
-import SnapshotTesting
-import SwiftUI
+import Common
 import Dependencies
 import SharedModels
-import Common
+import SharedUI
+import SnapshotTesting
+import SwiftUI
+import Testing
+
 
 @testable import ExploreFeature
 @testable import ExploreClient
