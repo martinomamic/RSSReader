@@ -53,7 +53,7 @@ import Common
     @Test("AddFeedView in loading state")
     func testAddFeedViewLoading() async throws {
         let model = AddFeedViewModel()
-        model.state = .adding
+        model.state = .loading
         model.urlString = "https://feeds.bbci.co.uk/news/world/rss.xml"
 
         let addFeedView = AddFeedView(viewModel: model)

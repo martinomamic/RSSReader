@@ -5,12 +5,12 @@
 //  Created by Martino Mamić on 29.04.25.
 //
 
-import Testing
-import Dependencies
-import SwiftUI
 import Common
-import SharedModels
+import Dependencies
 import FeedRepository
+import SharedModels
+import SwiftUI
+import Testing
 
 @testable import FeedListFeature
 
@@ -34,22 +34,21 @@ import FeedRepository
     
     @Test("ViewModel is initialized with loading state")
     func testInitialState() async throws {
-        let viewModel = FeedListViewModel()
+        let viewModel = AllFeedsViewModel()
         
         #expect(viewModel.state == .loading)
     }
     
     @Test("Navigation title is correct")
     func testNavigationTitle() {
-        let viewModel = FeedListViewModel()
+        let viewModel = AllFeedsViewModel()
         
-        #expect(viewModel.navigationTitle(showOnlyFavorites: false) == LocalizedStrings.FeedList.rssFeeds)
-        #expect(viewModel.navigationTitle(showOnlyFavorites: true) == LocalizedStrings.FeedList.favoriteFeeds)
+        #expect(viewModel.navigationTitle == LocalizedStrings.FeedList.rssFeeds)
     }
     
     @Test("FeedItemsViewModel is created correctly")
     func testMakeFeedItemsViewModel() {
-        let viewModel = FeedListViewModel()
+        let viewModel = AllFeedsViewModel()
         let feed = createTestFeed(url: "https://example.com", title: "Test Feed")
         
         let feedItemsViewModel = viewModel.makeFeedItemsViewModel(for: feed)

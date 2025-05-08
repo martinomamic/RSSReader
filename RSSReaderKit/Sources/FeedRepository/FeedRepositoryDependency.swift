@@ -52,9 +52,10 @@ extension FeedRepository: DependencyKey {
             },
             update: { feed in
                 feedStore.withValue { feeds in
-                    if let index = feeds.firstIndex(where: { $0.url == feed.url }) {
-                        feeds[index] = feed
+                    guard let index = feeds.firstIndex(where: { $0.url == feed.url }) else {
+                        return
                     }
+                    feeds[index] = feed
                 }
                 allFeedsContinuation.continuation.yield(feedStore.value)
                 favoriteFeedsContinuation.continuation.yield(feedStore.value.filter { $0.isFavorite })

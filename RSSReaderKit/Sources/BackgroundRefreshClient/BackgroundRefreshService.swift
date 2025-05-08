@@ -66,7 +66,8 @@ actor BackgroundRefreshService {
     nonisolated
     func scheduleAppRefresh() {
         let now = Date()
-        if let last = lastScheduleAttempt.value, now.timeIntervalSince(last) < debounceInterval {
+        if let lastAttempt = lastScheduleAttempt.value,
+            now.timeIntervalSince(lastAttempt) < debounceInterval {
             return
         }
         lastScheduleAttempt.setValue(now)
