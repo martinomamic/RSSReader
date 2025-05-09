@@ -32,10 +32,13 @@ public func assertSnapshot<V: View>(
   perceptualPrecision: Float = perceptualPrecision
 ) {
     func prepareView(for scheme: ColorScheme) -> some View {
-        view
-            .environment(\.colorScheme, scheme)
-            .background(Color(.systemBackground))
-            .withAccessibility(accessibility)
+        ZStack {
+            Color(.systemBackground).ignoresSafeArea()
+            
+            view
+                .environment(\.colorScheme, scheme)
+                .withAccessibility(accessibility)
+        }
     }
     
     func makeSnapshot(scheme: ColorScheme, layout: SnapshotLayout) {

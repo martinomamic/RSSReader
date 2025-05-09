@@ -31,76 +31,51 @@ import Common
             createExploreFeed(name: "Reuters World News", url: "https://feeds.reuters.com/reuters/worldnews")
         ]
         
-        withDependencies {
-            $0.exploreClient.loadExploreFeeds = { feeds }
-            $0.persistenceClient.loadFeeds = { [] }
-        } operation: {
-            let viewModel = ExploreViewModel()
-            viewModel.state = .content(feeds)
-            
-            let view = ExploreView()
-            
-            assertSnapshot(
-                view: view,
-                named: "ExploreWithFeeds"
-            )
-            
-            assertSnapshot(
-                view: view,
-                accessibility: .XXXL,
-                named: "ExploreWithFeeds"
-            )
-        }
+        let view = ExploreView()
+        view.viewModel.state = .content(feeds)
+        
+        assertSnapshot(
+            view: view,
+            named: "ExploreWithFeeds"
+        )
+        
+        assertSnapshot(
+            view: view,
+            accessibility: .XXXL,
+            named: "ExploreWithFeeds"
+        )
     }
     
     @Test("ExploreView with empty state")
     func testExploreViewEmpty() async throws {
-        withDependencies {
-            $0.exploreClient.loadExploreFeeds = { [] }
-        } operation: {
-            let viewModel = ExploreViewModel()
-            viewModel.state = .empty
-            
-            let view = ExploreView()
-            
-            assertSnapshot(
-                view: view,
-                named: "ExploreEmpty"
-            )
-        }
+        let view = ExploreView()
+        view.viewModel.state = .empty
+        
+        assertSnapshot(
+            view: view,
+            named: "ExploreEmpty"
+        )
     }
     
     @Test("ExploreView with error state")
     func testExploreViewError() async throws {
-        withDependencies {
-            $0.exploreClient.loadExploreFeeds = { throw AppError.unknown("File not found") }
-        } operation: {
-            let viewModel = ExploreViewModel()
-            viewModel.state = .error(AppError.general)
-            
-            let view = ExploreView()
-            
-            assertSnapshot(
-                view: view,
-                named: "ExploreError"
-            )
-        }
+        let view = ExploreView()
+        view.viewModel.state = .error(AppError.general)
+        
+        assertSnapshot(
+            view: view,
+            named: "ExploreError"
+        )
     }
     
     @Test("ExploreView in loading state")
     func testExploreViewLoading() async throws {
-        withDependencies {
-            $0.exploreClient = .testValue
-        } operation: {
-            let viewModel = ExploreViewModel()
-            viewModel.state = .loading
-            
-            let view = ExploreView()
-            
-            assertSnapshot(
-                view: view,
-                named: "ExploreLoading"
-            )
-        }
+        let view = ExploreView()
+        view.viewModel.state = .loading
+        
+        assertSnapshot(
+            view: view,
+            named: "ExploreLoading"
+        )
     }
 }

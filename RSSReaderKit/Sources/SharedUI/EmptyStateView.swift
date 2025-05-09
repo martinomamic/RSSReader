@@ -42,6 +42,7 @@ public struct EmptyStateView: View {
                 .buttonStyle(.bordered)
             }
         }
+        .background(Color(.systemBackground))
     }
 }
 

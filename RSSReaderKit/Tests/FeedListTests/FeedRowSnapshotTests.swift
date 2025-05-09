@@ -42,7 +42,7 @@ import SharedModels
             onNotificationsToggle: {},
             notificationIcon: Constants.Images.notificationDisabledIcon,
             favoriteIcon: Constants.Images.isNotFavoriteIcon
-        )
+        ).background(Color(.systemBackground))
 
         let favoriteFeed = createTestFeed(isFavorite: true)
         let favoriteRow = FeedRow(
@@ -51,7 +51,7 @@ import SharedModels
             onNotificationsToggle: {},
             notificationIcon: Constants.Images.notificationDisabledIcon,
             favoriteIcon: Constants.Images.isFavoriteIcon
-        )
+        ).background(Color(.systemBackground))
         
         let notificationsFeed = createTestFeed(notificationsEnabled: true)
         let notificationsRow = FeedRow(
@@ -60,7 +60,7 @@ import SharedModels
             onNotificationsToggle: {},
             notificationIcon: Constants.Images.notificationEnabledIcon,
             favoriteIcon: Constants.Images.isNotFavoriteIcon
-        )
+        ).background(Color(.systemBackground))
         
         let imageFeed = createTestFeed(imageURL: URL(string: "https://example.com/image.jpg"))
         let imageRow = FeedRow(
@@ -69,7 +69,7 @@ import SharedModels
             onNotificationsToggle: {},
             notificationIcon: Constants.Images.notificationDisabledIcon,
             favoriteIcon: Constants.Images.isNotFavoriteIcon
-        )
+        ).background(Color(.systemBackground))
         
         let longTitleFeed = createTestFeed(
             title: "This is a very long feed title that should definitely be truncated because it's way too long to fit on a single line"
@@ -80,38 +80,36 @@ import SharedModels
             onNotificationsToggle: {},
             notificationIcon: Constants.Images.notificationDisabledIcon,
             favoriteIcon: Constants.Images.isNotFavoriteIcon
-        )
+        ).background(Color(.systemBackground))
         
         assertSnapshot(
             view: defaultRow,
-            layouts: [.fixed(size: CGSize(width: 375, height: 120))],
-            colorScheme: .both,
+            layouts: [.smallPhone],
             named: "FeedRowDefault",
         )
         assertSnapshot(
             view: favoriteRow,
-            layouts: [.fixed(size: CGSize(width: 375, height: 120))],
+            layouts: [.smallPhone],
             named: "FeedRowFavorite"
         )
         assertSnapshot(
             view: notificationsRow,
-            layouts: [.fixed(size: CGSize(width: 375, height: 120))],
+            layouts: [.smallPhone],
             named: "FeedRowNotifications")
         assertSnapshot(
             view: imageRow,
-            layouts: [.fixed(size: CGSize(width: 375, height: 120))],
-            colorScheme: .both,
+            layouts: [.smallPhone],
             named: "FeedRowWithImage"
         )
         assertSnapshot(
             view: longTitleRow,
-            layouts: [.fixed(size: CGSize(width: 375, height: 120))],
+            layouts: [.smallPhone],
             named: "FeedRowLongTitle"
         )
         
         assertSnapshot(
             view: defaultRow,
-            layouts: [.fixed(size: CGSize(width: 375, height: 150))],
+            layouts: [.smallPhone],
             accessibility: .XXXL,
             named: "FeedRowAccessible"
         )

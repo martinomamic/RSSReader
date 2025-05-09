@@ -6,6 +6,7 @@
 //
 
 import Testing
+import SharedModels
 import SnapshotTestUtility
 import SwiftUI
 import Common
@@ -23,7 +24,7 @@ import Common
         let view = AddFeedView(viewModel: model)
         
         assertSnapshot(
-            view: view,
+            view: NavigationStack { view },
             named: "AddFeedEmpty"
         )
     }
@@ -37,12 +38,12 @@ import Common
         let view = AddFeedView(viewModel: model)
         
         assertSnapshot(
-            view: view,
+            view: NavigationStack { view },
             named: "AddFeedWithURL"
         )
         
         assertSnapshot(
-            view: view,
+            view: NavigationStack { view },
             accessibility: .XXXL,
             named: "AddFeedWithURL"
         )
@@ -57,7 +58,7 @@ import Common
         let view = AddFeedView(viewModel: model)
         
         assertSnapshot(
-            view: view,
+            view: NavigationStack { view },
             named: "AddFeedError"
         )
     }
@@ -71,7 +72,25 @@ import Common
         let view = AddFeedView(viewModel: model)
         
         assertSnapshot(
-            view: view,
+            view: NavigationStack { view },
+            named: "AddFeedLoading"
+        )
+    }
+    
+    @Test("AddFeedView with suggested feeds")
+    func testAddFeedViewWithSuggestedFeeds() async throws {
+        let model = AddFeedViewModel()
+        model.state = .idle
+        model.urlString = "https://feeds.bbci.co.uk/news/world/rss.xml"
+        model.exploreFeeds = [
+            ExploreFeed(name: "Feed1", url: "https://feeds.bbci.co.uk/news/world/rss.xml"),
+            ExploreFeed(name: "Fee2", url: "https://feeds.bbci.co.uk/news/uk/rss.xml")
+        ]
+
+        let view = AddFeedView(viewModel: model)
+        
+        assertSnapshot(
+            view: NavigationStack { view },
             named: "AddFeedLoading"
         )
     }

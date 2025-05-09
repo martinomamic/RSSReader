@@ -42,18 +42,21 @@ import Common
             imageURL: URL(string: "https://example.com/image.jpg")
         )
         let rowWithImage = FeedItemRow(item: itemWithImage)
+            .background(Color(.systemBackground))
         
         let itemWithoutImage = createTestItem(
             title: "Text Only News Item",
             description: "This is a news item without an image to show how the layout adapts to text-only content."
         )
         let rowWithoutImage = FeedItemRow(item: itemWithoutImage)
+            .background(Color(.systemBackground))
         
         let itemWithLongTitle = createTestItem(
             title: "This is an extremely long title that should be truncated or wrapped depending on the layout settings of the FeedItemRow component",
             description: "Short description."
         )
         let rowWithLongTitle = FeedItemRow(item: itemWithLongTitle)
+            .background(Color(.systemBackground))
         
         let minimalItem = createTestItem(
             title: "Minimal Item",
@@ -61,6 +64,7 @@ import Common
             description: nil
         )
         let minimalRow = FeedItemRow(item: minimalItem)
+            .background(Color(.systemBackground))
         
         assertSnapshot(
             view: rowWithImage,
@@ -91,4 +95,3 @@ import Common
         )
     }
 }
-
