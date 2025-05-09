@@ -1,11 +1,11 @@
 SWIFT_PACKAGE := swift package
-SWIFT_TEST := $(SWIFT_PACKAGE) test
 SWIFT_LINT := swiftlint
 SWIFT_FORMAT := swift-format
 PROJECT_NAME := RSSReader
 XCODE_PROJECT := $(PROJECT_NAME).xcodeproj
+TEST_RESULT_PATH := $(CURDIR)/TestResults.xcresult
 
-.PHONY: test lint lint-fix format clean install-tools setup open project init-packages reset-packages build test-coverage xcode-clean help
+.PHONY: test lint lint-fix format clean install-tools setup open project init-packages reset-packages build xcode-clean help
 
 project: install-tools setup open
 
@@ -53,12 +53,41 @@ xcode-clean:
 	xcodebuild clean -project $(XCODE_PROJECT) -scheme $(PROJECT_NAME)
 	rm -rf ~/Library/Developer/Xcode/DerivedData/*
 
-install-tools:
-	brew install swiftlint
-	brew install swift-format
-
 build:
 	xcodebuild build -project $(XCODE_PROJECT) -scheme $(PROJECT_NAME)
+	
+install-tools:
+	@echo "Checking if swiftlint is installed..."
+	@if ! command -v swiftlint &> /dev/null; then \
+		echo "Installing swiftlint..."; \
+		brew install swiftlint; \
+	else \
+		echo "swiftlint already installed"; \
+	fi
+	@echo "Checking if swift-format is installed..."
+	@if ! command -v swift-format &> /dev/null; then \
+		echo "Installing swift-format..."; \
+		brew install swift-format; \
+	else \
+		echo "swift-format already installed"; \
+	fi
+	@echo "Checking if jq is installed..."
+	@if ! command -v jq &> /dev/null; then \
+		echo "Installing jq..."; \
+		brew install jq; \
+	else \
+		echo "jq already installed"; \
+	fi
+
+test:
+	@echo "Removing previous test results..."
+	rm -rf $(TEST_RESULT_PATH)
+	@echo "Running tests and generating result bundle..."
+	xcodebuild test -project $(XCODE_PROJECT) -scheme $(PROJECT_NAME) -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.4' -resultBundlePath $(TEST_RESULT_PATH)
+	@echo "\nTest summary:"
+	@xcrun xcresulttool get test-results summary --path $(TEST_RESULT_PATH) --compact | \
+	jq '{totalTests: .totalTestCount, passed: .passedTests, failed: .failedTests, skipped: .skippedTests, expectedFailures: .expectedFailures, duration: (.result | if type=="object" then .testDuration else null end)}'
+	
 
 help:
 	@echo "Available commands:"
@@ -74,3 +103,4 @@ help:
 	@echo "  make build        		- Build project"
 	@echo "  make reset-packages 	- Reset package dependencies"
 	@echo "  make install-tools 	- Install development tools"
+	@echo "  make test 				- Runs tests, and adds a simple summary"
