@@ -266,8 +266,10 @@ let package = Package(
             name: "NotificationRepositoryTests",
             dependencies: [
                 "NotificationRepository",
-                .product(name: "Dependencies", package: "swift-dependencies")
-            ]
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+            ],
+            exclude: ["__Snapshots__"]
         ),
         .testTarget(
             name: "BackgroundRefreshClientTests",

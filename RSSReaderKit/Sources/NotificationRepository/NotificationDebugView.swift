@@ -17,9 +17,9 @@ public struct NotificationDebugView: View {
         case results
     }
 
-    @State private var isRefreshing = false
-    @State private var refreshResult = ""
-    @State private var notificationStatus = "Unknown"
+    @State public var isRefreshing = false
+    @State public var refreshResult = ""
+    @State public var notificationStatus = "Unknown"
     @Environment(\.scenePhase) private var scenePhase
     @Dependency(\.notificationRepository) private var notificationRepository
 
