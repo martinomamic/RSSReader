@@ -6,7 +6,7 @@
 //
 
 import Testing
-import SnapshotTesting
+import SnapshotTestUtility
 import SwiftUI
 import SharedModels
 import Common
@@ -35,60 +35,63 @@ import Common
         )
     }
     
-    @Test("FeedItemRow with image")
-    func testFeedItemRowWithImage() async throws {
-        let item = createTestItem(
+    @Test("FeedItemRow variations")
+    func testFeedItemRowVariations() async throws {
+        let itemWithImage = createTestItem(
             title: "Breaking News: Important Event",
             imageURL: URL(string: "https://example.com/image.jpg")
         )
+        let rowWithImage = FeedItemRow(item: itemWithImage)
+            .background(Color(.systemBackground))
         
-        let view = FeedItemRow(item: item)
-            .frame(width: 375)
-            .padding()
-        
-        assertSnapshot(of: view, as: .image)
-    }
-    
-    @Test("FeedItemRow without image")
-    func testFeedItemRowWithoutImage() async throws {
-        let item = createTestItem(
+        let itemWithoutImage = createTestItem(
             title: "Text Only News Item",
             description: "This is a news item without an image to show how the layout adapts to text-only content."
         )
+        let rowWithoutImage = FeedItemRow(item: itemWithoutImage)
+            .background(Color(.systemBackground))
         
-        let view = FeedItemRow(item: item)
-            .frame(width: 375)
-            .padding()
-        
-        assertSnapshot(of: view, as: .image)
-    }
-    
-    @Test("FeedItemRow with long title")
-    func testFeedItemRowWithLongTitle() async throws {
-        let item = createTestItem(
+        let itemWithLongTitle = createTestItem(
             title: "This is an extremely long title that should be truncated or wrapped depending on the layout settings of the FeedItemRow component",
             description: "Short description."
         )
+        let rowWithLongTitle = FeedItemRow(item: itemWithLongTitle)
+            .background(Color(.systemBackground))
         
-        let view = FeedItemRow(item: item)
-            .frame(width: 375)
-            .padding()
-        
-        assertSnapshot(of: view, as: .image)
-    }
-    
-    @Test("FeedItemRow with minimal data")
-    func testFeedItemRowWithMinimalData() async throws {
-        let item = createTestItem(
+        let minimalItem = createTestItem(
             title: "Minimal Item",
             pubDate: nil,
             description: nil
         )
+        let minimalRow = FeedItemRow(item: minimalItem)
+            .background(Color(.systemBackground))
         
-        let view = FeedItemRow(item: item)
-            .frame(width: 375)
-            .padding()
+        assertSnapshot(
+            view: rowWithImage,
+            layouts: [.fixed(size: CGSize(width: 375, height: 300))],
+            named: "FeedItemRowWithImage"
+        )
+        assertSnapshot(
+            view: rowWithoutImage,
+            layouts: [.fixed(size: CGSize(width: 375, height: 150))],
+            named: "FeedItemRowWithoutImage"
+        )
+        assertSnapshot(
+            view: rowWithLongTitle,
+            layouts: [.fixed(size: CGSize(width: 375, height: 150))],
+            named: "FeedItemRowLongTitle"
+        )
+        assertSnapshot(
+            view: minimalRow,
+            layouts: [.fixed(size: CGSize(width: 375, height: 80))],
+            named: "FeedItemRowMinimal"
+        )
         
-        assertSnapshot(of: view, as: .image)
+        assertSnapshot(
+            view: rowWithoutImage,
+            layouts: [.fixed(size: CGSize(width: 375, height: 200))],
+            accessibility: .XXXL,
+            named: "FeedItemRowAccessible"
+        )
     }
 }

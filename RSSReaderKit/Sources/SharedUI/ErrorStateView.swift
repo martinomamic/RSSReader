@@ -26,6 +26,7 @@ public struct ErrorStateView: View {
             Button("Try Again", action: retryAction)
                 .buttonStyle(.bordered)
         }
+        .background(Color(.systemBackground))
     }
 }
 
