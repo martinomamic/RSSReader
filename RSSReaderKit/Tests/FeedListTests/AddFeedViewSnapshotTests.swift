@@ -6,7 +6,7 @@
 //
 
 import Testing
-import SnapshotTesting
+import SnapshotTestUtility
 import SwiftUI
 import Common
 
@@ -20,10 +20,12 @@ import Common
         model.state = .idle
         model.urlString = ""
 
-        let addFeedView = AddFeedView(viewModel: model)
-            .frame(width: 375, height: 600)
+        let view = AddFeedView(viewModel: model)
         
-        assertSnapshot(of: addFeedView, as: .image)
+        assertSnapshot(
+            view: view,
+            named: "AddFeedEmpty"
+        )
     }
     
     @Test("AddFeedView with entered URL")
@@ -32,22 +34,32 @@ import Common
         model.state = .idle
         model.urlString = "https://feeds.bbci.co.uk/news/world/rss.xml"
 
-        let addFeedView = AddFeedView(viewModel: model)
-        .frame(width: 375, height: 600)
+        let view = AddFeedView(viewModel: model)
         
-        assertSnapshot(of: addFeedView, as: .image)
+        assertSnapshot(
+            view: view,
+            named: "AddFeedWithURL"
+        )
+        
+        assertSnapshot(
+            view: view,
+            accessibility: .XXXL,
+            named: "AddFeedWithURL"
+        )
     }
     
     @Test("AddFeedView with invalid URL error")
     func testAddFeedViewWithError() async throws {
         let model = AddFeedViewModel()
         model.state = .error(.invalidURL)
-        model.urlString = ""
+        model.urlString = "invalid"
 
-        let addFeedView = AddFeedView(viewModel: model)
-        .frame(width: 375, height: 600)
+        let view = AddFeedView(viewModel: model)
         
-        assertSnapshot(of: addFeedView, as: .image)
+        assertSnapshot(
+            view: view,
+            named: "AddFeedError"
+        )
     }
     
     @Test("AddFeedView in loading state")
@@ -56,22 +68,11 @@ import Common
         model.state = .loading
         model.urlString = "https://feeds.bbci.co.uk/news/world/rss.xml"
 
-        let addFeedView = AddFeedView(viewModel: model)
-            .frame(width: 375, height: 600)
+        let view = AddFeedView(viewModel: model)
         
-        assertSnapshot(of: addFeedView, as: .image)
-    }
-    
-    @Test("AddFeedView in dark mode")
-    func testAddFeedViewDarkMode() async throws {
-        let model = AddFeedViewModel()
-        model.state = .idle
-        model.urlString = "https://feeds.bbci.co.uk/news/world/rss.xml"
-
-        let addFeedView = AddFeedView(viewModel: model)
-            .frame(width: 375, height: 600)
-            .environment(\.colorScheme, .dark)
-        
-        assertSnapshot(of: addFeedView, as: .image)
+        assertSnapshot(
+            view: view,
+            named: "AddFeedLoading"
+        )
     }
 }

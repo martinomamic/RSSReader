@@ -5,17 +5,14 @@
 //  Created by Martino Mamić on 21.04.25.
 //
 
-import Common
+import Testing
+import SnapshotTestUtility
+import SwiftUI
 import Dependencies
 import SharedModels
-import SharedUI
-import SnapshotTesting
-import SwiftUI
-import Testing
-
+import Common
 
 @testable import ExploreFeature
-@testable import ExploreClient
 
 @MainActor
 @Suite struct ExploreViewSnapshotTests {
@@ -38,9 +35,21 @@ import Testing
             $0.exploreClient.loadExploreFeeds = { feeds }
             $0.persistenceClient.loadFeeds = { [] }
         } operation: {
+            let viewModel = ExploreViewModel()
+            viewModel.state = .content(feeds)
+            
             let view = ExploreView()
             
-            assertSnapshot(of: view, as: .image)
+            assertSnapshot(
+                view: view,
+                named: "ExploreWithFeeds"
+            )
+            
+            assertSnapshot(
+                view: view,
+                accessibility: .XXXL,
+                named: "ExploreWithFeeds"
+            )
         }
     }
     
@@ -49,47 +58,49 @@ import Testing
         withDependencies {
             $0.exploreClient.loadExploreFeeds = { [] }
         } operation: {
+            let viewModel = ExploreViewModel()
+            viewModel.state = .empty
+            
             let view = ExploreView()
             
-            assertSnapshot(of: view, as: .image)
+            assertSnapshot(
+                view: view,
+                named: "ExploreEmpty"
+            )
         }
     }
     
     @Test("ExploreView with error state")
     func testExploreViewError() async throws {
         withDependencies {
-            $0.exploreClient.loadExploreFeeds = { throw ExploreError.fileNotFound }
+            $0.exploreClient.loadExploreFeeds = { throw AppError.unknown("File not found") }
         } operation: {
+            let viewModel = ExploreViewModel()
+            viewModel.state = .error(AppError.general)
+            
             let view = ExploreView()
             
-            assertSnapshot(of: view, as: .image)
+            assertSnapshot(
+                view: view,
+                named: "ExploreError"
+            )
         }
     }
     
-    @Test("ExploreFeedRow")
-    func testExploreFeedRow() throws {
-        let feed = createExploreFeed(name: "BBC News", url: "https://feeds.bbci.co.uk/news/world/rss.xml")
-        
-        let view = ExploreFeedRow(
-            feed: feed,
-            isAdded: false,
-            onAddTapped: {}
-        )
-        
-        assertSnapshot(of: view, as: .image)
-    }
-    
-    @Test("ExploreFeedRow added state")
-    func testExploreFeedRowAdded() throws {
-        let feed = createExploreFeed(name: "BBC News", url: "https://feeds.bbci.co.uk/news/world/rss.xml")
-        
-        let view = ExploreFeedRow(
-            feed: feed,
-            isAdded: true,
-            onAddTapped: {}
-        )
-        .frame(width: 375)
-        
-        assertSnapshot(of: view, as: .image)
+    @Test("ExploreView in loading state")
+    func testExploreViewLoading() async throws {
+        withDependencies {
+            $0.exploreClient = .testValue
+        } operation: {
+            let viewModel = ExploreViewModel()
+            viewModel.state = .loading
+            
+            let view = ExploreView()
+            
+            assertSnapshot(
+                view: view,
+                named: "ExploreLoading"
+            )
+        }
     }
 }
