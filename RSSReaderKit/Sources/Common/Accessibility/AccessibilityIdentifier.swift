@@ -21,6 +21,10 @@ public enum AccessibilityIdentifier {
         public static let editButton = "feedListEditButton"
         public static let feedsList = "feedsList"
         public static let favoritesList = "favoritesList"
+        public static let feedsListErrorView = "feedsListErrorView"
+        public static let favoritesListErrorView = "favoritesListErrorView"
+        public static let feedsListEmptyView = "feedsListEmptyView"
+        public static let favoritesListEmptyView = "favoritesListEmptyView"
     }
     
     public enum FeedView {
@@ -34,10 +38,10 @@ public enum AccessibilityIdentifier {
     
     public enum AddFeed {
         public static let urlTextField = "feedUrlTextField"
-        public static let bbcExampleButton = "bbcExampleButton"
-        public static let nbcExampleButton = "nbcExampleButton"
         public static let cancelButton = "cancelButton"
         public static let addButton = "addButton"
+        public static let addViewErrorView = "addViewErrorView"
+        public static let addViewEmptyView = "addViewEmptyView"
     }
     
     public enum FeedItems {
