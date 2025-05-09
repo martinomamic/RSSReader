@@ -33,6 +33,7 @@ struct AddFeedView: View {
                 ErrorStateView(error: error) {
                     viewModel.addFeed()
                 }
+                .testId(AccessibilityIdentifier.AddFeed.addViewErrorView)
                 
             case .empty:
                 EmptyStateView(
@@ -40,6 +41,7 @@ struct AddFeedView: View {
                     systemImage: "tray.empty",
                     description: "No feeds to add"
                 )
+                .testId(AccessibilityIdentifier.AddFeed.addViewEmptyView)
             }
         }
         .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
@@ -68,6 +70,22 @@ struct AddFeedView: View {
                 .background(Color(.systemGray6))
                 .cornerRadius(8)
                 .testId(AccessibilityIdentifier.AddFeed.urlTextField)
+            
+            Button(action: {
+                viewModel.addFeed()
+            }) {
+                HStack {
+                    Text(LocalizedStrings.General.add)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(viewModel.isAddButtonDisabled ? Color.gray : Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(8)
+            }
+            .disabled(viewModel.isAddButtonDisabled)
+            .testId(AccessibilityIdentifier.AddFeed.addButton)
+            .padding(.top, 8)
         }
     }
     

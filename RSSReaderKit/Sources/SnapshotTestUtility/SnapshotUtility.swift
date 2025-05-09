@@ -5,7 +5,6 @@
 //  Created by Martino Mamic on 08.05.25.
 //
 
-import Dependencies
 import SnapshotTesting
 import SwiftUI
 import Testing
