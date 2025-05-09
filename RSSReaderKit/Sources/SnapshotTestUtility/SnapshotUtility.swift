@@ -31,62 +31,40 @@ public func assertSnapshot<V: View>(
   named: String? = nil,
   perceptualPrecision: Float = perceptualPrecision
 ) {
+    func prepareView(for scheme: ColorScheme) -> some View {
+        view
+            .environment(\.colorScheme, scheme)
+            .background(Color(.systemBackground))
+            .withAccessibility(accessibility)
+    }
+    
+    func makeSnapshot(scheme: ColorScheme, layout: SnapshotLayout) {
+        let suffix = scheme == .light ? "light" : "dark"
+        let snapshotName = "\(named.map { "\($0)-" } ?? "")\(layout.name)-\(accessibility.rawValue)-\(suffix)"
+        
+        assertSnapshot(
+            of: prepareView(for: scheme),
+            as: .image(
+                perceptualPrecision: perceptualPrecision,
+                layout: .device(config: layout.config)
+            ),
+            named: snapshotName,
+            record: isRecording,
+            file: file,
+            testName: testName,
+            line: line
+        )
+    }
+    
     for layout in layouts {
-      switch colorScheme {
-      case .light:
-        assertSnapshot(
-          of: view.environment(\.colorScheme, .light).withAccessibility(accessibility),
-          as: .image(
-            perceptualPrecision: perceptualPrecision,
-            layout: .device(config: layout.config)
-          ),
-          named: "\(named.map { "\($0)-" } ?? "")\(layout.name)-\(accessibility.rawValue)-light",
-          record: isRecording,
-          file: file,
-          testName: testName,
-          line: line
-        )
-        
-      case .dark:
-        assertSnapshot(
-          of: view.environment(\.colorScheme, .dark).withAccessibility(accessibility),
-          as: .image(
-            perceptualPrecision: perceptualPrecision,
-            layout: .device(config: layout.config)
-          ),
-          named: "\(named.map { "\($0)-" } ?? "")\(layout.name)-\(accessibility.rawValue)-dark",
-          record: isRecording,
-          file: file,
-          testName: testName,
-          line: line
-        )
-        
-      case .both:
-        assertSnapshot(
-          of: view.environment(\.colorScheme, .light).withAccessibility(accessibility),
-          as: .image(
-            perceptualPrecision: perceptualPrecision,
-            layout: .device(config: layout.config)
-          ),
-          named: "\(named.map { "\($0)-" } ?? "")\(layout.name)-\(accessibility.rawValue)-light",
-          record: isRecording,
-          file: file,
-          testName: testName,
-          line: line
-        )
-        
-        assertSnapshot(
-          of: view.environment(\.colorScheme, .dark).withAccessibility(accessibility),
-          as: .image(
-            perceptualPrecision: perceptualPrecision,
-            layout: .device(config: layout.config)
-          ),
-          named: "\(named.map { "\($0)-" } ?? "")\(layout.name)-\(accessibility.rawValue)-dark",
-          record: isRecording,
-          file: file,
-          testName: testName,
-          line: line
-        )
-      }
-  }
+        switch colorScheme {
+        case .light:
+            makeSnapshot(scheme: .light, layout: layout)
+        case .dark:
+            makeSnapshot(scheme: .dark, layout: layout)
+        case .both:
+            makeSnapshot(scheme: .light, layout: layout)
+            makeSnapshot(scheme: .dark, layout: layout)
+        }
+    }
 }

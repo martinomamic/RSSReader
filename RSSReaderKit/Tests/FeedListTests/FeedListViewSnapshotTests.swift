@@ -2,7 +2,7 @@
 //  FeedListViewSnapshotTests.swift
 //  RSSReaderKit
 //
-//  Created by Martino Mamic on 09.05.25.
+//  Created by Martino Mamic on 13.04.25.
 //
 
 import Testing
@@ -48,17 +48,13 @@ import Common
             let viewModel = AllFeedsViewModel()
             viewModel.state = .content(feeds)
             
-            let view = FeedListView(viewModel: viewModel)
-                .navigationTitle(viewModel.navigationTitle)
+            let view = NavigationStack {
+                FeedListView(viewModel: viewModel)
+                    .navigationTitle(viewModel.navigationTitle)
+            }
             
             assertSnapshot(
                 view: view,
-                named: "FeedListWithContent"
-            )
-            
-            assertSnapshot(
-                view: view,
-                accessibility: .XXXL,
                 named: "FeedListWithContent"
             )
         }
@@ -72,8 +68,10 @@ import Common
             let viewModel = AllFeedsViewModel()
             viewModel.state = .empty
             
-            let view = FeedListView(viewModel: viewModel)
-                .navigationTitle(viewModel.navigationTitle)
+            let view = NavigationStack {
+                FeedListView(viewModel: viewModel)
+                    .navigationTitle(viewModel.navigationTitle)
+            }
             
             assertSnapshot(
                 view: view,
@@ -90,8 +88,10 @@ import Common
             let viewModel = AllFeedsViewModel()
             viewModel.state = .loading
             
-            let view = FeedListView(viewModel: viewModel)
-                .navigationTitle(viewModel.navigationTitle)
+            let view = NavigationStack {
+                FeedListView(viewModel: viewModel)
+                    .navigationTitle(viewModel.navigationTitle)
+            }
             
             assertSnapshot(
                 view: view,
@@ -108,12 +108,37 @@ import Common
             let viewModel = AllFeedsViewModel()
             viewModel.state = .error(AppError.networkError)
             
-            let view = FeedListView(viewModel: viewModel)
-                .navigationTitle(viewModel.navigationTitle)
+            let view = NavigationStack {
+                FeedListView(viewModel: viewModel)
+                    .navigationTitle(viewModel.navigationTitle)
+            }
             
             assertSnapshot(
                 view: view,
                 named: "FeedListError"
+            )
+        }
+    }
+    
+    @Test("FeedListView accessibility")
+    func testFeedListViewAccessibility() async throws {
+        withDependencies {
+            $0.feedRepository = .testValue
+        } operation: {
+            let viewModel = AllFeedsViewModel()
+            viewModel.state = .content([
+                createTestFeed(title: "BBC News", isFavorite: true)
+            ])
+            
+            let view = NavigationStack {
+                FeedListView(viewModel: viewModel)
+                    .navigationTitle(viewModel.navigationTitle)
+            }
+            
+            assertSnapshot(
+                view: view,
+                accessibility: .XXXL,
+                named: "FeedListWithContentAccessible"
             )
         }
     }
