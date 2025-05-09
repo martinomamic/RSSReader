@@ -20,6 +20,7 @@ let package = Package(
         .library(name: "RSSClient", targets: ["RSSClient"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
         .library(name: "SharedUI", targets: ["SharedUI"]),
+        .library(name: "SnapshotTestUtility", targets: ["SnapshotTestUtility"]),
         .library(name: "TabBarFeature", targets: ["TabBarFeature"]),
         .library(name: "UserDefaultsClient", targets: ["UserDefaultsClient"]),
     ],
@@ -73,13 +74,14 @@ let package = Package(
             name: "SharedUI",
             dependencies: [
                 "Common",
-                "Kingfisher"
+                "Kingfisher",
+                "SharedModels"
             ]
         ),
         .testTarget(
             name: "SharedUITests",
             dependencies: [
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+                "SnapshotTestUtility",
                 "SharedUI"
                
             ],
@@ -133,7 +135,7 @@ let package = Package(
             name: "ExploreFeatureTests",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+                "SnapshotTestUtility",
                 "ExploreFeature"
             ],
             exclude: ["__Snapshots__"]
@@ -154,7 +156,7 @@ let package = Package(
             name: "FeedListTests",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+                "SnapshotTestUtility",
                 "FeedListFeature",
                 "NotificationRepository"
             ],
@@ -174,7 +176,7 @@ let package = Package(
             name: "FeedItemsTests",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+                "SnapshotTestUtility",
                 "FeedItemsFeature",
                 "NotificationRepository"
             ],
@@ -221,7 +223,7 @@ let package = Package(
         .testTarget(
             name: "TabBarFeatureTests",
             dependencies: [
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+                "SnapshotTestUtility",
                 "TabBarFeature",
                 "Common"
             ],
@@ -265,8 +267,10 @@ let package = Package(
             name: "NotificationRepositoryTests",
             dependencies: [
                 "NotificationRepository",
-                .product(name: "Dependencies", package: "swift-dependencies")
-            ]
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "SnapshotTestUtility"
+            ],
+            exclude: ["__Snapshots__"]
         ),
         .testTarget(
             name: "BackgroundRefreshClientTests",
@@ -281,6 +285,13 @@ let package = Package(
                 "UserNotificationClient",
                 .product(name: "Dependencies", package: "swift-dependencies")
             ]
+        ),
+        .target(
+            name: "SnapshotTestUtility",
+            dependencies: [
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
+            ],
+            path: "Sources/SnapshotTestUtility"
         ),
     ]
 )

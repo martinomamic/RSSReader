@@ -21,12 +21,13 @@ public struct RSSParser: Sendable {
         delegate.configure(feedURL: feedURL)
         parser.delegate = delegate
 
-        if parser.parse() {
-            return delegate.result
-        } else if let error = parser.parserError {
-            throw RSSError.parsingError(error)
-        } else {
-            throw RSSError.general
+        guard parser.parse() else {
+            if let error = parser.parserError {
+                throw RSSError.parsingError(error)
+            } else {
+                throw RSSError.general
+            }
         }
+        return delegate.result
     }
 }

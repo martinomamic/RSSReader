@@ -11,7 +11,7 @@ import SharedUI
 
 struct AddFeedView: View {
     @Environment(\.dismiss) private var dismiss
-    @State var viewModel = AddFeedViewModel()
+    @Bindable var viewModel = AddFeedViewModel()
     
     var body: some View {
         VStack {

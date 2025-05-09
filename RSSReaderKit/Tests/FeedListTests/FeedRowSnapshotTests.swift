@@ -6,7 +6,7 @@
 //
 
 import Testing
-import SnapshotTesting
+import SnapshotTestUtility
 import SwiftUI
 import Common
 import SharedModels
@@ -33,138 +33,85 @@ import SharedModels
         )
     }
     
-    @Test("FeedRow with default state")
-    func testFeedRowDefault() async throws {
-        let feed = createTestFeed()
-        
-        let feedRow = FeedRow(
-            feed: feed,
+    @Test("FeedRow variations")
+    func testFeedRowVariations() async throws {
+        let defaultFeed = createTestFeed()
+        let defaultRow = FeedRow(
+            feed: defaultFeed,
             onFavoriteToggle: {},
             onNotificationsToggle: {},
             notificationIcon: Constants.Images.notificationDisabledIcon,
             favoriteIcon: Constants.Images.isNotFavoriteIcon
-        )
-        .frame(width: 375)
-        
-        assertSnapshot(of: feedRow, as: .image)
-    }
-    
-    @Test("FeedRow with favorite enabled")
-    func testFeedRowFavorite() async throws {
-        let feed = createTestFeed(isFavorite: true)
-        
-        let feedRow = FeedRow(
-            feed: feed,
+        ).background(Color(.systemBackground))
+
+        let favoriteFeed = createTestFeed(isFavorite: true)
+        let favoriteRow = FeedRow(
+            feed: favoriteFeed,
             onFavoriteToggle: {},
             onNotificationsToggle: {},
             notificationIcon: Constants.Images.notificationDisabledIcon,
             favoriteIcon: Constants.Images.isFavoriteIcon
-        )
-        .frame(width: 375)
+        ).background(Color(.systemBackground))
         
-        assertSnapshot(of: feedRow, as: .image)
-    }
-    
-    @Test("FeedRow with notifications enabled")
-    func testFeedRowNotifications() async throws {
-        let feed = createTestFeed(notificationsEnabled: true)
-        
-        let feedRow = FeedRow(
-            feed: feed,
+        let notificationsFeed = createTestFeed(notificationsEnabled: true)
+        let notificationsRow = FeedRow(
+            feed: notificationsFeed,
             onFavoriteToggle: {},
             onNotificationsToggle: {},
             notificationIcon: Constants.Images.notificationEnabledIcon,
             favoriteIcon: Constants.Images.isNotFavoriteIcon
-        )
-        .frame(width: 375)
+        ).background(Color(.systemBackground))
         
-        assertSnapshot(of: feedRow, as: .image)
-    }
-    
-    @Test("FeedRow with both favorite and notifications enabled")
-    func testFeedRowFavoriteAndNotifications() async throws {
-        let feed = createTestFeed(isFavorite: true, notificationsEnabled: true)
-        
-        let feedRow = FeedRow(
-            feed: feed,
-            onFavoriteToggle: {},
-            onNotificationsToggle: {},
-            notificationIcon: Constants.Images.notificationEnabledIcon,
-            favoriteIcon: Constants.Images.isFavoriteIcon
-        )
-        .frame(width: 375)
-        
-        assertSnapshot(of: feedRow, as: .image)
-    }
-    
-    @Test("FeedRow with image")
-    func testFeedRowWithImage() async throws {
-        let feed = createTestFeed(
-            imageURL: URL(string: "https://example.com/image.jpg")
-        )
-        
-        let feedRow = FeedRow(
-            feed: feed,
+        let imageFeed = createTestFeed(imageURL: URL(string: "https://example.com/image.jpg"))
+        let imageRow = FeedRow(
+            feed: imageFeed,
             onFavoriteToggle: {},
             onNotificationsToggle: {},
             notificationIcon: Constants.Images.notificationDisabledIcon,
             favoriteIcon: Constants.Images.isNotFavoriteIcon
-        )
-        .frame(width: 375)
+        ).background(Color(.systemBackground))
         
-        assertSnapshot(of: feedRow, as: .image)
-    }
-    
-    @Test("FeedRow with long title")
-    func testFeedRowLongTitle() async throws {
-        let feed = createTestFeed(
+        let longTitleFeed = createTestFeed(
             title: "This is a very long feed title that should definitely be truncated because it's way too long to fit on a single line"
         )
-        
-        let feedRow = FeedRow(
-            feed: feed,
+        let longTitleRow = FeedRow(
+            feed: longTitleFeed,
             onFavoriteToggle: {},
             onNotificationsToggle: {},
             notificationIcon: Constants.Images.notificationDisabledIcon,
             favoriteIcon: Constants.Images.isNotFavoriteIcon
+        ).background(Color(.systemBackground))
+        
+        assertSnapshot(
+            view: defaultRow,
+            layouts: [.smallPhone],
+            named: "FeedRowDefault",
         )
-        .frame(width: 375)
-        
-        assertSnapshot(of: feedRow, as: .image)
-    }
-    
-    @Test("FeedRow with long description")
-    func testFeedRowLongDescription() async throws {
-        let feed = createTestFeed(
-            description: "This is a very long description for the feed that should definitely be truncated after a few lines. We're making it extra long to ensure that the line limit for descriptions is working properly. It might truncate with an ellipsis if the text is too long."
+        assertSnapshot(
+            view: favoriteRow,
+            layouts: [.smallPhone],
+            named: "FeedRowFavorite"
+        )
+        assertSnapshot(
+            view: notificationsRow,
+            layouts: [.smallPhone],
+            named: "FeedRowNotifications")
+        assertSnapshot(
+            view: imageRow,
+            layouts: [.smallPhone],
+            named: "FeedRowWithImage"
+        )
+        assertSnapshot(
+            view: longTitleRow,
+            layouts: [.smallPhone],
+            named: "FeedRowLongTitle"
         )
         
-        let feedRow = FeedRow(
-            feed: feed,
-            onFavoriteToggle: {},
-            onNotificationsToggle: {},
-            notificationIcon: Constants.Images.notificationDisabledIcon,
-            favoriteIcon: Constants.Images.isNotFavoriteIcon
+        assertSnapshot(
+            view: defaultRow,
+            layouts: [.smallPhone],
+            accessibility: .XXXL,
+            named: "FeedRowAccessible"
         )
-        .frame(width: 375)
-        
-        assertSnapshot(of: feedRow, as: .image)
-    }
-    
-    @Test("FeedRow in dark mode")
-    func testFeedRowDarkMode() async throws {
-        let feed = createTestFeed()
-        
-        let feedRow = FeedRow(
-            feed: feed,
-            onFavoriteToggle: {},
-            onNotificationsToggle: {},
-            notificationIcon: Constants.Images.notificationDisabledIcon,
-            favoriteIcon: Constants.Images.isNotFavoriteIcon
-        )
-        .frame(width: 375)
-        .environment(\.colorScheme, .dark)
-        
-        assertSnapshot(of: feedRow, as: .image)
     }
 }

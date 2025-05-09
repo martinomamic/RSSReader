@@ -34,13 +34,15 @@ public struct EmptyStateView: View {
         } description: {
             Text(description)
         } actions: {
-            if let primaryAction, let primaryActionLabel {
+            if let primaryAction,
+                let primaryActionLabel {
                 Button(action: primaryAction) {
                     Text(primaryActionLabel)
                 }
                 .buttonStyle(.bordered)
             }
         }
+        .background(Color(.systemBackground))
     }
 }
 

@@ -13,8 +13,8 @@ import NotificationRepository
 
 public struct TabBarView: View {
     @State private var selectedTab: TabItem = .feeds
-    private var favoriteFeedsViewModel = FavoriteFeedsViewModel()
-    private var allFeedsViewModel = AllFeedsViewModel()
+    @Bindable private var favoriteFeedsViewModel = FavoriteFeedsViewModel()
+    @Bindable private var allFeedsViewModel = AllFeedsViewModel()
     
     public init() {}
     
