@@ -50,12 +50,10 @@ extension FeedListViewModelProtocol {
     }
 
     public func notificationIcon(for feed: Feed) -> String {
-        let isEnabled = self.feeds.first(where: { $0.url == feed.url })?.notificationsEnabled ?? feed.notificationsEnabled
-        return isEnabled ? Constants.Images.notificationEnabledIcon : Constants.Images.notificationDisabledIcon
+        feed.notificationsEnabled ? Constants.Images.notificationEnabledIcon : Constants.Images.notificationDisabledIcon
     }
 
     public func favoriteIcon(for feed: Feed) -> String {
-        let isFavorite = self.feeds.first(where: { $0.url == feed.url })?.isFavorite ?? feed.isFavorite
-        return isFavorite ? Constants.Images.isFavoriteIcon : Constants.Images.isNotFavoriteIcon
+        feed.isFavorite ? Constants.Images.isFavoriteIcon : Constants.Images.isNotFavoriteIcon
     }
 }
