@@ -17,7 +17,6 @@ import UserNotificationClient
 actor BackgroundRefreshService {
     private let taskIdentifier = "hr.maminjo.RSSReader.feedrefresh"
     private let refreshInterval: TimeInterval = 15 * 60
-    private let maxRetries = 3
     private let isConfigured = LockIsolated(false)
     private let schedulingNeeded = LockIsolated(false)
     private var activeTask: Task<Void, Never>?

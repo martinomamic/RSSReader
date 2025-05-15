@@ -1,5 +1,5 @@
 //
-//  RssClientDependency.swift
+//  RSSClientDependency.swift
 //  RSSReaderKit
 //
 //  Created by Martino Mamić on 22.04.25.
