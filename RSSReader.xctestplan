@@ -98,29 +98,50 @@
     {
       "target" : {
         "containerPath" : "container:RSSReaderKit",
-        "identifier" : "FeedRepositoryTests",
-        "name" : "FeedRepositoryTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "FeedListTests",
-        "name" : "FeedListTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "TabBarFeatureTests",
-        "name" : "TabBarFeatureTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
         "identifier" : "CommonTests",
         "name" : "CommonTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "FeedListFeatureTests",
+        "name" : "FeedListFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "PersistenceClientTests",
+        "name" : "PersistenceClientTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "ExploreFeatureTests",
+        "name" : "ExploreFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReader.xcodeproj",
+        "identifier" : "386A8D2E2DAA864A00BCD162",
+        "name" : "RSSReaderTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "RSSClientTests",
+        "name" : "RSSClientTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReader.xcodeproj",
+        "identifier" : "386A8D382DAA864A00BCD162",
+        "name" : "RSSReaderUITests"
       }
     },
     {
@@ -133,15 +154,29 @@
     {
       "target" : {
         "containerPath" : "container:RSSReaderKit",
-        "identifier" : "ExploreFeatureTests",
-        "name" : "ExploreFeatureTests"
+        "identifier" : "NotificationRepositoryTests",
+        "name" : "NotificationRepositoryTests"
       }
     },
     {
       "target" : {
         "containerPath" : "container:RSSReaderKit",
-        "identifier" : "FeedItemsTests",
-        "name" : "FeedItemsTests"
+        "identifier" : "UserNotificationClientTests",
+        "name" : "UserNotificationClientTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "SharedModelsTests",
+        "name" : "SharedModelsTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "FeedRepositoryTests",
+        "name" : "FeedRepositoryTests"
       }
     },
     {
@@ -160,23 +195,16 @@
     },
     {
       "target" : {
-        "containerPath" : "container:RSSReader.xcodeproj",
-        "identifier" : "386A8D2E2DAA864A00BCD162",
-        "name" : "RSSReaderTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:RSSReader.xcodeproj",
-        "identifier" : "386A8D382DAA864A00BCD162",
-        "name" : "RSSReaderUITests"
+        "containerPath" : "container:RSSReaderKit",
+        "identifier" : "TabBarFeatureTests",
+        "name" : "TabBarFeatureTests"
       }
     },
     {
       "target" : {
         "containerPath" : "container:RSSReaderKit",
-        "identifier" : "UserNotificationClientTests",
-        "name" : "UserNotificationClientTests"
+        "identifier" : "FeedItemsFeatureTests",
+        "name" : "FeedItemsFeatureTests"
       }
     },
     {
@@ -184,34 +212,6 @@
         "containerPath" : "container:RSSReaderKit",
         "identifier" : "BackgroundRefreshClientTests",
         "name" : "BackgroundRefreshClientTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "RSSClientTests",
-        "name" : "RSSClientTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "PersistenceClientTests",
-        "name" : "PersistenceClientTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "SharedModelsTests",
-        "name" : "SharedModelsTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:RSSReaderKit",
-        "identifier" : "NotificationRepositoryTests",
-        "name" : "NotificationRepositoryTests"
       }
     }
   ],

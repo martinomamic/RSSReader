@@ -1,7 +1,16 @@
-import Testing
+//
+//  UserNotificationClient.swift
+//  RSSReaderKit
+//
+//  Created by Martino Mamić on 03.05.25.
+//
+
 import Dependencies
 import Foundation
+import Testing
+
 @testable import UserNotificationClient
+@preconcurrency import UserNotifications
 
 @Suite struct UserNotificationClientTests {
     @Test("Request authorization returns correct value")
