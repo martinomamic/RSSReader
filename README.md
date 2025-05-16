@@ -3,7 +3,7 @@
 ![Swift](https://img.shields.io/badge/Swift-6.0-orange.svg)
 ![Platforms](https://img.shields.io/badge/Platform-iOS%2017-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Coverage](https://img.shields.io/badge/Coverage-64%25-yellow.svg)
+![Coverage](https://img.shields.io/badge/Coverage-77%25-yellowgreen.svg)
 
 An iOS application for reading and managing RSS feeds, built with a focus on clean architecture, testability, and modern iOS development practices. The project is structured as a modular Swift Package with clear separation of concerns.
 
@@ -126,39 +126,42 @@ make lint-fix        # Fix SwiftLint violations
 make format          # Run swift-format
 make clean           # Clean build artifacts
 make install-tools   # Install required development tools
+make test            # Run tests and display basic test information
 ```
 
 ## Potential Improvements
 
 ### Technical Enhancements
-- Increase test coverage to 80%
-- Optimize background task handling
-- Add direct deep linking to articles
-- Implement in-app webview with proper navigation
-- Add settings for webview/Safari preference
-- Implement HTML content handling
-- Add pagination for feed items
-- Set up CI/CD pipeline
-- Implement code coverage reporting
-- Add code quality metrics
+- Increase test coverage to 80%+
+- Optimize background task handling and scheduling logic
+- Refine `BGTaskScheduler` interaction with a mockable abstraction for improved testability
+- Add direct deep linking to articles and specific feeds
+- Implement robust HTML content rendering within the app (e.g. for full article views)
+- Add pagination or infinite scrolling for feed items lists
+- Set up a CI/CD pipeline for automated builds, tests, and releases
+- Enhance code coverage reporting (e.g. integrate with SonarQube or Codecov)
+- Add code quality metrics and static analysis beyond SwiftLint
+- Implement comprehensive UI tests for key user flows
+- Performance profiling and optimization, especially for large numbers of feeds/items
+- Add more granular error handling and user feedback for background processes
 
 ### Feature Additions
-- Reading history tracking
-- Feed search and filtering
-- Dark mode optimization
-- Widget extensions
-- Share sheet integration
-- OPML import/export
-- Pull-to-refresh
-- Unread item tracking
+- Feed search and filtering capabilities
+- Advanced dark mode optimization and theme customization
+- Widget extensions for quick access to new items or favorite feeds
+- Share sheet integration for articles
+- OPML import/export for feed lists
+- Pull-to-refresh gesture for feed lists and item lists
+- Unread item tracking and management (mark as read/unread)
+- Offline reading mode (caching article content)
+- Customizable feed update intervals per feed or globally
+- Grouping/categorizing feeds
 
 ### Architecture & Development
-- Standardize state management
-- Split UI components into dedicated module
-- Add style guide system
-- Implement SwiftData migration strategy
-- Add crash reporting
-- Improve localization support
+- Define and implement a formal SwiftData migration strategy
+- Integrate crash reporting (e.g., Sentry, Firebase Crashlytics)
+- Expand and improve localization support for more languages
+- Formalize and unify error presentation to the user across all modules (e.g. show smaller alerts for adding feeds not full screen, etc.)
 
 ## Getting Help
 
