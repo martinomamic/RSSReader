@@ -20,7 +20,7 @@ let package = Package(
         .library(name: "RSSClient", targets: ["RSSClient"]),
         .library(name: "SharedModels", targets: ["SharedModels"]),
         .library(name: "SharedUI", targets: ["SharedUI"]),
-        .library(name: "SnapshotTestUtility", targets: ["SnapshotTestUtility"]),
+        .library(name: "TestUtility", targets: ["TestUtility"]),
         .library(name: "TabBarFeature", targets: ["TabBarFeature"]),
         .library(name: "UserDefaultsClient", targets: ["UserDefaultsClient"]),
     ],
@@ -31,6 +31,13 @@ let package = Package(
         .package(url: "https://github.com/onevcat/Kingfisher.git", from: "8.3.2"),
     ],
     targets: [
+        .target(
+            name: "TestUtility",
+            dependencies: [
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+                "SharedModels"
+            ]
+        ),
         .target(
             name: "BackgroundRefreshClient",
             dependencies: [
@@ -55,6 +62,7 @@ let package = Package(
             name: "RSSClientTests",
             dependencies: [
                 "RSSClient",
+                "TestUtility",
             ],
             resources: [
                 .copy("Resources/bbc.xml")
@@ -67,7 +75,8 @@ let package = Package(
         .testTarget(
             name: "SharedModelsTests",
             dependencies: [
-                "SharedModels"
+                "SharedModels",
+                "TestUtility",
             ]
         ),
         .target(
@@ -81,9 +90,8 @@ let package = Package(
         .testTarget(
             name: "SharedUITests",
             dependencies: [
-                "SnapshotTestUtility",
+                "TestUtility",
                 "SharedUI"
-               
             ],
             exclude: ["__Snapshots__"]
         ),
@@ -99,6 +107,7 @@ let package = Package(
                 "NotificationRepository",
                 "PersistenceClient",
                 "RSSClient",
+                "TestUtility",
             ]
         ),
         .target(
@@ -118,7 +127,8 @@ let package = Package(
                 "ExploreClient",
                 "PersistenceClient",
                 "RSSClient",
-                "SharedModels"
+                "SharedModels",
+                "TestUtility",
             ]
         ),
         .target(
@@ -135,7 +145,7 @@ let package = Package(
             name: "ExploreFeatureTests",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                "SnapshotTestUtility",
+                "TestUtility",
                 "ExploreFeature"
             ],
             exclude: ["__Snapshots__"]
@@ -156,7 +166,7 @@ let package = Package(
             name: "FeedListTests",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                "SnapshotTestUtility",
+                "TestUtility",
                 "FeedListFeature",
                 "NotificationRepository"
             ],
@@ -176,7 +186,7 @@ let package = Package(
             name: "FeedItemsTests",
             dependencies: [
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                "SnapshotTestUtility",
+                "TestUtility",
                 "FeedItemsFeature",
                 "NotificationRepository"
             ],
@@ -200,7 +210,9 @@ let package = Package(
                 .product(name: "ConcurrencyExtras", package: "swift-concurrency-extras"),
                 "FeedRepository",
                 "RSSClient",
-                "PersistenceClient"
+                "PersistenceClient",
+                // CHANGE: Depend on TestUtility
+                "TestUtility",
             ]
         ),
         .target(
@@ -210,7 +222,6 @@ let package = Package(
                 "Common",
                 "BackgroundRefreshClient",
                 "UserNotificationClient"
-                
             ]
         ),
         .target(
@@ -223,7 +234,7 @@ let package = Package(
         .testTarget(
             name: "TabBarFeatureTests",
             dependencies: [
-                "SnapshotTestUtility",
+                "TestUtility",
                 "TabBarFeature",
                 "Common"
             ],
@@ -241,7 +252,8 @@ let package = Package(
             name: "PersistenceClientTests",
             dependencies: [
                 .product(name: "ConcurrencyExtras", package: "swift-concurrency-extras"),
-                "PersistenceClient"
+                "PersistenceClient",
+                "TestUtility",
             ]
         ),
         .target(
@@ -255,6 +267,7 @@ let package = Package(
             dependencies: [
                 .product(name: "ConcurrencyExtras", package: "swift-concurrency-extras"),
                 "UserDefaultsClient",
+                "TestUtility",
             ]
         ),
         .target(
@@ -268,7 +281,7 @@ let package = Package(
             dependencies: [
                 "NotificationRepository",
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                "SnapshotTestUtility"
+                "TestUtility",
             ],
             exclude: ["__Snapshots__"]
         ),
@@ -276,22 +289,17 @@ let package = Package(
             name: "BackgroundRefreshClientTests",
             dependencies: [
                 "BackgroundRefreshClient",
-                .product(name: "Dependencies", package: "swift-dependencies")
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "TestUtility",
             ]
         ),
         .testTarget(
             name: "UserNotificationClientTests",
             dependencies: [
                 "UserNotificationClient",
-                .product(name: "Dependencies", package: "swift-dependencies")
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                "TestUtility",
             ]
-        ),
-        .target(
-            name: "SnapshotTestUtility",
-            dependencies: [
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
-            ],
-            path: "Sources/SnapshotTestUtility"
         ),
     ]
 )

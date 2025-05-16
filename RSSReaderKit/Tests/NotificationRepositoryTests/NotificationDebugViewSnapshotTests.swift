@@ -6,7 +6,7 @@
 //
 
 import Testing
-import SnapshotTestUtility
+import TestUtility
 import SwiftUI
 import Dependencies
 import Common
