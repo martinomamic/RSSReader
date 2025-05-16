@@ -5,11 +5,11 @@
 //  Created by Martino Mamić on 29.04.25.
 //
 
-import Testing
-import SharedModels
-import SnapshotTestUtility
-import SwiftUI
 import Common
+import SharedModels
+import SwiftUI
+import Testing
+import TestUtility
 
 @testable import FeedListFeature
 

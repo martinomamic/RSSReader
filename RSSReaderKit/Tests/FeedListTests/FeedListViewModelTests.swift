@@ -11,27 +11,12 @@ import FeedRepository
 import SharedModels
 import SwiftUI
 import Testing
+import TestUtility
 
 @testable import FeedListFeature
 
 @MainActor
 @Suite struct FeedListViewModelTests {
-    func createTestFeed(
-        url: String = "https://example.com/feed",
-        title: String = "Test Feed",
-        description: String = "Test description",
-        isFavorite: Bool = false,
-        notificationsEnabled: Bool = false
-    ) -> Feed {
-        Feed(
-            url: URL(string: url)!,
-            title: title,
-            description: description,
-            isFavorite: isFavorite,
-            notificationsEnabled: notificationsEnabled
-        )
-    }
-    
     @Test("ViewModel is initialized with loading state")
     func testInitialState() async throws {
         let viewModel = AllFeedsViewModel()
@@ -49,8 +34,7 @@ import Testing
     @Test("FeedItemsViewModel is created correctly")
     func testMakeFeedItemsViewModel() {
         let viewModel = AllFeedsViewModel()
-        let feed = createTestFeed(url: "https://example.com", title: "Test Feed")
-        
+        let feed = SharedMocks.createFeed(urlString: "https://example.com", title: "Test Feed")
         let feedItemsViewModel = viewModel.makeFeedItemsViewModel(for: feed)
         
         #expect(feedItemsViewModel.feedURL == URL(string: "https://example.com"))

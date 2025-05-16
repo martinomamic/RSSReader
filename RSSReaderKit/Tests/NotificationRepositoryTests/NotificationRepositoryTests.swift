@@ -1,9 +1,17 @@
-import Testing
+//
+//  NotificationDebugViewSnapshotTests.swift
+//  RSSReaderKit
+//
+//  Created by Martino Mamic on 08.05.25.
+//
+
+import Common
 import Dependencies
 import Foundation
-import Common
 import SharedModels
+import Testing
 import UserNotificationClient
+
 @testable import NotificationRepository
 
 @Suite struct NotificationRepositoryTests {

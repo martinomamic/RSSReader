@@ -1,18 +1,26 @@
-import Testing
+//
+//  FeedRepositoryTests.swift
+//  RSSReaderKit
+//
+//  Created by Martino Mamić on 29.04.25.
+//
+
 import Dependencies
 import Foundation
 import FeedRepository
 import PersistenceClient
 import RSSClient
 import SharedModels
+import Testing
+import TestUtility
 
 @Suite("FeedRepository Tests")
 struct FeedRepositoryTests {
     @Test("Initial load emits correct feeds via stream")
     func testInitialLoadEmitsFeeds() async throws {
         let mockFeeds = [
-            Feed(url: URL(string: "https://a.com")!, title: "A", isFavorite: false, notificationsEnabled: false),
-            Feed(url: URL(string: "https://b.com")!, title: "B", isFavorite: true, notificationsEnabled: false)
+            SharedMocks.createFeed(url: URL(string: "https://a.com")!, title: "A", isFavorite: false, notificationsEnabled: false),
+            SharedMocks.createFeed(url: URL(string: "https://b.com")!, title: "B", isFavorite: true, notificationsEnabled: false)
         ]
        
         let repo = withDependencies {
@@ -194,7 +202,6 @@ struct FeedRepositoryTests {
             continuation.continuation.yield(feedStore.value)
         }
         
-        // Inicijalno emitiraj feedove
         continuation.continuation.yield(feedStore.value)
         
         var receivedFeeds: [Feed] = []

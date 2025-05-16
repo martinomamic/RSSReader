@@ -5,37 +5,18 @@
 //  Created by Martino Mamić on 21.04.25.
 //
 
-import Testing
-import Foundation
-import Dependencies
-import SharedModels
-import RSSClient
 import Common
+import Dependencies
+import Foundation
+import RSSClient
+import SharedModels
+import Testing
+import TestUtility
 
 @testable import FeedItemsFeature
 
 @MainActor
 @Suite struct FeedItemsViewModelTests {
-    func createTestItem(
-        id: UUID = UUID(),
-        feedID: UUID = UUID(),
-        title: String = "Test Item",
-        url: String = "https://example.com/item",
-        pubDate: Date? = Date(),
-        description: String? = "Test description",
-        imageURL: String? = nil
-    ) -> FeedItem {
-        FeedItem(
-            id: id,
-            feedID: feedID,
-            title: title,
-            link: URL(string: url)!,
-            pubDate: pubDate,
-            description: description,
-            imageURL: imageURL != nil ? URL(string: imageURL!) : nil
-        )
-    }
-    
     func createViewModel(
         url: String = "https://example.com",
         title: String = "Test Feed"
@@ -49,8 +30,8 @@ import Common
     @Test("Load items successfully")
     func testLoadItemsSuccess() async throws {
         let items = [
-            createTestItem(title: "Item 1"),
-            createTestItem(title: "Item 2")
+            SharedMocks.createFeedItem(title: "Item 1"),
+            SharedMocks.createFeedItem(title: "Item 2")
         ]
         
         let viewModel = createViewModel()
@@ -66,6 +47,8 @@ import Common
                 #expect(loadedItems.count == 2)
                 #expect(loadedItems[0].title == "Item 1")
                 #expect(loadedItems[1].title == "Item 2")
+            } else {
+                #expect(Bool(false), "ViewModel state was not .content: \(viewModel.state)")
             }
         }
     }
@@ -100,6 +83,8 @@ import Common
             
             if case .error(let error) = viewModel.state {
                 #expect(error.errorDescription == AppError.networkError.errorDescription)
+            } else {
+                #expect(Bool(false), "ViewModel state was not .error: \(viewModel.state)")
             }
         }
     }
