@@ -5,37 +5,19 @@
 //  Created by Martino Mamić on 29.04.25.
 //
 
-import Testing
-import SnapshotTestUtility
-import SwiftUI
 import Common
 import SharedModels
+import SwiftUI
+import Testing
+import TestUtility
 
 @testable import FeedListFeature
 
 @MainActor
 @Suite struct FeedRowSnapshotTests {
-    func createTestFeed(
-        url: String = "https://example.com/feed",
-        title: String = "Test Feed",
-        description: String = "This is a test feed with some description text that should span at least a couple of lines to test the layout of the feed row.",
-        isFavorite: Bool = false,
-        notificationsEnabled: Bool = false,
-        imageURL: URL? = nil
-    ) -> Feed {
-        Feed(
-            url: URL(string: url)!,
-            title: title,
-            description: description,
-            imageURL: imageURL,
-            isFavorite: isFavorite,
-            notificationsEnabled: notificationsEnabled
-        )
-    }
-    
     @Test("FeedRow variations")
     func testFeedRowVariations() async throws {
-        let defaultFeed = createTestFeed()
+        let defaultFeed = SharedMocks.createFeed()
         let defaultRow = FeedRow(
             feed: defaultFeed,
             onFavoriteToggle: {},
@@ -44,7 +26,7 @@ import SharedModels
             favoriteIcon: Constants.Images.isNotFavoriteIcon
         ).background(Color(.systemBackground))
 
-        let favoriteFeed = createTestFeed(isFavorite: true)
+        let favoriteFeed = SharedMocks.createFeed(isFavorite: true)
         let favoriteRow = FeedRow(
             feed: favoriteFeed,
             onFavoriteToggle: {},
@@ -52,8 +34,8 @@ import SharedModels
             notificationIcon: Constants.Images.notificationDisabledIcon,
             favoriteIcon: Constants.Images.isFavoriteIcon
         ).background(Color(.systemBackground))
-        
-        let notificationsFeed = createTestFeed(notificationsEnabled: true)
+
+        let notificationsFeed = SharedMocks.createFeed(notificationsEnabled: true)
         let notificationsRow = FeedRow(
             feed: notificationsFeed,
             onFavoriteToggle: {},
@@ -61,8 +43,8 @@ import SharedModels
             notificationIcon: Constants.Images.notificationEnabledIcon,
             favoriteIcon: Constants.Images.isNotFavoriteIcon
         ).background(Color(.systemBackground))
-        
-        let imageFeed = createTestFeed(imageURL: URL(string: "https://example.com/image.jpg"))
+
+        let imageFeed = SharedMocks.createFeed(imageURL: URL(string: "https://example.com/image.jpg"))
         let imageRow = FeedRow(
             feed: imageFeed,
             onFavoriteToggle: {},
@@ -70,8 +52,8 @@ import SharedModels
             notificationIcon: Constants.Images.notificationDisabledIcon,
             favoriteIcon: Constants.Images.isNotFavoriteIcon
         ).background(Color(.systemBackground))
-        
-        let longTitleFeed = createTestFeed(
+
+        let longTitleFeed = SharedMocks.createFeed(
             title: "This is a very long feed title that should definitely be truncated because it's way too long to fit on a single line"
         )
         let longTitleRow = FeedRow(
@@ -81,7 +63,7 @@ import SharedModels
             notificationIcon: Constants.Images.notificationDisabledIcon,
             favoriteIcon: Constants.Images.isNotFavoriteIcon
         ).background(Color(.systemBackground))
-        
+
         assertSnapshot(
             view: defaultRow,
             layouts: [.smallPhone],
@@ -106,7 +88,7 @@ import SharedModels
             layouts: [.smallPhone],
             named: "FeedRowLongTitle"
         )
-        
+
         assertSnapshot(
             view: defaultRow,
             layouts: [.smallPhone],

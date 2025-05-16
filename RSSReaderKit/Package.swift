@@ -2,28 +2,88 @@
 
 import PackageDescription
 
+fileprivate enum Module: String, CaseIterable {
+    case backgroundRefreshClient = "BackgroundRefreshClient"
+    case common = "Common"
+    case exploreClient = "ExploreClient"
+    case exploreFeature = "ExploreFeature"
+    case feedItemsFeature = "FeedItemsFeature"
+    case feedListFeature = "FeedListFeature"
+    case feedRepository = "FeedRepository"
+    case notificationRepository = "NotificationRepository"
+    case persistenceClient = "PersistenceClient"
+    case rssClient = "RSSClient"
+    case sharedModels = "SharedModels"
+    case sharedUI = "SharedUI"
+    case testUtility = "TestUtility"
+    case tabBarFeature = "TabBarFeature"
+    case userDefaultsClient = "UserDefaultsClient"
+    case userNotificationClient = "UserNotificationClient"
+
+    var name: String { self.rawValue }
+    var testName: String { "\(self.rawValue)Tests" }
+}
+
+fileprivate enum ExternalProduct {
+    case concurrencyExtras
+    case dependencies
+    case snapshotTesting
+    case kingfisher
+    
+    var name: String {
+        switch self {
+        case .concurrencyExtras:
+            return "ConcurrencyExtras"
+        case .dependencies:
+            return "Dependencies"
+        case .snapshotTesting:
+            return "SnapshotTesting"
+        case .kingfisher:
+           return "Kingfisher"
+        }
+    }
+    var package: String {
+        switch self {
+        case .concurrencyExtras:
+            return "swift-concurrency-extras"
+        case .dependencies:
+            return "swift-dependencies"
+        case .snapshotTesting:
+            return "swift-snapshot-testing"
+        case .kingfisher:
+           return "Kingfisher"
+        }
+    }
+}
+
+fileprivate func externalProduct(_ product: ExternalProduct) -> Target.Dependency {
+    .product(name: product.name, package: product.package)
+}
+
+fileprivate func module(_ module: Module) -> Target.Dependency {
+    .target(name: module.name)
+}
+
+private func target(_ module: Module, dependencies: [Target.Dependency] = [], exclude: [String] = []) -> Target {
+    .target(name: module.name, dependencies: dependencies, exclude: exclude)
+}
+
+fileprivate func testTarget(_ module: Module, dependencies: [Target.Dependency] = [], exclude: [String] = [], resources: [Resource]? = nil) -> Target {
+    .testTarget(name: module.testName, dependencies: dependencies, exclude: exclude, resources: resources)
+}
+
+fileprivate func library(_ module: Module) -> PackageDescription.Product {
+    .library(name: module.name, targets: [module.name])
+}
+
+fileprivate let snapshotsDirectory = "__Snapshots__"
+
 let package = Package(
     name: "RSSReaderKit",
     platforms: [
         .iOS(.v17)
     ],
-    products: [
-        .library(name: "BackgroundRefreshClient", targets: ["BackgroundRefreshClient"]),
-        .library(name: "Common", targets: ["Common"]),
-        .library(name: "ExploreClient", targets: ["ExploreClient"]),
-        .library(name: "ExploreFeature", targets: ["ExploreFeature"]),
-        .library(name: "FeedItemsFeature", targets: ["FeedItemsFeature"]),
-        .library(name: "FeedListFeature", targets: ["FeedListFeature"]),
-        .library(name: "FeedRepository", targets: ["FeedRepository"]),
-        .library(name: "NotificationRepository", targets: ["NotificationRepository"]),
-        .library(name: "PersistenceClient", targets: ["PersistenceClient"]),
-        .library(name: "RSSClient", targets: ["RSSClient"]),
-        .library(name: "SharedModels", targets: ["SharedModels"]),
-        .library(name: "SharedUI", targets: ["SharedUI"]),
-        .library(name: "SnapshotTestUtility", targets: ["SnapshotTestUtility"]),
-        .library(name: "TabBarFeature", targets: ["TabBarFeature"]),
-        .library(name: "UserDefaultsClient", targets: ["UserDefaultsClient"]),
-    ],
+    products: Module.allCases.map { library($0) },
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-concurrency-extras", from: "1.3.1"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.9.1"),
@@ -31,267 +91,269 @@ let package = Package(
         .package(url: "https://github.com/onevcat/Kingfisher.git", from: "8.3.2"),
     ],
     targets: [
-        .target(
-            name: "BackgroundRefreshClient",
+        target(
+            .backgroundRefreshClient,
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "Common",
-                "SharedModels",
-                "PersistenceClient",
-                "FeedRepository",
-                "UserNotificationClient",
-                "UserDefaultsClient"
+                externalProduct(.dependencies),
+                module(.common),
+                module(.feedRepository),
+                module(.persistenceClient),
+                module(.sharedModels),
+                module(.userDefaultsClient),
+                module(.userNotificationClient)
             ]
         ),
-        .target(
-            name: "RSSClient",
+        testTarget(
+            .backgroundRefreshClient,
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "Common",
-                "SharedModels"
+                externalProduct(.dependencies),
+                module(.backgroundRefreshClient),
+                module(.testUtility),
             ]
         ),
-        .testTarget(
-            name: "RSSClientTests",
+        target(.common),
+        testTarget(
+            .common,
             dependencies: [
-                "RSSClient",
+                externalProduct(.dependencies),
+                module(.common),
+                module(.exploreClient),
+                module(.notificationRepository),
+                module(.persistenceClient),
+                module(.rssClient),
+                module(.testUtility),
+            ]
+        ),
+        target(
+            .exploreClient,
+            dependencies: [
+                externalProduct(.dependencies),
+                module(.common),
+                module(.persistenceClient),
+                module(.rssClient),
+                module(.sharedModels)
+            ]
+        ),
+        testTarget(
+            .exploreClient,
+            dependencies: [
+                externalProduct(.dependencies),
+                module(.exploreClient),
+                module(.persistenceClient),
+                module(.rssClient),
+                module(.sharedModels),
+                module(.testUtility),
+            ]
+        ),
+        target(
+            .exploreFeature,
+            dependencies: [
+                externalProduct(.dependencies),
+                module(.common),
+                module(.feedRepository),
+                module(.sharedModels),
+                module(.sharedUI)
+            ]
+        ),
+        testTarget(
+            .exploreFeature,
+            dependencies: [
+                externalProduct(.dependencies),
+                module(.exploreFeature),
+                module(.testUtility)
+            ],
+            exclude: [snapshotsDirectory]
+        ),
+        target(
+            .feedItemsFeature,
+            dependencies: [
+                externalProduct(.dependencies),
+                module(.common),
+                module(.rssClient),
+                module(.sharedModels),
+                module(.sharedUI)
+            ]
+        ),
+        testTarget(
+            .feedItemsFeature,
+            dependencies: [
+                externalProduct(.dependencies),
+                module(.feedItemsFeature),
+                module(.notificationRepository),
+                module(.testUtility)
+            ],
+            exclude: [snapshotsDirectory]
+        ),
+        target(
+            .feedListFeature,
+            dependencies: [
+                externalProduct(.dependencies),
+                module(.common),
+                module(.feedItemsFeature),
+                module(.feedRepository),
+                module(.notificationRepository),
+                module(.sharedModels),
+                module(.sharedUI)
+            ]
+        ),
+        testTarget(
+            .feedListFeature,
+            dependencies: [
+                externalProduct(.dependencies),
+                module(.feedListFeature),
+                module(.notificationRepository),
+                module(.testUtility)
+            ],
+            exclude: [snapshotsDirectory]
+        ),
+        target(
+            .feedRepository,
+            dependencies: [
+                externalProduct(.dependencies),
+                module(.common),
+                module(.exploreClient),
+                module(.persistenceClient),
+                module(.rssClient),
+                module(.sharedModels)
+            ]
+        ),
+        testTarget(
+            .feedRepository,
+            dependencies: [
+                externalProduct(.concurrencyExtras),
+                externalProduct(.dependencies),
+                module(.feedRepository),
+                module(.rssClient),
+                module(.persistenceClient),
+                module(.testUtility),
+            ]
+        ),
+        target(
+            .notificationRepository,
+            dependencies: [
+                externalProduct(.dependencies),
+                module(.backgroundRefreshClient),
+                module(.common),
+                module(.userNotificationClient)
+            ]
+        ),
+        testTarget(
+            .notificationRepository,
+            dependencies: [
+                externalProduct(.dependencies),
+                module(.notificationRepository),
+                module(.testUtility),
+            ],
+            exclude: [snapshotsDirectory]
+        ),
+        target(
+            .persistenceClient,
+            dependencies: [
+                externalProduct(.dependencies),
+                module(.common),
+                module(.sharedModels)
+            ]
+        ),
+        testTarget(
+            .persistenceClient,
+            dependencies: [
+                externalProduct(.concurrencyExtras),
+                module(.persistenceClient),
+                module(.testUtility),
+            ]
+        ),
+        target(
+            .rssClient,
+            dependencies: [
+                externalProduct(.dependencies),
+                module(.common),
+                module(.sharedModels)
+            ]
+        ),
+        testTarget(
+            .rssClient,
+            dependencies: [
+                module(.rssClient),
+                module(.testUtility),
             ],
             resources: [
                 .copy("Resources/bbc.xml")
             ]
         ),
-        .target(
-            name: "SharedModels",
-            dependencies: []
-        ),
-        .testTarget(
-            name: "SharedModelsTests",
+        target(.sharedModels),
+        testTarget(
+            .sharedModels,
             dependencies: [
-                "SharedModels"
+                module(.sharedModels),
+                module(.testUtility),
             ]
         ),
-        .target(
-            name: "SharedUI",
+        target(
+            .sharedUI,
             dependencies: [
-                "Common",
-                "Kingfisher",
-                "SharedModels"
+                externalProduct(.kingfisher),
+                module(.common),
+                module(.sharedModels)
             ]
         ),
-        .testTarget(
-            name: "SharedUITests",
+        testTarget(
+            .sharedUI,
             dependencies: [
-                "SnapshotTestUtility",
-                "SharedUI"
-               
+                module(.sharedUI),
+                module(.testUtility)
             ],
-            exclude: ["__Snapshots__"]
+            exclude: [snapshotsDirectory]
         ),
-        .target(
-            name: "Common",
-        ),
-        .testTarget(
-            name: "CommonTests",
+        target(
+            .tabBarFeature,
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "Common",
-                "ExploreClient",
-                "NotificationRepository",
-                "PersistenceClient",
-                "RSSClient",
+                module(.exploreFeature),
+                module(.feedListFeature)
             ]
         ),
-        .target(
-            name: "ExploreClient",
+        testTarget(
+            .tabBarFeature,
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "Common",
-                "PersistenceClient",
-                "RSSClient",
-                "SharedModels"
-            ]
-        ),
-        .testTarget(
-            name: "ExploreClientTests",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "ExploreClient",
-                "PersistenceClient",
-                "RSSClient",
-                "SharedModels"
-            ]
-        ),
-        .target(
-            name: "ExploreFeature",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "Common",
-                "FeedRepository",
-                "SharedModels",
-                "SharedUI"
-            ]
-        ),
-        .testTarget(
-            name: "ExploreFeatureTests",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "SnapshotTestUtility",
-                "ExploreFeature"
+                module(.common),
+                module(.tabBarFeature),
+                module(.testUtility)
             ],
-            exclude: ["__Snapshots__"]
+            exclude: [snapshotsDirectory]
         ),
-        .target(
-            name: "FeedListFeature",
+        target(
+            .testUtility,
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "Common",
-                "FeedItemsFeature",
-                "FeedRepository",
-                "NotificationRepository",
-                "SharedModels",
-                "SharedUI"
+                externalProduct(.snapshotTesting),
+                module(.sharedModels)
             ]
         ),
-        .testTarget(
-            name: "FeedListTests",
+        target(
+            .userDefaultsClient,
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "SnapshotTestUtility",
-                "FeedListFeature",
-                "NotificationRepository"
-            ],
-            exclude: ["__Snapshots__"]
-        ),
-        .target(
-            name: "FeedItemsFeature",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "Common",
-                "RSSClient",
-                "SharedModels",
-                "SharedUI"
+                externalProduct(.dependencies)
             ]
         ),
-        .testTarget(
-            name: "FeedItemsTests",
+        testTarget(
+            .userDefaultsClient,
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "SnapshotTestUtility",
-                "FeedItemsFeature",
-                "NotificationRepository"
-            ],
-            exclude: ["__Snapshots__"]
-        ),
-        .target(
-            name: "FeedRepository",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "Common",
-                "ExploreClient",
-                "PersistenceClient",
-                "RSSClient",
-                "SharedModels"
+                externalProduct(.concurrencyExtras),
+                module(.userDefaultsClient),
+                module(.testUtility),
             ]
         ),
-        .testTarget(
-            name: "FeedRepositoryTests",
+        target(
+            .userNotificationClient,
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "ConcurrencyExtras", package: "swift-concurrency-extras"),
-                "FeedRepository",
-                "RSSClient",
-                "PersistenceClient"
+                externalProduct(.dependencies)
             ]
         ),
-        .target(
-            name: "NotificationRepository",
+        testTarget(
+            .userNotificationClient,
             dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "Common",
-                "BackgroundRefreshClient",
-                "UserNotificationClient"
-                
+                externalProduct(.dependencies),
+                module(.userNotificationClient),
+                module(.testUtility),
             ]
-        ),
-        .target(
-            name: "TabBarFeature",
-            dependencies: [
-                "ExploreFeature",
-                "FeedListFeature"
-            ]
-        ),
-        .testTarget(
-            name: "TabBarFeatureTests",
-            dependencies: [
-                "SnapshotTestUtility",
-                "TabBarFeature",
-                "Common"
-            ],
-            exclude: ["__Snapshots__"]
-        ),
-        .target(
-            name: "PersistenceClient",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "Common",
-                "SharedModels"
-            ]
-        ),
-        .testTarget(
-            name: "PersistenceClientTests",
-            dependencies: [
-                .product(name: "ConcurrencyExtras", package: "swift-concurrency-extras"),
-                "PersistenceClient"
-            ]
-        ),
-        .target(
-            name: "UserDefaultsClient",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies")
-            ]
-        ),
-        .testTarget(
-            name: "UserDefaultsClientTests",
-            dependencies: [
-                .product(name: "ConcurrencyExtras", package: "swift-concurrency-extras"),
-                "UserDefaultsClient",
-            ]
-        ),
-        .target(
-            name: "UserNotificationClient",
-            dependencies: [
-                .product(name: "Dependencies", package: "swift-dependencies")
-            ]
-        ),
-        .testTarget(
-            name: "NotificationRepositoryTests",
-            dependencies: [
-                "NotificationRepository",
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                "SnapshotTestUtility"
-            ],
-            exclude: ["__Snapshots__"]
-        ),
-        .testTarget(
-            name: "BackgroundRefreshClientTests",
-            dependencies: [
-                "BackgroundRefreshClient",
-                .product(name: "Dependencies", package: "swift-dependencies")
-            ]
-        ),
-        .testTarget(
-            name: "UserNotificationClientTests",
-            dependencies: [
-                "UserNotificationClient",
-                .product(name: "Dependencies", package: "swift-dependencies")
-            ]
-        ),
-        .target(
-            name: "SnapshotTestUtility",
-            dependencies: [
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
-            ],
-            path: "Sources/SnapshotTestUtility"
         ),
     ]
 )

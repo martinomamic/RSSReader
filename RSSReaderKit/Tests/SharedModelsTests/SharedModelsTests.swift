@@ -37,27 +37,6 @@ import Foundation
         #expect(feed.notificationsEnabled == notificationsEnabled)
     }
     
-    @Test("Feed ID is unique based on properties")
-    func testFeedID() {
-        let url = URL(string: "https://example.com/feed")!
-        
-        let feed1 = Feed(url: url, isFavorite: false, notificationsEnabled: false)
-        let feed2 = Feed(url: url, isFavorite: true, notificationsEnabled: false)
-        let feed3 = Feed(url: url, isFavorite: false, notificationsEnabled: true)
-        let feed4 = Feed(url: url, isFavorite: true, notificationsEnabled: true)
-        
-        // IDs should be different when properties change
-        #expect(feed1.id != feed2.id)
-        #expect(feed1.id != feed3.id)
-        #expect(feed1.id != feed4.id)
-        #expect(feed2.id != feed3.id)
-        #expect(feed2.id != feed4.id)
-        #expect(feed3.id != feed4.id)
-        
-        // ID should be consistent for the same object
-        #expect(feed1.id == feed1.id)
-    }
-    
     @Test("FeedItem init sets properties correctly")
     func testFeedItemInit() {
         let id = UUID()

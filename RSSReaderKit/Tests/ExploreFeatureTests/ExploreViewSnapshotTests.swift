@@ -5,30 +5,24 @@
 //  Created by Martino Mamić on 21.04.25.
 //
 
-import Testing
-import SnapshotTestUtility
-import SwiftUI
+import Common
 import Dependencies
 import SharedModels
-import Common
+import SwiftUI
+import Testing
+import TestUtility
 
 @testable import ExploreFeature
 
 @MainActor
 @Suite struct ExploreViewSnapshotTests {
-    private func createExploreFeed(
-        name: String = "Test Feed",
-        url: String = "https://example.com/feed"
-    ) -> ExploreFeed {
-        ExploreFeed(name: name, url: url)
-    }
     
     @Test("ExploreView with feeds")
     func testExploreViewWithFeeds() async throws {
         let feeds = [
-            createExploreFeed(name: "BBC News", url: "https://feeds.bbci.co.uk/news/world/rss.xml"),
-            createExploreFeed(name: "NBC News", url: "https://feeds.nbcnews.com/nbcnews/public/news"),
-            createExploreFeed(name: "Reuters World News", url: "https://feeds.reuters.com/reuters/worldnews")
+            SharedMocks.createExploreFeed(name: "BBC News", url: "https://feeds.bbci.co.uk/news/world/rss.xml"),
+            SharedMocks.createExploreFeed(name: "NBC News", url: "https://feeds.nbcnews.com/nbcnews/public/news"),
+            SharedMocks.createExploreFeed(name: "Reuters World News", url: "https://feeds.reuters.com/reuters/worldnews")
         ]
         
         let view = ExploreView()

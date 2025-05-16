@@ -5,10 +5,11 @@
 //  Created by Martino Mamić on 21.04.25.
 //
 
-import Testing
+import ConcurrencyExtras
 import Dependencies
 import Foundation
-import ConcurrencyExtras
+import Testing
+import TestUtility
 
 @testable import ExploreClient
 @testable import SharedModels
@@ -16,30 +17,12 @@ import ConcurrencyExtras
 @testable import PersistenceClient
 
 @Suite struct ExploreClientTests {
-    func createExploreFeed(
-        name: String = "Test Feed",
-        url: String = "https://example.com/feed"
-    ) -> ExploreFeed {
-        ExploreFeed(name: name, url: url)
-    }
-    
-    func createFeed(
-        url: String = "https://example.com/feed",
-        title: String = "Test Feed",
-        description: String = "Test Description"
-    ) -> Feed {
-        Feed(
-            url: URL(string: url)!,
-            title: title,
-            description: description
-        )
-    }
     
     @Test("Loading explore feeds fetches feeds from JSON file")
     func testLoadExploreFeeds() async throws {
         let mockFeeds = [
-            createExploreFeed(name: "Feed 1", url: "https://example1.com/feed"),
-            createExploreFeed(name: "Feed 2", url: "https://example2.com/feed")
+            SharedMocks.createExploreFeed(name: "Feed 1", url: "https://example1.com/feed"),
+            SharedMocks.createExploreFeed(name: "Feed 2", url: "https://example2.com/feed")
         ]
         
         let client = ExploreClient(
@@ -47,7 +30,7 @@ import ConcurrencyExtras
                 return mockFeeds
             },
             addFeed: { _ in
-                return Feed(url: URL(string: "https://example.com")!)
+                return SharedMocks.createFeed(urlString: "https://example.com")
             }
         )
         
@@ -67,7 +50,7 @@ import ConcurrencyExtras
                 throw ExploreError.fileNotFound
             },
             addFeed: { _ in
-                return Feed(url: URL(string: "https://example.com")!)
+                return SharedMocks.createFeed(urlString: "https://example.com")
             }
         )
         
@@ -86,7 +69,7 @@ import ConcurrencyExtras
                 throw ExploreError.decodingFailed("Invalid JSON")
             },
             addFeed: { _ in
-                return Feed(url: URL(string: "https://example.com")!)
+                return SharedMocks.createFeed(urlString: "https://example.com")
             }
         )
         
@@ -104,8 +87,8 @@ import ConcurrencyExtras
     
     @Test("Adding explore feed fetches and saves feed successfully")
     func testAddFeed() async throws {
-        let exploreFeed = createExploreFeed()
-        let expectedFeed = createFeed()
+        let exploreFeed = SharedMocks.createExploreFeed()
+        let expectedFeed = SharedMocks.createFeed()
         
         let client = ExploreClient(
             loadExploreFeeds: {
@@ -127,7 +110,7 @@ import ConcurrencyExtras
     
     @Test("Adding feed throws invalidURL when URL is invalid")
     func testAddFeedInvalidURL() async throws {
-        let exploreFeed = createExploreFeed(url: "invalid-url")
+        let exploreFeed = SharedMocks.createExploreFeed(url: "invalid-url")
         
         let client = ExploreClient(
             loadExploreFeeds: {
@@ -148,7 +131,7 @@ import ConcurrencyExtras
     
     @Test("Adding feed throws feedFetchFailed when feed fetch fails")
     func testAddFeedFetchFailed() async throws {
-        let exploreFeed = createExploreFeed()
+        let exploreFeed = SharedMocks.createExploreFeed()
         
         let client = ExploreClient(
             loadExploreFeeds: {
@@ -173,8 +156,8 @@ import ConcurrencyExtras
     
     @Test("Live implementation correctly uses dependencies")
     func testLiveImplementation() async throws {
-        let mockFeed = createFeed()
-        let mockExploreFeed = createExploreFeed()
+        let mockFeed = SharedMocks.createFeed()
+        let mockExploreFeed = SharedMocks.createExploreFeed()
         
         try await withDependencies {
             $0.rssClient.fetchFeed = { url in
@@ -188,8 +171,6 @@ import ConcurrencyExtras
         } operation: {
             let client = ExploreClient.live()
             
-            // Test won't pass the URL validation in the live implementation
-            // Creating a custom implementation for testing
             let testClient = ExploreClient(
                 loadExploreFeeds: client.loadExploreFeeds,
                 addFeed: { exploreFeed in
@@ -198,10 +179,10 @@ import ConcurrencyExtras
                     }
                     
                     @Dependency(\.rssClient.fetchFeed) var fetchFeed
-                    @Dependency(\.persistenceClient.saveFeed) var addFeed
+                    @Dependency(\.persistenceClient.saveFeed) var addFeedToPersistence
                     
                     let feed = try await fetchFeed(url)
-                    try await addFeed(feed)
+                    try await addFeedToPersistence(feed)
                     return feed
                 }
             )
