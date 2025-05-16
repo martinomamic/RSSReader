@@ -10,9 +10,7 @@
 		185780322DC663E600AA34ED /* UserDefaultsClient in Frameworks */ = {isa = PBXBuildFile; productRef = 185780312DC663E600AA34ED /* UserDefaultsClient */; };
 		185780342DC6642100AA34ED /* BackgroundRefreshClient in Frameworks */ = {isa = PBXBuildFile; productRef = 185780332DC6642100AA34ED /* BackgroundRefreshClient */; };
 		18B962CF2DC8CD9000C85343 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 18B962CE2DC8CD9000C85343 /* LICENSE */; };
-		382CFC1B2DAFA4F600CFBB7D /* PersistenceClient in Frameworks */ = {isa = PBXBuildFile; productRef = 382CFC1A2DAFA4F600CFBB7D /* PersistenceClient */; };
 		3882B1C32DAFE47B0069A7E1 /* TabBarFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 3882B1C22DAFE47B0069A7E1 /* TabBarFeature */; };
-		38C352E32DABF64F008FA670 /* RSSClient in Frameworks */ = {isa = PBXBuildFile; productRef = 38C352E22DABF64F008FA670 /* RSSClient */; };
 		38C7436A2DB6CD7A00983997 /* Common in Frameworks */ = {isa = PBXBuildFile; productRef = 38C743692DB6CD7A00983997 /* Common */; };
 /* End PBXBuildFile section */
 
@@ -80,11 +78,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				38C352E32DABF64F008FA670 /* RSSClient in Frameworks */,
 				3882B1C32DAFE47B0069A7E1 /* TabBarFeature in Frameworks */,
 				185780342DC6642100AA34ED /* BackgroundRefreshClient in Frameworks */,
 				185780322DC663E600AA34ED /* UserDefaultsClient in Frameworks */,
-				382CFC1B2DAFA4F600CFBB7D /* PersistenceClient in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -159,8 +155,6 @@
 			);
 			name = RSSReader;
 			packageProductDependencies = (
-				38C352E22DABF64F008FA670 /* RSSClient */,
-				382CFC1A2DAFA4F600CFBB7D /* PersistenceClient */,
 				3882B1C22DAFE47B0069A7E1 /* TabBarFeature */,
 				185780312DC663E600AA34ED /* UserDefaultsClient */,
 				185780332DC6642100AA34ED /* BackgroundRefreshClient */,
@@ -667,17 +661,9 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = BackgroundRefreshClient;
 		};
-		382CFC1A2DAFA4F600CFBB7D /* PersistenceClient */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = PersistenceClient;
-		};
 		3882B1C22DAFE47B0069A7E1 /* TabBarFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TabBarFeature;
-		};
-		38C352E22DABF64F008FA670 /* RSSClient */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = RSSClient;
 		};
 		38C743692DB6CD7A00983997 /* Common */ = {
 			isa = XCSwiftPackageProductDependency;
