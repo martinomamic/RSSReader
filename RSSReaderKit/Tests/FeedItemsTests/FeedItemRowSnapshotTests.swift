@@ -13,6 +13,12 @@ import Common
 
 @testable import FeedItemsFeature
 
+private let pubDateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "dd.MM.yyyy"
+    return formatter
+}()
+
 @MainActor
 @Suite struct FeedItemRowSnapshotTests {
     func createTestItem(
@@ -20,7 +26,7 @@ import Common
         feedID: UUID = UUID(),
         title: String = "Test Item",
         link: URL = URL(string: "https://example.com/item")!,
-        pubDate: Date? = Date(),
+        pubDate: Date? = pubDateFormatter.date(from: "09.05.2025"),
         description: String? = "This is a detailed description of the item that contains multiple lines of text to demonstrate how the layout handles longer content in the feed item row component.",
         imageURL: URL? = nil
     ) -> FeedItem {
