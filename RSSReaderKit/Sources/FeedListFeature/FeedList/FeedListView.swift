@@ -65,6 +65,9 @@ public struct FeedListView<ViewModel: FeedListViewModelProtocol>: View {
                 .testId(viewModel.listAccessibilityId)
             }
         }
+        .task {
+            viewModel.setupFeeds()
+        }
         .navigationTitle(viewModel.navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: Feed.self) { feed in

@@ -44,6 +44,9 @@ struct AddFeedView: View {
                 .testId(AccessibilityIdentifier.AddFeed.addViewEmptyView)
             }
         }
+        .task {
+            viewModel.loadExploreFeeds()
+        }
         .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
             if shouldDismiss {
                 dismiss()

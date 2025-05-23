@@ -25,11 +25,7 @@ class ExploreViewModel {
     private var addTask: Task<Void, Never>?
     private var loadTask: Task<Void, Never>?
 
-    public init() {
-        loadExploreFeeds()
-    }
-
-    func loadExploreFeeds() {
+    public func loadExploreFeeds() {
         loadTask?.cancel()
         state = .loading
 

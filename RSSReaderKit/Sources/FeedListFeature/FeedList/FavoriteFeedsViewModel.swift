@@ -36,20 +36,7 @@ public class FavoriteFeedsViewModel: FeedListViewModelProtocol {
     public var emptyStateDescription: String { LocalizedStrings.FeedList.noFavoritesDescription }
     public var primaryActionLabel: String? { nil }
 
-    public init() {
-        guard feedStreamTask == nil else { return }
-        feedStreamTask = Task { @MainActor in
-            do {
-                try await feedRepository.loadInitialFeeds()
-                for await favoriteFeeds in feedRepository.favoriteFeedsStream {
-                    self.feeds = favoriteFeeds
-                    self.state = self.feeds.isEmpty ? .empty : .content(self.feeds)
-                }
-            } catch {
-                self.state = .error(ErrorUtils.toAppError(error))
-            }
-        }
-    }
+    public init() {}
     
     public func setupFeeds() {
         feedStreamTask?.cancel()
