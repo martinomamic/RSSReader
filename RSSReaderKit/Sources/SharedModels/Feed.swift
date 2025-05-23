@@ -35,8 +35,4 @@ public struct Feed: Identifiable, Hashable, Sendable, Equatable {
     public static func == (lhs: Feed, rhs: Feed) -> Bool {
         return lhs.id == rhs.id && lhs.description == rhs.description && lhs.imageURL == rhs.imageURL && lhs.isFavorite == rhs.isFavorite && lhs.notificationsEnabled == rhs.notificationsEnabled
     }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
 }
