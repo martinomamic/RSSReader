@@ -11,7 +11,7 @@ import SharedUI
 import SwiftUI
 
 public struct ExploreView: View {
-    @Bindable var viewModel = ExploreViewModel()
+    @State var viewModel = ExploreViewModel()
 
     public init() {}
 

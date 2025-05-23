@@ -37,18 +37,7 @@ public class FavoriteFeedsViewModel: FeedListViewModelProtocol {
     public var primaryActionLabel: String? { nil }
 
     public init() {
-        guard feedStreamTask == nil else { return }
-        feedStreamTask = Task { @MainActor in
-            do {
-                try await feedRepository.loadInitialFeeds()
-                for await favoriteFeeds in feedRepository.favoriteFeedsStream {
-                    self.feeds = favoriteFeeds
-                    self.state = self.feeds.isEmpty ? .empty : .content(self.feeds)
-                }
-            } catch {
-                self.state = .error(ErrorUtils.toAppError(error))
-            }
-        }
+        setupFeeds()
     }
     
     public func setupFeeds() {
@@ -69,33 +58,31 @@ public class FavoriteFeedsViewModel: FeedListViewModelProtocol {
     
     public func toggleNotifications(_ feed: Feed) {
         notificationsTask?.cancel()
-        
         notificationsTask = Task { @MainActor in
             do {
-                if await !notificationRepository.notificationsAuthorized() {
-                    try await notificationRepository.requestPermissions()
+                if await !self.notificationRepository.notificationsAuthorized() {
+                    try await self.notificationRepository.requestPermissions()
                 }
                 
-                try await feedRepository.toggleNotifications(feed.url)
+                try await self.feedRepository.toggleNotifications(feed.url)
             
-                guard await notificationRepository.notificationsAuthorized(),
+                guard await self.notificationRepository.notificationsAuthorized(),
                       let updatedFeed = self.feeds.first(where: { $0.url == feed.url }),
                       updatedFeed.notificationsEnabled else { return }
-                try await notificationRepository.checkForNewItems()
+                try await self.notificationRepository.checkForNewItems()
             } catch {
-                state = .error(ErrorUtils.toAppError(error))
+                self.state = .error(ErrorUtils.toAppError(error))
             }
         }
     }
     
     public func toggleFavorite(_ feed: Feed) {
         favoritesTask?.cancel()
-        
         favoritesTask = Task { @MainActor in
             do {
-                try await feedRepository.toggleFavorite(feed.url)
+                try await self.feedRepository.toggleFavorite(feed.url)
             } catch {
-                state = .error(ErrorUtils.toAppError(error))
+                self.state = .error(ErrorUtils.toAppError(error))
             }
         }
     }
@@ -111,26 +98,5 @@ public class FavoriteFeedsViewModel: FeedListViewModelProtocol {
                 self.state = .error(ErrorUtils.toAppError(error))
             }
         }
-    }
-    
-    public func makeFeedItemsViewModel(for feed: Feed) -> FeedItemsViewModel {
-        FeedItemsViewModel(
-            feedURL: feed.url,
-            feedTitle: feed.title ?? LocalizedStrings.FeedList.unnamedFeed
-        )
-    }
-    
-    public func notificationIcon(for feed: Feed) -> String {
-        let currentFeedState = self.feeds.first(where: { $0.url == feed.url })
-        let isEnabled = currentFeedState?.notificationsEnabled ?? feed.notificationsEnabled
-        let icon = isEnabled ? Constants.Images.notificationEnabledIcon : Constants.Images.notificationDisabledIcon
-        return icon
-    }
-    
-    public func favoriteIcon(for feed: Feed) -> String {
-        let currentFeedState = self.feeds.first(where: { $0.url == feed.url })
-        let isFavorite = currentFeedState?.isFavorite ?? feed.isFavorite
-        let icon = isFavorite ? Constants.Images.isFavoriteIcon : Constants.Images.isNotFavoriteIcon
-        return icon
     }
 }
