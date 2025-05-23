@@ -29,7 +29,9 @@ public class AllFeedsViewModel: FeedListViewModelProtocol {
     private var favoritesTask: Task<Void, Never>?
     private var notificationsTask: Task<Void, Never>?
     
-    public init() {}
+    public init() {
+        setupFeeds()
+    }
     
     public func setupFeeds() {
         feedStreamTask?.cancel()

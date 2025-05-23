@@ -36,7 +36,9 @@ public class FavoriteFeedsViewModel: FeedListViewModelProtocol {
     public var emptyStateDescription: String { LocalizedStrings.FeedList.noFavoritesDescription }
     public var primaryActionLabel: String? { nil }
 
-    public init() {}
+    public init() {
+        setupFeeds()
+    }
     
     public func setupFeeds() {
         feedStreamTask?.cancel()
