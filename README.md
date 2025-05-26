@@ -3,7 +3,7 @@
 ![Swift](https://img.shields.io/badge/Swift-6.0-orange.svg)
 ![Platforms](https://img.shields.io/badge/Platform-iOS%2017-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Coverage](https://img.shields.io/badge/Coverage-80%-green.svg)
+![Coverage](https://img.shields.io/badge/Coverage-80%25-green.svg)
 
 An iOS application for reading and managing RSS feeds, built with a focus on clean architecture, testability, and modern iOS development practices. The project is structured as a modular Swift Package with clear separation of concerns.
 
@@ -42,10 +42,18 @@ An iOS application for reading and managing RSS feeds, built with a focus on cle
 
 <p align="center">
   <img src="RSSReader/Screenshots/Explore.png" width="200" alt="Explore">
+  <img src="RSSReader/Screenshots/Explore added feeds empty.png" width="200" alt="Empty added feeds">
+</p>
+<p align="center">
+<em>Left: Explore tab with suggested feeds to add - Right: Explore added feeds view showing no added feeds</em>
+</p>
+
+<p align="center">
+  <img src="RSSReader/Screenshots/Explore added feeds.png" width="200" alt="Explore added feeds">
   <img src="RSSReader/Screenshots/Debug view.png" width="200" alt="Debug">
 </p>
 <p align="center">
-  <em>Left: Explore tab with suggested feeds to add - Right: Debug panel for testing notifications and background tasks</em>
+  <em>Left: Explore tab with added feeds which can be removed - Right: Debug panel for testing notifications and background tasks</em>
 </p>
 
 ## Dependencies
