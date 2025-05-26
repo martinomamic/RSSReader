@@ -24,8 +24,9 @@ import TestUtility
         let view = AddFeedView(viewModel: model)
         
         assertSnapshot(
-            view: NavigationStack { view },
-            named: "AddFeedEmpty"
+            view: view,
+            named: "AddFeedEmpty",
+            embedding: .navigationStack()
         )
     }
     
@@ -38,14 +39,16 @@ import TestUtility
         let view = AddFeedView(viewModel: model)
         
         assertSnapshot(
-            view: NavigationStack { view },
-            named: "AddFeedWithURL"
+            view: view,
+            named: "AddFeedWithURL",
+            embedding: .navigationStack()
         )
         
         assertSnapshot(
-            view: NavigationStack { view },
+            view: view,
             accessibility: .XXXL,
-            named: "AddFeedWithURL"
+            named: "AddFeedWithURL_XXXL",
+            embedding: .navigationStack()
         )
     }
     
@@ -58,8 +61,9 @@ import TestUtility
         let view = AddFeedView(viewModel: model)
         
         assertSnapshot(
-            view: NavigationStack { view },
-            named: "AddFeedError"
+            view: view,
+            named: "AddFeedError",
+            embedding: .navigationStack()
         )
     }
     
@@ -72,8 +76,9 @@ import TestUtility
         let view = AddFeedView(viewModel: model)
         
         assertSnapshot(
-            view: NavigationStack { view },
-            named: "AddFeedLoading"
+            view: view,
+            named: "AddFeedLoading",
+            embedding: .navigationStack()
         )
     }
     
@@ -90,8 +95,9 @@ import TestUtility
         let view = AddFeedView(viewModel: model)
         
         assertSnapshot(
-            view: NavigationStack { view },
-            named: "AddFeedLoading"
+            view: view,
+            named: "AddFeedLoading",
+            embedding: .navigationStack()
         )
     }
 }

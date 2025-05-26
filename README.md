@@ -3,7 +3,7 @@
 ![Swift](https://img.shields.io/badge/Swift-6.0-orange.svg)
 ![Platforms](https://img.shields.io/badge/Platform-iOS%2017-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Coverage](https://img.shields.io/badge/Coverage-77%25-yellowgreen.svg)
+![Coverage](https://img.shields.io/badge/Coverage-80%-green.svg)
 
 An iOS application for reading and managing RSS feeds, built with a focus on clean architecture, testability, and modern iOS development practices. The project is structured as a modular Swift Package with clear separation of concerns.
 
@@ -14,6 +14,7 @@ An iOS application for reading and managing RSS feeds, built with a focus on cle
 - Background refresh and notifications for new items
 - Favorite feeds management
 - Explore curated feed suggestions
+- Add and remove explore feeds to the feed list from the explore feeds tab
 - Enhanced feed addition with top recommendations
 - Debug panel for notifications and background tasks
 - SwiftData persistence
@@ -132,7 +133,6 @@ make test            # Run tests and display basic test information
 ## Potential Improvements
 
 ### Technical Enhancements
-- Increase test coverage to 80%+
 - Optimize background task handling and scheduling logic
 - Refine `BGTaskScheduler` interaction with a mockable abstraction for improved testability
 - Add direct deep linking to articles and specific feeds
