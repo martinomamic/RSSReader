@@ -17,17 +17,19 @@ import Common
 @Suite struct NotificationDebugViewSnapshotTests {
     @Test("NotificationDebugView in different states")
     func testNotificationDebugView() async throws {
-        let debugView = NavigationStack { NotificationDebugView() }
+        let debugView = NotificationDebugView()
         
         assertSnapshot(
             view: debugView,
-            named: "NotificationDebugView"
+            named: "NotificationDebugView",
+            embedding: .navigationStack()
         )
         
         assertSnapshot(
             view: debugView,
             accessibility: .XXXL,
-            named: "NotificationDebugViewAccessible"
+            named: "NotificationDebugViewAccessible",
+            embedding: .navigationStack()
         )
     }
     
@@ -37,8 +39,9 @@ import Common
         debugView.isRefreshing = true
         
         assertSnapshot(
-            view: NavigationStack { debugView },
-            named: "NotificationDebugViewRefreshing"
+            view: debugView,
+            named: "NotificationDebugViewRefreshing",
+            embedding: .navigationStack()
         )
     }
     
@@ -50,8 +53,9 @@ import Common
         debugView.notificationStatus = "Authorized"
         
         assertSnapshot(
-            view: NavigationStack { debugView },
-            named: "NotificationDebugViewResults"
+            view: debugView,
+            named: "NotificationDebugViewResults",
+            embedding: .navigationStack()
         )
     }
 }

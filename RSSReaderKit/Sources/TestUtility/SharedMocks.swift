@@ -28,7 +28,7 @@ public enum SharedMocks {
         isFavorite: Bool = false,
         notificationsEnabled: Bool = false
     ) -> Feed {
-        let finalURL = url ?? URL(string: urlString)!
+        let finalURL = url ?? URL(string: urlString) ?? URL(string: "https://fallback.example.com/feed")!
         return Feed(
             url: finalURL,
             title: title,
@@ -70,23 +70,56 @@ public enum SharedMocks {
         ExploreFeed(name: name, url: url)
     }
     
-    public static var feedItems: [FeedItem] {
-        [
-            FeedItem(
-                feedID: UUID(),
-                title: "Test Item 1",
-                link: URL(string: "https://test.example.com/item1")!,
-                pubDate: Date(),
-                description: "This is test item 1",
-                imageURL: URL(string: "https://test.example.com/item1.jpg")
-            ),
-            FeedItem(
-                feedID: UUID(),
-                title: "Test Item 2",
-                link: URL(string: "https://test.example.com/item2")!,
-                pubDate: Date().addingTimeInterval(-3600),
-                description: "This is test item 2"
-            )
-        ]
-    }
+    public static let sampleExploreFeed1 = ExploreFeed(name: "BBC News", url: "https://feeds.bbci.co.uk/news/world/rss.xml")
+    public static let sampleExploreFeed2 = ExploreFeed(name: "NBC News", url: "https://feeds.nbcnews.com/nbcnews/public/news")
+    public static let sampleExploreFeed3 = ExploreFeed(name: "Reuters World News", url: "http://feeds.reuters.com/reuters/worldnews")
+    
+    public static let sampleFeed1: Feed = createFeed(
+        urlString: sampleExploreFeed1.url,
+        title: sampleExploreFeed1.name,
+        description: "Latest news from BBC World."
+    )
+    
+    public static let sampleFeed2: Feed = createFeed(
+        urlString: sampleExploreFeed2.url,
+        title: sampleExploreFeed2.name,
+        description: "Breaking news and top stories from NBC News."
+    )
+    
+    public static let sampleFeed3: Feed =
+    createFeed(
+        urlString: sampleExploreFeed3.url,
+        title: sampleExploreFeed3.name,
+        description: "World news from Reuters."
+    )
+    
+    public static let sampleExploreFeeds: [ExploreFeed] = [
+        sampleExploreFeed1,
+        sampleExploreFeed2,
+        sampleExploreFeed3
+    ]
+    
+    public static let sampleFeeds: [Feed] = [
+        sampleFeed1,
+        sampleFeed2,
+        sampleFeed3
+    ]
+    
+    public static let feedItems: [FeedItem] = [
+        FeedItem(
+            feedID: UUID(),
+            title: "Test Item 1",
+            link: URL(string: "https://test.example.com/item1")!,
+            pubDate: Date(),
+            description: "This is test item 1",
+            imageURL: URL(string: "https://test.example.com/item1.jpg")
+        ),
+        FeedItem(
+            feedID: UUID(),
+            title: "Test Item 2",
+            link: URL(string: "https://test.example.com/item2")!,
+            pubDate: Date().addingTimeInterval(-3600),
+            description: "This is test item 2"
+        )
+    ]
 }

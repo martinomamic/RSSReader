@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct FeedItem: Identifiable, Hashable, Sendable {
+public struct FeedItem: Identifiable, Sendable, Equatable {
     public let id: UUID
     public let feedID: UUID
     public let title: String

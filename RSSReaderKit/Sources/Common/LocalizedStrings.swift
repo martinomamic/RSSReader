@@ -26,6 +26,8 @@ public enum LocalizedStrings {
         public static let title = String(localized: "explore_title")
         public static let noFeedsTitle = String(localized: "explore_no_feeds_title")
         public static let noFeedsDescription = String(localized: "explore_no_feeds_description")
+        public static let noAddedFeedsTitle = String(localized: "explore_no_added_feeds_title")
+        public static let noAddedFeedsDescription = String(localized: "explore_no_added_feeds_description")
         public static let errorAddingFeed = String(localized: "explore_error_adding_feed")
     }
     
@@ -38,7 +40,7 @@ public enum LocalizedStrings {
 
     public enum ExploreFeed {
         public static let add = String(localized: "explore_feed_add")
-        public static let added = String(localized: "explore_feed_added")
+        public static let remove = String(localized: "explore_feed_remove")
     }
 
     public enum EmptyState {

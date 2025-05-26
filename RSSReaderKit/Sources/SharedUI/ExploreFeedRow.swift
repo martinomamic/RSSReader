@@ -12,16 +12,16 @@ import SwiftUI
 public struct ExploreFeedRow: View {
     public let feed: ExploreFeed
     public let isAdded: Bool
-    public let onAddTapped: () -> Void
+    public let onTapped: () -> Void
     
     public init(
         feed: ExploreFeed,
         isAdded: Bool,
-        onAddTapped: @escaping () -> Void
+        onTapped: @escaping () -> Void
     ) {
         self.feed = feed
         self.isAdded = isAdded
-        self.onAddTapped = onAddTapped
+        self.onTapped = onTapped
     }
 
     public var body: some View {
@@ -39,10 +39,9 @@ public struct ExploreFeedRow: View {
             Spacer()
 
             RoundedButton(
-                title: isAdded ? LocalizedStrings.ExploreFeed.added : LocalizedStrings.ExploreFeed.add,
-                action: onAddTapped,
-                backgroundColor: isAdded ? .green : .blue,
-                isDisabled: isAdded
+                title: isAdded ? LocalizedStrings.ExploreFeed.remove : LocalizedStrings.ExploreFeed.add,
+                action: onTapped,
+                backgroundColor: isAdded ? .green : .blue
             )
         }
         .padding(.vertical, Constants.UI.verticalPadding)
@@ -57,7 +56,7 @@ public struct ExploreFeedRow: View {
             url: "https://feeds.bbci.co.uk/news/world/rss.xml"
         ),
         isAdded: false,
-        onAddTapped: {}
+        onTapped: {}
     )
     .padding()
 }
@@ -69,7 +68,7 @@ public struct ExploreFeedRow: View {
             url: "https://feeds.bbci.co.uk/news/world/rss.xml"
         ),
         isAdded: true,
-        onAddTapped: {}
+        onTapped: {}
     )
     .padding()
 }

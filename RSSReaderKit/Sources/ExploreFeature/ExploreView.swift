@@ -11,12 +11,25 @@ import SharedUI
 import SwiftUI
 
 public struct ExploreView: View {
-    @Bindable var viewModel = ExploreViewModel()
+    @State var viewModel = ExploreViewModel()
 
     public init() {}
 
     public var body: some View {
         VStack {
+            Picker("Filter", selection: $viewModel.selectedFilter) {
+                ForEach(ExploreFeedFilter.allCases) { filter in
+                    Text(filter.rawValue).tag(filter)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+            .padding(.top)
+            .onChange(of: viewModel.selectedFilter) { _, _ in
+                viewModel.filterFeeds()
+            }
+            .testId(AccessibilityIdentifier.Explore.filterPicker)
+
             switch viewModel.state {
             case .loading:
                 ProgressView()
@@ -28,8 +41,8 @@ public struct ExploreView: View {
                         ExploreFeedRow(
                             feed: feed,
                             isAdded: viewModel.isFeedAdded(feed),
-                            onAddTapped: {
-                                viewModel.addFeed(feed)
+                            onTapped: {
+                                viewModel.handleFeed(feed)
                             }
                         )
                     }
@@ -44,9 +57,9 @@ public struct ExploreView: View {
                 
             case .empty:
                 EmptyStateView(
-                    title: LocalizedStrings.Explore.noFeedsTitle,
+                    title: viewModel.selectedFilter == .notAdded ? LocalizedStrings.Explore.noFeedsTitle : LocalizedStrings.Explore.noAddedFeedsTitle,
                     systemImage: Constants.Images.noItemsIcon,
-                    description: LocalizedStrings.Explore.noFeedsDescription
+                    description: viewModel.selectedFilter == .notAdded ? LocalizedStrings.Explore.noFeedsDescription : LocalizedStrings.Explore.noAddedFeedsDescription
                 )
                 .testId(AccessibilityIdentifier.Explore.emptyView)
             }
@@ -57,4 +70,8 @@ public struct ExploreView: View {
             viewModel.loadExploreFeeds()
         }
     }
+}
+
+extension AccessibilityIdentifier.Explore {
+    static let filterPicker = "explore_filter_picker"
 }

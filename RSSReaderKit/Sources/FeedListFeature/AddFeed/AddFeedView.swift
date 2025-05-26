@@ -11,7 +11,7 @@ import SharedUI
 
 struct AddFeedView: View {
     @Environment(\.dismiss) private var dismiss
-    @Bindable var viewModel = AddFeedViewModel()
+    @State var viewModel = AddFeedViewModel()
     
     var body: some View {
         VStack {
@@ -43,6 +43,9 @@ struct AddFeedView: View {
                 )
                 .testId(AccessibilityIdentifier.AddFeed.addViewEmptyView)
             }
+        }
+        .task {
+            viewModel.loadExploreFeeds()
         }
         .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
             if shouldDismiss {
@@ -99,7 +102,7 @@ struct AddFeedView: View {
                     ExploreFeedRow(
                         feed: feed,
                         isAdded: viewModel.isFeedAdded(feed),
-                        onAddTapped: {
+                        onTapped: {
                             viewModel.addExploreFeed(feed)
                         }
                     )

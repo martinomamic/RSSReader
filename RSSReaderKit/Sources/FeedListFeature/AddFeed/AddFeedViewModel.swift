@@ -26,10 +26,6 @@ class AddFeedViewModel {
     var exploreFeeds: [ExploreFeed] = []
     var addedFeedURLs: Set<String> = []
     
-    init() {
-        loadExploreFeeds()
-    }
-    
     var isAddButtonDisabled: Bool {
         !isValidURL
     }
@@ -85,7 +81,7 @@ class AddFeedViewModel {
         }
     }
     
-    func loadExploreFeeds() {
+    public func loadExploreFeeds() {
         loadExploreTask?.cancel()
         
         loadExploreTask = Task {

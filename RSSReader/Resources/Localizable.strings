@@ -13,9 +13,12 @@
 
 // Explore
 "explore_title" = "Explore Feeds";
-"explore_no_feeds_title" = "No Feeds Found";
+"explore_no_feeds_title" = "No Feeds";
 "explore_no_feeds_description" = "No feeds available";
+"explore_no_added_feeds_title" = "Added Feeds";
+"explore_no_added_feeds_description" = "No added feeds";
 "explore_error_adding_feed" = "Error Adding Feed";
+"explore_error_removing_feed" = "Error Removing Feed";
 
 // Add Feed
 "add_feed_title" = "Add Feed";
@@ -28,7 +31,7 @@
 
 // Explore Feed Row
 "explore_feed_add" = "Add";
-"explore_feed_added" = "Added";
+"explore_feed_remove" = "Remove";
 
 // Empty State
 "empty_state_default_title" = "No Items";

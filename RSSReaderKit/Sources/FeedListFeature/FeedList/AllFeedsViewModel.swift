@@ -51,32 +51,31 @@ public class AllFeedsViewModel: FeedListViewModelProtocol {
     
     public func toggleNotifications(_ feed: Feed) {
         notificationsTask?.cancel()
-        
         notificationsTask = Task { @MainActor in
             do {
-                if await !notificationRepository.notificationsAuthorized() {
-                    try await notificationRepository.requestPermissions()
+                if await !self.notificationRepository.notificationsAuthorized() {
+                    try await self.notificationRepository.requestPermissions()
                 }
                 
-                try await feedRepository.toggleNotifications(feed.url)
+                try await self.feedRepository.toggleNotifications(feed.url)
                 
-                guard await notificationRepository.notificationsAuthorized(),
-                      feed.notificationsEnabled else { return }
-                try await notificationRepository.checkForNewItems()
+                guard await self.notificationRepository.notificationsAuthorized(),
+                      let updatedFeed = self.feeds.first(where: { $0.url == feed.url }),
+                      updatedFeed.notificationsEnabled else { return }
+                try await self.notificationRepository.checkForNewItems()
             } catch {
-                state = .error(ErrorUtils.toAppError(error))
+                self.state = .error(ErrorUtils.toAppError(error))
             }
         }
     }
     
     public func toggleFavorite(_ feed: Feed) {
         favoritesTask?.cancel()
-        
         favoritesTask = Task { @MainActor in
             do {
-                try await feedRepository.toggleFavorite(feed.url)
+                try await self.feedRepository.toggleFavorite(feed.url)
             } catch {
-                state = .error(ErrorUtils.toAppError(error))
+                self.state = .error(ErrorUtils.toAppError(error))
             }
         }
     }
@@ -85,8 +84,8 @@ public class AllFeedsViewModel: FeedListViewModelProtocol {
         deleteTask?.cancel()
         deleteTask = Task { @MainActor in
             do {
-                guard let feed = indexSet.map({ feeds[$0] }).first else { return }
-                try await feedRepository.delete(feed.url)
+                guard let feed = indexSet.map({ self.feeds[$0] }).first else { return }
+                try await self.feedRepository.delete(feed.url)
             } catch {
                 self.state = .error(ErrorUtils.toAppError(error))
             }

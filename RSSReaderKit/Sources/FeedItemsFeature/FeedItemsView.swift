@@ -12,7 +12,7 @@ import SharedUI
 import SwiftUI
 
 public struct FeedItemsView: View {
-    @Bindable var viewModel: FeedItemsViewModel
+    var viewModel: FeedItemsViewModel
 
     public init(viewModel: FeedItemsViewModel) {
         self.viewModel = viewModel

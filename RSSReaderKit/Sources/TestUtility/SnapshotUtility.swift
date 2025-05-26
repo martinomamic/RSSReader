@@ -17,6 +17,10 @@ public enum ColorSchemeVariant: String {
     case both
 }
 
+public enum SnapshotEmbedding {
+    case navigationStack(title: String? = nil)
+}
+
 @MainActor
 public func assertSnapshot<V: View>(
   view: V,
@@ -28,14 +32,31 @@ public func assertSnapshot<V: View>(
   accessibility: SnapshotAccessibility = .none,
   colorScheme: ColorSchemeVariant = .both,
   named: String? = nil,
-  perceptualPrecision: Float = perceptualPrecision
+  perceptualPrecision: Float = perceptualPrecision,
+  embedding: SnapshotEmbedding? = nil
 ) {
     func prepareView(for scheme: ColorScheme) -> some View {
-        ZStack {
+        let contentView: AnyView
+        
+        if let embedding {
+            switch embedding {
+            case .navigationStack(let title):
+                contentView = AnyView(
+                    NavigationStack {
+                        view
+                            .navigationTitle(title ?? "")
+                    }
+                )
+            }
+        } else {
+            contentView = AnyView(view)
+        }
+ 
+        return ZStack {
             Color(.systemBackground).ignoresSafeArea()
-            
-            view
+            contentView
                 .environment(\.colorScheme, scheme)
+                .preferredColorScheme(scheme) // Reinforce color scheme
                 .withAccessibility(accessibility)
         }
     }

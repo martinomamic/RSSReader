@@ -16,7 +16,6 @@ import TestUtility
 
 @MainActor
 @Suite struct ExploreViewSnapshotTests {
-    
     @Test("ExploreView with feeds")
     func testExploreViewWithFeeds() async throws {
         let feeds = [
@@ -26,28 +25,69 @@ import TestUtility
         ]
         
         let view = ExploreView()
-        view.viewModel.state = .content(feeds)
+        view.viewModel.feeds = feeds
+        view.viewModel.addedFeedURLs = []
+        view.viewModel.selectedFilter = .notAdded
+        view.viewModel.filterFeeds()
         
         assertSnapshot(
             view: view,
-            named: "ExploreWithFeeds"
+            named: "ExploreWithFeeds_NotAdded",
+            embedding: .navigationStack()
         )
         
         assertSnapshot(
             view: view,
             accessibility: .XXXL,
-            named: "ExploreWithFeeds"
+            named: "ExploreWithFeeds_NotAdded_XXXL",
+            embedding: .navigationStack()
+        )
+
+        view.viewModel.addedFeedURLs = Set(feeds.map { $0.url })
+        view.viewModel.selectedFilter = .added
+        view.viewModel.filterFeeds()
+
+        assertSnapshot(
+            view: view,
+            named: "ExploreWithFeeds_Added",
+            embedding: .navigationStack()
+        )
+
+        assertSnapshot(
+            view: view,
+            accessibility: .XXXL,
+            named: "ExploreWithFeeds_Added_XXXL",
+            embedding: .navigationStack()
         )
     }
     
-    @Test("ExploreView with empty state")
-    func testExploreViewEmpty() async throws {
+    @Test("ExploreView with empty state - Not Added filter")
+    func testExploreViewEmptyNotAdded() async throws {
         let view = ExploreView()
-        view.viewModel.state = .empty
+        view.viewModel.feeds = []
+        view.viewModel.addedFeedURLs = []
+        view.viewModel.selectedFilter = .notAdded
+        view.viewModel.filterFeeds()
         
         assertSnapshot(
             view: view,
-            named: "ExploreEmpty"
+            named: "ExploreEmpty_NotAdded",
+            embedding: .navigationStack()
+        )
+    }
+
+    @Test("ExploreView with empty state - Added filter")
+    func testExploreViewEmptyAdded() async throws {
+        let view = ExploreView()
+        view.viewModel.feeds = [SharedMocks.createExploreFeed(name: "Some Feed")]
+        view.viewModel.addedFeedURLs = []
+        view.viewModel.selectedFilter = .added
+        view.viewModel.filterFeeds()
+        
+        assertSnapshot(
+            view: view,
+            named: "ExploreEmpty_Added",
+            embedding: .navigationStack()
         )
     }
     
@@ -58,7 +98,8 @@ import TestUtility
         
         assertSnapshot(
             view: view,
-            named: "ExploreError"
+            named: "ExploreError",
+            embedding: .navigationStack()
         )
     }
     
@@ -69,7 +110,8 @@ import TestUtility
         
         assertSnapshot(
             view: view,
-            named: "ExploreLoading"
+            named: "ExploreLoading",
+            embedding: .navigationStack()
         )
     }
 }
