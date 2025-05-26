@@ -21,14 +21,13 @@ import TestUtility
         let viewModel = AllFeedsViewModel()
         viewModel.state = .empty
         
-        let view = NavigationStack {
-            FeedListView(viewModel: viewModel)
-                .navigationTitle(viewModel.navigationTitle)
-        }
+        let view = FeedListView(viewModel: viewModel)
+            .navigationTitle(viewModel.navigationTitle)
         
         assertSnapshot(
             view: view,
-            named: "FeedListEmpty"
+            named: "FeedListEmpty",
+            embedding: .navigationStack()
         )
     }
     
@@ -37,14 +36,13 @@ import TestUtility
         let viewModel = AllFeedsViewModel()
         viewModel.state = .loading
         
-        let view = NavigationStack {
-            FeedListView(viewModel: viewModel)
-                .navigationTitle(viewModel.navigationTitle)
-        }
+        let view = FeedListView(viewModel: viewModel)
+            .navigationTitle(viewModel.navigationTitle)
         
         assertSnapshot(
             view: view,
-            named: "FeedListLoading"
+            named: "FeedListLoading",
+            embedding: .navigationStack()
         )
     }
     
@@ -53,14 +51,13 @@ import TestUtility
         let viewModel = AllFeedsViewModel()
         viewModel.state = .error(AppError.networkError)
         
-        let view = NavigationStack {
-            FeedListView(viewModel: viewModel)
-                .navigationTitle(viewModel.navigationTitle)
-        }
+        let view = FeedListView(viewModel: viewModel)
+            .navigationTitle(viewModel.navigationTitle)
         
         assertSnapshot(
             view: view,
-            named: "FeedListError"
+            named: "FeedListError",
+            embedding: .navigationStack()
         )
     }
 }

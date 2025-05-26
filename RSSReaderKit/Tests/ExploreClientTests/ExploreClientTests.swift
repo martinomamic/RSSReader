@@ -17,7 +17,6 @@ import TestUtility
 @testable import PersistenceClient
 
 @Suite struct ExploreClientTests {
-    
     @Test("Loading explore feeds fetches feeds from JSON file")
     func testLoadExploreFeeds() async throws {
         let mockFeeds = [

@@ -158,7 +158,7 @@ import TestUtility
 
         @Test("Get background task status")
         func testGetBackgroundTaskStatus() async throws {
-            await withDependencies {_ in }
+            await withDependencies { _ in }
             operation: {
                 let client = BackgroundRefreshClient.live()
                 client.configure()
@@ -190,5 +190,4 @@ import TestUtility
                 #expect(didAttemptSend.value, "Should attempt to send notification.")
             }
         }
-
 }

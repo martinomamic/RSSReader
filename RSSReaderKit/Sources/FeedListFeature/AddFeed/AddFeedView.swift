@@ -102,7 +102,7 @@ struct AddFeedView: View {
                     ExploreFeedRow(
                         feed: feed,
                         isAdded: viewModel.isFeedAdded(feed),
-                        onAddTapped: {
+                        onTapped: {
                             viewModel.addExploreFeed(feed)
                         }
                     )

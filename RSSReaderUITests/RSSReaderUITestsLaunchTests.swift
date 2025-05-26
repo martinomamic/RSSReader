@@ -25,10 +25,12 @@ final class RSSReaderUITestsLaunchTests: XCTestCase {
             let feedsTab = app.tabBars.buttons.matching(identifier: AccessibilityIdentifier.TabBar.feedsTab).firstMatch
             let favoritesTab = app.tabBars.buttons.matching(identifier: AccessibilityIdentifier.TabBar.favoritesTab).firstMatch
             let exploreTab = app.tabBars.buttons.matching(identifier: AccessibilityIdentifier.TabBar.exploreTab).firstMatch
+            let debugTab = app.tabBars.buttons.matching(identifier: AccessibilityIdentifier.TabBar.debugTab).firstMatch
       
             XCTAssertTrue(feedsTab.exists || app.tabBars.buttons["Feeds"].exists, "Feeds tab doesn't exist")
             XCTAssertTrue(favoritesTab.exists || app.tabBars.buttons["Favorites"].exists, "Favorites tab doesn't exist")
             XCTAssertTrue(exploreTab.exists || app.tabBars.buttons["Explore"].exists, "Explore tab doesn't exist")
+            XCTAssertTrue(debugTab.exists || app.tabBars.buttons["Debug"].exists, "Debug tab doesn't exist")
             
             XCTAssertTrue(app.navigationBars["RSS Feeds"].exists, "RSS Feeds navigation bar not found")
             
@@ -51,7 +53,6 @@ final class RSSReaderUITestsLaunchTests: XCTestCase {
             favoritesAttachment.lifetime = .keepAlways
             add(favoritesAttachment)
             
-            // Navigate to Explore tab and take a screenshot
             if exploreTab.exists {
                 exploreTab.tap()
             } else {
