@@ -53,12 +53,14 @@ public func assertSnapshot<V: View>(
         }
  
         return ZStack {
-            Color(.systemBackground).ignoresSafeArea()
+            Color(.systemBackground)
+                .ignoresSafeArea()
             contentView
                 .environment(\.colorScheme, scheme)
-                .preferredColorScheme(scheme) // Reinforce color scheme
+                .preferredColorScheme(scheme)
                 .withAccessibility(accessibility)
         }
+        .background(Color(.systemBackground))
     }
     
     func makeSnapshot(scheme: ColorScheme, layout: SnapshotLayout) {
