@@ -91,9 +91,6 @@ test:
 	@xcrun xccov view --report $(TEST_RESULT_PATH) --json | \
 	jq '{coverage: .lineCoverage, targets: [.targets[] | {name: .name, coverage: .lineCoverage, functions: .functionCoverage}]}' | \
 	jq -r '"Overall Coverage: " + ((.coverage * 100) | tostring | .[0:5]) + "%"'
-	@echo "\nDetailed coverage by target:"
-	@xcrun xccov view --report $(TEST_RESULT_PATH) --json | \
-	jq -r '.targets[] | select(.lineCoverage > 0) | "  " + .name + ": " + ((.lineCoverage * 100) | tostring | .[0:5]) + "%"'
 
 help:
 	@echo "Available commands:"
