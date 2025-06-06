@@ -8,6 +8,7 @@
 import Common
 import SwiftUI
 import SharedUI
+import ToastFeature
 
 struct AddFeedView: View {
     @Environment(\.dismiss) private var dismiss
@@ -22,8 +23,13 @@ struct AddFeedView: View {
                         ProgressView()
                     }
                 
-            case .content:
+            case  let .content(toast):
                 addForm
+                    .overlay(alignment: .top) {
+                        if let toast {
+                            ToastView(toast: toast, offset: .zero)
+                        }
+                    }
                 
             case .error(let error):
                 ErrorStateView(error: error) {

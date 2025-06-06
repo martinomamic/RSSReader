@@ -194,7 +194,8 @@ let package = Package(
                 module(.feedRepository),
                 module(.notificationRepository),
                 module(.sharedModels),
-                module(.sharedUI)
+                module(.sharedUI),
+                module(.toastFeature)
             ]
         ),
         testTarget(
@@ -306,7 +307,10 @@ let package = Package(
             exclude: [snapshotsDirectory]
         ),
         target(
-            .toastFeature
+            .toastFeature,
+            dependencies: [
+                module(.common)
+            ]
         ),
         target(
             .tabBarFeature,

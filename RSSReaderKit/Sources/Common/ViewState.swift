@@ -13,9 +13,3 @@ public enum ViewState<T>: Equatable where T: Equatable {
     case error(AppError)
     case empty
 }
-
-public extension ViewState where T == Bool {
-    static var idle: ViewState<Bool> {
-        return .content(false)
-    }
-}

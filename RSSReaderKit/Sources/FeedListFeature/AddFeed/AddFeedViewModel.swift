@@ -10,6 +10,7 @@ import Dependencies
 import Foundation
 import SharedModels
 import SwiftUI
+import ToastFeature
 
 @MainActor @Observable
 class AddFeedViewModel {
@@ -22,7 +23,7 @@ class AddFeedViewModel {
     private var loadExploreTask: Task<Void, Never>?
     
     var urlString: String = ""
-    var state: ViewState<Bool> = .idle
+    var state: ViewState<Toast?> = .idle
     var exploreFeeds: [ExploreFeed] = []
     var addedFeedURLs: Set<String> = []
     
@@ -46,7 +47,6 @@ class AddFeedViewModel {
             state = .error(AppError.invalidURL)
             return
         }
-        
         addFeedTask?.cancel()
         state = .loading
         
@@ -54,7 +54,7 @@ class AddFeedViewModel {
             do {
                 try await feedRepository.add(url)
                 loadExploreFeeds()
-                state = .content(true)
+                state = .content(.success("Feed added"))
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }
@@ -69,7 +69,7 @@ class AddFeedViewModel {
             do {
                 _ = try await feedRepository.addExploreFeed(exploreFeed)
                 loadExploreFeeds()
-                state = .content(true)
+                state = .content(.success("Feed added"))
             } catch {
                 state = .error(ErrorUtils.toAppError(error))
             }

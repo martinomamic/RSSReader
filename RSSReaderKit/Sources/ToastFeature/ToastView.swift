@@ -8,13 +8,17 @@
 import Common
 import SwiftUI
 
-struct ToastView: View {
+public struct ToastView: View {
     let toast: Toast
-    let onSwipeEnd: () -> Void
 
     @State private var offset: CGSize = .zero
+    
+    public init(toast: Toast, offset: CGSize) {
+        self.toast = toast
+        self.offset = offset
+    }
 
-    var body: some View {
+    public var body: some View {
         HStack {
             Image(systemName: toast.icon)
                 .foregroundColor(toast.foregroundColor)
@@ -34,5 +38,11 @@ struct ToastView: View {
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: offset)
         .transition(.move(edge: .top).combined(with: .opacity))
         .zIndex(1000)
+    }
+}
+
+public extension ViewState where T == Toast? {
+    static var idle: ViewState<Toast?> {
+        return .content(nil)
     }
 }
