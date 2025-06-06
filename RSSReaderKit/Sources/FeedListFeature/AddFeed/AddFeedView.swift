@@ -17,17 +17,13 @@ struct AddFeedView: View {
         VStack {
             switch viewModel.state {
             case .loading:
-                ProgressView()
+                addForm
+                    .overlay {
+                        ProgressView()
+                    }
                 
             case .content:
-                ScrollView {
-                    VStack(spacing: 16) {
-                        urlInputSection
-                        
-                        exploreFeedsSection
-                    }
-                    .padding()
-                }
+                addForm
                 
             case .error(let error):
                 ErrorStateView(error: error) {
@@ -47,16 +43,22 @@ struct AddFeedView: View {
         .task {
             viewModel.loadExploreFeeds()
         }
-        .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
-            if shouldDismiss {
-                dismiss()
-            }
-        }
         .navigationTitle(LocalizedStrings.AddFeed.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             cancelButton
             addButton
+        }
+    }
+    
+    private var addForm: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                urlInputSection
+                
+                exploreFeedsSection
+            }
+            .padding()
         }
     }
     

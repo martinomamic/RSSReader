@@ -35,11 +35,6 @@ class AddFeedViewModel {
         return false
     }
     
-    var shouldDismiss: Bool {
-        if case .content(true) = state { return true }
-        return false
-    }
-    
     private var isValidURL: Bool {
         guard !urlString.isEmpty,
               let url = URL(string: urlString) else { return false }
