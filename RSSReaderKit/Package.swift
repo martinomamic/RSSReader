@@ -15,8 +15,9 @@ fileprivate enum Module: String, CaseIterable {
     case rssClient = "RSSClient"
     case sharedModels = "SharedModels"
     case sharedUI = "SharedUI"
-    case testUtility = "TestUtility"
     case tabBarFeature = "TabBarFeature"
+    case testUtility = "TestUtility"
+    case toastFeature = "ToastFeature"
     case userDefaultsClient = "UserDefaultsClient"
     case userNotificationClient = "UserNotificationClient"
 
@@ -303,6 +304,9 @@ let package = Package(
                 module(.testUtility)
             ],
             exclude: [snapshotsDirectory]
+        ),
+        target(
+            .toastFeature
         ),
         target(
             .tabBarFeature,
