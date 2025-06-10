@@ -8,17 +8,12 @@
 import Common
 import SwiftUI
 
-public struct ToastView: View {
+struct ToastView: View {
     let toast: Toast
 
     @State private var offset: CGSize = .zero
     
-    public init(toast: Toast, offset: CGSize) {
-        self.toast = toast
-        self.offset = offset
-    }
-
-    public var body: some View {
+    var body: some View {
         HStack {
             Image(systemName: toast.icon)
                 .foregroundColor(toast.foregroundColor)

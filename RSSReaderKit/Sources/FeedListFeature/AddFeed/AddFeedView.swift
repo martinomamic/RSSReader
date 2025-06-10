@@ -23,13 +23,8 @@ struct AddFeedView: View {
                         ProgressView()
                     }
                 
-            case  let .content(toast):
+            case .content:
                 addForm
-                    .overlay(alignment: .top) {
-                        if let toast {
-                            ToastView(toast: toast, offset: .zero)
-                        }
-                    }
                 
             case .error(let error):
                 ErrorStateView(error: error) {
@@ -46,6 +41,7 @@ struct AddFeedView: View {
                 .testId(AccessibilityIdentifier.AddFeed.addViewEmptyView)
             }
         }
+        .toastOverlay(viewModel.toastService)
         .task {
             viewModel.loadExploreFeeds()
         }
@@ -62,7 +58,9 @@ struct AddFeedView: View {
             VStack(spacing: 16) {
                 urlInputSection
                 
-                exploreFeedsSection
+                if !viewModel.exploreFeeds.isEmpty {
+                    exploreFeedsSection
+                }
             }
             .padding()
         }
