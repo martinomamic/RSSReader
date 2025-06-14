@@ -16,10 +16,10 @@ public struct ToastOverlayView: View {
     
     public var body: some View {
         VStack {
+            Spacer()
             ForEach(toastService.toasts) { toast in
                 ToastView(toast: toast)
             }
-            Spacer()
         }
         .animation(
             .spring(
@@ -34,7 +34,7 @@ public struct ToastOverlayView: View {
 @MainActor
 extension View {
     public func toastOverlay(_ toastService: ToastService) -> some View {
-        overlay(alignment: .top) {
+        overlay(alignment: .bottom) {
             ToastOverlayView(toastService: toastService)
         }
     }

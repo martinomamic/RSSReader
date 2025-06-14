@@ -54,17 +54,6 @@ extension Toast {
     var backgroundColor: Color {
         switch self.type {
         case .info:
-            return .blue.opacity(0.5)
-        case .error:
-            return .red.opacity(0.5)
-        case .success:
-            return .green.opacity(0.5)
-        }
-    }
-
-    var foregroundColor: Color {
-        switch self.type {
-        case .info:
             return .blue
         case .error:
             return .red

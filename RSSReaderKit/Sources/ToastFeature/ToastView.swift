@@ -16,7 +16,7 @@ struct ToastView: View {
     var body: some View {
         HStack {
             Image(systemName: toast.icon)
-                .foregroundColor(toast.foregroundColor)
+                .foregroundColor(.white)
                 .font(.title2)
 
             Text(toast.message)
@@ -31,7 +31,7 @@ struct ToastView: View {
         .padding(.top, Constants.UI.verticalPadding)
         .offset(y: offset.height)
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: offset)
-        .transition(.move(edge: .top).combined(with: .opacity))
+        .transition(.move(edge: .bottom).combined(with: .opacity))
         .zIndex(1000)
     }
 }
