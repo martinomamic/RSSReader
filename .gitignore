@@ -62,3 +62,11 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 *.xcuserstate
 .DS_Store
+
+# Test Results
+TestResults.xcresult/
+*.xcresult/
+
+# Coverage Reports
+coverage.txt
+coverage/

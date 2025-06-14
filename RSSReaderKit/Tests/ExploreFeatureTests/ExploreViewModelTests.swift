@@ -2,7 +2,7 @@
 //  ExploreViewModelTests.swift
 //  RSSReaderKitTests
 //
-//  Created by Martino Mamic on 19.05.25.
+//  Created by Martino Mamić on 19.05.25.
 //
 
 import Common

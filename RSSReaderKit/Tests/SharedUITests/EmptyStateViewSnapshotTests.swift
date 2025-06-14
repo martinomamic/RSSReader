@@ -2,7 +2,7 @@
 //  EmptyStateViewSnapshotTests.swift
 //  RSSReaderKit
 //
-//  Created by Martino Mamic on 09.05.25.
+//  Created by Martino Mamić on 09.05.25.
 //
 
 import Testing

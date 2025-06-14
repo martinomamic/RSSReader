@@ -2,7 +2,7 @@
 //  NotificationDelegate.swift
 //  RSSReaderKit
 //
-//  Created by Martino Mamic on 03.05.25.
+//  Created by Martino Mamić on 03.05.25.
 //
 
 import Foundation

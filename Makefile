@@ -83,11 +83,14 @@ test:
 	@echo "Removing previous test results..."
 	rm -rf $(TEST_RESULT_PATH)
 	@echo "Running tests and generating result bundle..."
-	xcodebuild test -project $(XCODE_PROJECT) -scheme $(PROJECT_NAME) -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.4' -resultBundlePath $(TEST_RESULT_PATH)
+	xcodebuild test -project $(XCODE_PROJECT) -scheme $(PROJECT_NAME) -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.4' -resultBundlePath $(TEST_RESULT_PATH) -enableCodeCoverage YES
 	@echo "\nTest summary:"
 	@xcrun xcresulttool get test-results summary --path $(TEST_RESULT_PATH) --compact | \
 	jq '{totalTests: .totalTestCount, passed: .passedTests, failed: .failedTests, skipped: .skippedTests, expectedFailures: .expectedFailures, duration: (.result | if type=="object" then .testDuration else null end)}'
-	
+	@echo "\nGenerating coverage report..."
+	@xcrun xccov view --report $(TEST_RESULT_PATH) --json | \
+	jq '{coverage: .lineCoverage, targets: [.targets[] | {name: .name, coverage: .lineCoverage, functions: .functionCoverage}]}' | \
+	jq -r '"Overall Coverage: " + ((.coverage * 100) | tostring | .[0:5]) + "%"'
 
 help:
 	@echo "Available commands:"
@@ -103,4 +106,4 @@ help:
 	@echo "  make build        		- Build project"
 	@echo "  make reset-packages 	- Reset package dependencies"
 	@echo "  make install-tools 	- Install development tools"
-	@echo "  make test 				- Runs tests, and adds a simple summary"
+	@echo "  make test 				- Runs tests, and adds a simple summary and code coverage"
