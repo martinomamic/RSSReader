@@ -43,7 +43,7 @@ extension ExploreClient {
 
                     return feed
                 } catch let error as RSSError {
-                    throw ExploreError.feedFetchFailed(error.localizedDescription)
+                    throw ExploreError.feedFetchFailed(String(describing: error))
                 } catch {
                     throw error
                 }

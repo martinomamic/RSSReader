@@ -10,6 +10,7 @@ import Dependencies
 import Foundation
 import SharedModels
 import SwiftUI
+import ToastFeature
 
 @MainActor @Observable
 class AddFeedViewModel {
@@ -22,9 +23,11 @@ class AddFeedViewModel {
     private var loadExploreTask: Task<Void, Never>?
     
     var urlString: String = ""
-    var state: ViewState<Bool> = .idle
+    var state: ViewState<Toast?> = .idle
     var exploreFeeds: [ExploreFeed] = []
     var addedFeedURLs: Set<String> = []
+    
+    let toastService = ToastService()
     
     var isAddButtonDisabled: Bool {
         !isValidURL
@@ -32,11 +35,6 @@ class AddFeedViewModel {
     
     var isLoading: Bool {
         if case .loading = state { return true }
-        return false
-    }
-    
-    var shouldDismiss: Bool {
-        if case .content(true) = state { return true }
         return false
     }
     
@@ -51,7 +49,6 @@ class AddFeedViewModel {
             state = .error(AppError.invalidURL)
             return
         }
-        
         addFeedTask?.cancel()
         state = .loading
         
@@ -59,10 +56,25 @@ class AddFeedViewModel {
             do {
                 try await feedRepository.add(url)
                 loadExploreFeeds()
-                state = .content(true)
+                state = .content(nil)
+                toastService.showSuccess("Added feed from link /n\(urlString)")
             } catch {
-                state = .error(ErrorUtils.toAppError(error))
+                handleError(error)
             }
+        }
+    }
+    
+    fileprivate func handleError(_ error: any Error) {
+        let appError = ErrorUtils.toAppError(error)
+        switch appError {
+        case .duplicateFeed:
+            toastService.showError("Feed for this link is already added")
+            state = .idle
+        case .invalidURL:
+            toastService.showError(appError.errorDescription)
+            state = .idle
+        default:
+            state = .error(appError)
         }
     }
     
@@ -74,9 +86,10 @@ class AddFeedViewModel {
             do {
                 _ = try await feedRepository.addExploreFeed(exploreFeed)
                 loadExploreFeeds()
-                state = .content(true)
+                state = .content(nil)
+                toastService.showSuccess("Added feed from link /n\(exploreFeed.url)")
             } catch {
-                state = .error(ErrorUtils.toAppError(error))
+                handleError(error)
             }
         }
     }
@@ -96,7 +109,7 @@ class AddFeedViewModel {
                     .prefix(10)
                     .map { $0 }
             } catch {
-                exploreFeeds = []
+                toastService.showError("Couldn't load explore feeds")
             }
         }
     }

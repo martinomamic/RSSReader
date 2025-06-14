@@ -2,7 +2,7 @@
 //  SharedMocks.swift
 //  RSSReaderKit
 //
-//  Created by Martino Mamic on 08.05.25.
+//  Created by Martino Mamić on 08.05.25.
 //
 
 import Foundation
