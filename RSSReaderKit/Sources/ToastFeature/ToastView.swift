@@ -2,7 +2,7 @@
 //  ToastView.swift
 //  RSSReaderKit
 //
-//  Created by Martino Mamic on 06.06.25.
+//  Created by Martino Mamić on 06.06.25.
 //
 
 import Common

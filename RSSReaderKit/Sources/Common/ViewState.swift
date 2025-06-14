@@ -2,7 +2,7 @@
 //  ViewState.swift
 //  RSSReaderKit
 //
-//  Created by Martino Mamic on 05.05.25.
+//  Created by Martino Mamić on 05.05.25.
 //
 
 import Foundation

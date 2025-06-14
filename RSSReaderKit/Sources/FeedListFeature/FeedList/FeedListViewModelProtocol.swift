@@ -2,7 +2,7 @@
 //  FeedListViewModelProtocol.swift
 //  RSSReaderKit
 //
-//  Created by Martino Mamic on 06.05.25.
+//  Created by Martino Mamić on 06.05.25.
 //
 
 import Common
