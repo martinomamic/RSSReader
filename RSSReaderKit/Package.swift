@@ -153,7 +153,8 @@ let package = Package(
                 module(.common),
                 module(.feedRepository),
                 module(.sharedModels),
-                module(.sharedUI)
+                module(.sharedUI),
+                module(.toastFeature)
             ]
         ),
         testTarget(

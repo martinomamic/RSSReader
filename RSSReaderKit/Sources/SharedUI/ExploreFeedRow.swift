@@ -25,26 +25,34 @@ public struct ExploreFeedRow: View {
     }
 
     public var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: Constants.UI.exploreFeedRowSpacing) {
-                Text(feed.name)
-                    .font(.headline)
+        Button(action: onTapped) {
+            HStack {
+                VStack(alignment: .leading, spacing: Constants.UI.exploreFeedRowSpacing) {
+                    Text(feed.name)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
 
-                Text(feed.url)
+                    Text(feed.url)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(Constants.UI.exploreFeedUrlLineLimit)
+                }
+
+                Spacer()
+
+                Text(isAdded ? LocalizedStrings.ExploreFeed.remove : LocalizedStrings.ExploreFeed.add)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(Constants.UI.exploreFeedUrlLineLimit)
+                    .fontWeight(.medium)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(isAdded ? .green : .blue)
+                    .foregroundStyle(.white)
+                    .clipShape(Capsule())
             }
-
-            Spacer()
-
-            RoundedButton(
-                title: isAdded ? LocalizedStrings.ExploreFeed.remove : LocalizedStrings.ExploreFeed.add,
-                action: onTapped,
-                backgroundColor: isAdded ? .green : .blue
-            )
+            .padding(.vertical, Constants.UI.verticalPadding)
+            .contentShape(Rectangle())
         }
-        .padding(.vertical, Constants.UI.verticalPadding)
+        .buttonStyle(PlainButtonStyle())
         .testId(AccessibilityIdentifier.Explore.feedRow)
     }
 }

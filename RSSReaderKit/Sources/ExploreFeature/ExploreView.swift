@@ -9,6 +9,7 @@ import Common
 import SharedModels
 import SharedUI
 import SwiftUI
+import ToastFeature
 
 public struct ExploreView: View {
     @State var viewModel = ExploreViewModel()
@@ -69,6 +70,7 @@ public struct ExploreView: View {
         .task {
             viewModel.loadExploreFeeds()
         }
+        .toastOverlay(viewModel.toastService)
     }
 }
 

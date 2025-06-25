@@ -5,7 +5,6 @@
 //  Created by Martino Mamić on 06.06.25.
 //
 
-import Dependencies
 import Foundation
 import Observation
 import SwiftUI
