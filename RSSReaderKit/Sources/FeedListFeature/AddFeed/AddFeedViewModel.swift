@@ -57,7 +57,7 @@ class AddFeedViewModel {
                 try await feedRepository.add(url)
                 loadExploreFeeds()
                 state = .content(nil)
-                toastService.showSuccess("Added feed from link /n\(urlString)")
+                toastService.showSuccess("Added feed from link \(urlString)")
             } catch {
                 handleError(error)
             }
@@ -87,7 +87,7 @@ class AddFeedViewModel {
                 _ = try await feedRepository.addExploreFeed(exploreFeed)
                 loadExploreFeeds()
                 state = .content(nil)
-                toastService.showSuccess("Added feed from link /n\(exploreFeed.url)")
+                toastService.showSuccess("Added feed from link \(exploreFeed.url)")
             } catch {
                 handleError(error)
             }
