@@ -47,8 +47,13 @@ public struct ExploreView: View {
                                 viewModel.handleFeed(feed)
                             }
                         )
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
                     }
                 }
+                .animation(.easeInOut(duration: 0.3), value: feeds.map(\.url))
                 .testId(AccessibilityIdentifier.Explore.feedsList)
 
             case .error(let error):

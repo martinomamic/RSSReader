@@ -26,6 +26,7 @@ class AddFeedViewModel {
     var state: ViewState<Toast?> = .idle
     var exploreFeeds: [ExploreFeed] = []
     var addedFeedURLs: Set<String> = []
+    var processingFeedURLs: Set<String> = []
     
     let toastService = ToastService()
     
@@ -42,6 +43,10 @@ class AddFeedViewModel {
         guard !urlString.isEmpty,
               let url = URL(string: urlString) else { return false }
         return UIApplication.shared.canOpenURL(url)
+    }
+    
+    func isProcessingFeed(_ feed: ExploreFeed) -> Bool {
+        processingFeedURLs.contains(feed.url)
     }
     
     func addFeed() {
@@ -64,7 +69,7 @@ class AddFeedViewModel {
         }
     }
     
-    fileprivate func handleError(_ error: any Error) {
+    private func handleError(_ error: any Error) {
         let appError = ErrorUtils.toAppError(error)
         switch appError {
         case .duplicateFeed:
@@ -81,11 +86,19 @@ class AddFeedViewModel {
     func addExploreFeed(_ exploreFeed: ExploreFeed) {
         addFeedTask?.cancel()
         state = .loading
+        processingFeedURLs.insert(exploreFeed.url)
         
         addFeedTask = Task {
+            defer {
+                processingFeedURLs.remove(exploreFeed.url)
+            }
             do {
                 _ = try await feedRepository.addExploreFeed(exploreFeed)
-                loadExploreFeeds()
+                
+                withAnimation(.easeOut(duration: 0.3)) {
+                    loadExploreFeeds()
+                }
+                
                 state = .content(nil)
                 toastService.showSuccess(String(format: LocalizedStrings.AddFeed.successLinkFromExplore, exploreFeed.url))
             } catch {
@@ -106,7 +119,7 @@ class AddFeedViewModel {
                 
                 exploreFeeds = allExploreFeeds
                     .filter { !addedFeedURLs.contains($0.url) }
-                    .prefix(10)
+                    .prefix(5)
                     .map { $0 }
             } catch {
                 toastService.showError(LocalizedStrings.AddFeed.errorExploreLoad)
