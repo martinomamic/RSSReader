@@ -15,10 +15,19 @@ import SharedUI
 import ToastFeature
 
 enum ExploreFeedFilter: String, CaseIterable, Identifiable {
-    case notAdded = "Not Added"
-    case added = "Added"
+    case notAdded = "notAdded"
+    case added = "added"
 
     var id: String { self.rawValue }
+    
+    var displayName: String {
+        switch self {
+        case .notAdded:
+            return LocalizedStrings.Explore.filterNotAdded
+        case .added:
+            return LocalizedStrings.Explore.filterAdded
+        }
+    }
 }
 
 @MainActor @Observable
@@ -31,6 +40,9 @@ class ExploreViewModel {
     var addedFeedURLs: Set<String> = []
     var selectedFilter: ExploreFeedFilter = .notAdded
     var feeds: [ExploreFeed] = []
+    
+    // Track feeds currently being processed
+    var processingFeedURLs: Set<String> = []
     
     let toastService = ToastService()
 
@@ -75,7 +87,11 @@ class ExploreViewModel {
 
     func addFeed(_ exploreFeed: ExploreFeed) {
         addTask?.cancel()
+        processingFeedURLs.insert(exploreFeed.url)
+        
         addTask = Task {
+            defer { processingFeedURLs.remove(exploreFeed.url) }
+            
             do {
                 _ = try await feedRepository.addExploreFeed(exploreFeed)
                 feeds = try await feedRepository.loadExploreFeeds()
@@ -91,7 +107,11 @@ class ExploreViewModel {
 
     func removeFeed(_ exploreFeed: ExploreFeed) {
         removeTask?.cancel()
+        processingFeedURLs.insert(exploreFeed.url)
+        
         removeTask = Task {
+            defer { processingFeedURLs.remove(exploreFeed.url) }
+            
             do {
                 guard let feedURLToRemove = URL(string: exploreFeed.url) else {
                     toastService.showError(LocalizedStrings.Explore.invalidFeedURL)
@@ -115,7 +135,14 @@ class ExploreViewModel {
         addedFeedURLs.contains(feed.url)
     }
     
+    func isFeedProcessing(_ feed: ExploreFeed) -> Bool {
+        processingFeedURLs.contains(feed.url)
+    }
+    
     func handleFeed(_ feed: ExploreFeed) {
+        // Prevent multiple operations on the same feed
+        guard !isFeedProcessing(feed) else { return }
+        
         if isFeedAdded(feed) {
             removeFeed(feed)
         } else {

@@ -18,9 +18,9 @@ public struct ExploreView: View {
 
     public var body: some View {
         VStack {
-            Picker("Filter", selection: $viewModel.selectedFilter) {
+            Picker(LocalizedStrings.Explore.filter, selection: $viewModel.selectedFilter) {
                 ForEach(ExploreFeedFilter.allCases) { filter in
-                    Text(filter.rawValue).tag(filter)
+                    Text(filter.displayName).tag(filter)
                 }
             }
             .pickerStyle(.segmented)
@@ -42,6 +42,7 @@ public struct ExploreView: View {
                         ExploreFeedRow(
                             feed: feed,
                             isAdded: viewModel.isFeedAdded(feed),
+                            isProcessing: viewModel.isFeedProcessing(feed),
                             onTapped: {
                                 viewModel.handleFeed(feed)
                             }
