@@ -12,6 +12,7 @@ import Foundation
 import Observation
 import SharedModels
 import SharedUI
+import ToastFeature
 
 enum ExploreFeedFilter: String, CaseIterable, Identifiable {
     case notAdded = "Not Added"
@@ -30,6 +31,8 @@ class ExploreViewModel {
     var addedFeedURLs: Set<String> = []
     var selectedFilter: ExploreFeedFilter = .notAdded
     var feeds: [ExploreFeed] = []
+    
+    let toastService = ToastService()
 
     var addTask: Task<Void, Never>?
     var loadTask: Task<Void, Never>?
@@ -58,7 +61,14 @@ class ExploreViewModel {
                 
                 filterFeeds()
             } catch {
-                state = .error(ErrorUtils.toAppError(error))
+                if feeds.isEmpty {
+                    // First time loading failed - show error state with retry
+                    state = .error(ErrorUtils.toAppError(error))
+                } else {
+                    // Refresh failed but we have cached data - show toast instead
+                    toastService.showError(LocalizedStrings.Explore.errorRefreshExplore)
+                    filterFeeds()
+                }
             }
         }
     }
@@ -71,8 +81,10 @@ class ExploreViewModel {
                 feeds = try await feedRepository.loadExploreFeeds()
                 addedFeedURLs.insert(exploreFeed.url)
                 filterFeeds()
+                
+                toastService.showSuccess(String(format: LocalizedStrings.Explore.successAdd, exploreFeed.name))
             } catch {
-                state = .error(ErrorUtils.toAppError(error))
+                toastService.showError(String(format: LocalizedStrings.Explore.errorAdd, exploreFeed.name))
             }
         }
     }
@@ -82,7 +94,7 @@ class ExploreViewModel {
         removeTask = Task {
             do {
                 guard let feedURLToRemove = URL(string: exploreFeed.url) else {
-                    // shouldn't be possible but I'll leave an early exit
+                    toastService.showError(LocalizedStrings.Explore.invalidFeedURL)
                     return
                 }
                 try await feedRepository.delete(feedURLToRemove)
@@ -91,8 +103,10 @@ class ExploreViewModel {
                 
                 addedFeedURLs.remove(exploreFeed.url)
                 filterFeeds()
+                
+                toastService.showSuccess(String(format: LocalizedStrings.Explore.successRemove, exploreFeed.name))
             } catch {
-                state = .error(ErrorUtils.toAppError(error))
+                toastService.showError(String(format: LocalizedStrings.Explore.errorRemove, exploreFeed.name))
             }
         }
     }

@@ -10,6 +10,7 @@ import SwiftUI
 
 struct ToastView: View {
     let toast: Toast
+    let toastService: ToastService
 
     @State private var offset: CGSize = .zero
     
@@ -30,6 +31,24 @@ struct ToastView: View {
         .padding(.horizontal)
         .padding(.top, Constants.UI.verticalPadding)
         .offset(y: offset.height)
+        .gesture(
+            DragGesture()
+                .onChanged { gesture in
+                    if gesture.translation.height > 0 { // Allow dragging only downwards
+                        offset = gesture.translation
+                    }
+                }
+                .onEnded { _ in
+                    if offset.height > 50 {
+                        toastService.dismiss(toast)
+                    } else {
+                        offset = .zero
+                    }
+                }
+        )
+        .onTapGesture {
+            toastService.dismiss(toast)
+        }
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: offset)
         .transition(.move(edge: .bottom).combined(with: .opacity))
         .zIndex(1000)

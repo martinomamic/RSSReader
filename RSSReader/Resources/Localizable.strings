@@ -20,6 +20,14 @@
 "explore_error_adding_feed" = "Error Adding Feed";
 "explore_error_removing_feed" = "Error Removing Feed";
 
+// Explore localizations
+"explore_error_refreshing_feeds" = "Failed to refresh explore feeds";
+"explore_success_added_feed" = "Added %@";
+"explore_error_adding_feed_generic" = "Failed to add %@";
+"explore_invalid_feed_url" = "Invalid feed URL";
+"explore_success_removed_feed" = "Removed %@";
+"explore_error_removing_feed_generic" = "Failed to remove %@";
+
 // Add Feed
 "add_feed_title" = "Add Feed";
 "add_feed_url_placeholder" = "Feed URL";
@@ -28,6 +36,15 @@
 "add_feed_example_bbc" = "BBC News";
 "add_feed_example_nbc" = "NBC News";
 "add_feed_error_title" = "Error Adding Feed";
+"add_feed_empty_title" = "Adding Views not possible";
+"add_feed_empty_description" = "No feeds to add";
+"add_feed_suggested_feeds" = "Suggested Feeds";
+
+// Add Feed localizations
+"add_feed_success_from_link" = "Added feed from link %@";
+"add_feed_error_duplicate" = "Feed for this link is already added";
+"add_feed_success_from_explore" = "Added feed from link %@";
+"add_feed_error_loading_explore" = "Couldn't load explore feeds";
 
 // Explore Feed Row
 "explore_feed_add" = "Add";
@@ -58,6 +75,19 @@
 "feed_list_no_favorites_description" = "Add feeds to favorites from the Feeds tab";
 "feed_list_no_feeds_description" = "Add an RSS feed to get started";
 "feed_list_unnamed_feed" = "Unnamed feed";
+
+// Notification Debug Panel
+"notification_debug_title" = "Notification Debug";
+"notification_debug_status" = "Status";
+"notification_debug_notification_status" = "Notification Status:";
+"notification_debug_check" = "Check";
+"notification_debug_actions" = "Actions";
+"notification_debug_request_permissions" = "Request Notification Permissions";
+"notification_debug_send_delayed" = "Send Delayed (5 sec) Notification";
+"notification_debug_trigger_refresh" = "Trigger Manual Background Refresh";
+"notification_debug_test_parsing" = "Test Feed Parsing";
+"notification_debug_results" = "Results";
+"notification_debug_processing" = "Processing...";
 
 // General
 "general_ok" = "OK";

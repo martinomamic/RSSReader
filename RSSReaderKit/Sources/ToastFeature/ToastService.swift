@@ -5,7 +5,6 @@
 //  Created by Martino Mamić on 06.06.25.
 //
 
-import Dependencies
 import Foundation
 import Observation
 import SwiftUI
@@ -19,7 +18,7 @@ public final class ToastService {
     public func show(_ toast: Toast) {
         toasts.insert(toast, at: 0)
         Task {
-            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            try? await Task.sleep(for: .seconds(2))
             dismiss(toast)
         }
     }

@@ -1,129 +1,95 @@
-//
-//  AddFeedViewModel.swift
-//  RSSReaderKit
-//
-//  Created by Martino Mamić on 13.04.25.
-//
+// Feed Items
+"feed_items_no_items_title" = "No Items";
+"feed_items_no_items_description" = "This feed contains no items";
 
-import Common
-import Dependencies
-import Foundation
-import SharedModels
-import SwiftUI
-import ToastFeature
+// Loading States
+"loading" = "Loading...";
 
-@MainActor @Observable
-class AddFeedViewModel {
-    @ObservationIgnored
-    @Dependency(\.feedRepository) private var feedRepository
-    @ObservationIgnored
-    @Dependency(\.exploreClient) private var exploreClient
-    
-    private var addFeedTask: Task<Void, Never>?
-    private var loadExploreTask: Task<Void, Never>?
-    
-    var urlString: String = ""
-    var state: ViewState<Toast?> = .idle
-    var exploreFeeds: [ExploreFeed] = []
-    var addedFeedURLs: Set<String> = []
-    
-    let toastService = ToastService()
-    
-    var isAddButtonDisabled: Bool {
-        !isValidURL
-    }
-    
-    var isLoading: Bool {
-        if case .loading = state { return true }
-        return false
-    }
-    
-    private var isValidURL: Bool {
-        guard !urlString.isEmpty,
-              let url = URL(string: urlString) else { return false }
-        return UIApplication.shared.canOpenURL(url)
-    }
-    
-    func addFeed() {
-        guard let url = URL(string: urlString) else {
-            state = .error(AppError.invalidURL)
-            return
-        }
-        addFeedTask?.cancel()
-        state = .loading
-        
-        addFeedTask = Task {
-            do {
-                try await feedRepository.add(url)
-                loadExploreFeeds()
-                state = .content(nil)
-                toastService.showSuccess("Added feed from link /n\(urlString)")
-            } catch {
-                handleError(error)
-            }
-        }
-    }
-    
-    fileprivate func handleError(_ error: any Error) {
-        let appError = ErrorUtils.toAppError(error)
-        switch appError {
-        case .duplicateFeed:
-            toastService.showError("Feed for this link is already added")
-            state = .idle
-        case .invalidURL:
-            toastService.showError(appError.errorDescription)
-            state = .idle
-        default:
-            state = .error(appError)
-        }
-    }
-    
-    func addExploreFeed(_ exploreFeed: ExploreFeed) {
-        addFeedTask?.cancel()
-        state = .loading
-        
-        addFeedTask = Task {
-            do {
-                _ = try await feedRepository.addExploreFeed(exploreFeed)
-                loadExploreFeeds()
-                state = .content(nil)
-                toastService.showSuccess("Added feed from link /n\(exploreFeed.url)")
-            } catch {
-                handleError(error)
-            }
-        }
-    }
-    
-    public func loadExploreFeeds() {
-        loadExploreTask?.cancel()
-        
-        loadExploreTask = Task {
-            do {
-                let allExploreFeeds = try await exploreClient.loadExploreFeeds()
-                let currentFeeds = try await feedRepository.getCurrentFeeds()
-                
-                addedFeedURLs = Set(currentFeeds.map { $0.url.absoluteString })
-                
-                exploreFeeds = allExploreFeeds
-                    .filter { !addedFeedURLs.contains($0.url) }
-                    .prefix(10)
-                    .map { $0 }
-            } catch {
-                toastService.showError("Couldn't load explore feeds")
-            }
-        }
-    }
-    
-    func isFeedAdded(_ feed: ExploreFeed) -> Bool {
-        addedFeedURLs.contains(feed.url)
-    }
-}
+// Tab Bar
+"tab_feeds" = "Feeds";
+"tab_explore" = "Explore";
+"tab_favorites" = "Favorites";
+"tab_debug" = "Debug";
 
-#if DEBUG
-extension AddFeedViewModel {
-    @MainActor
-    func waitForAddToFinish() async {
-        await addFeedTask?.value
-    }
-}
-#endif
+// Explore
+"explore_title" = "Explore Feeds";
+"explore_no_feeds_title" = "No Feeds";
+"explore_no_feeds_description" = "No feeds available";
+"explore_no_added_feeds_title" = "Added Feeds";
+"explore_no_added_feeds_description" = "No added feeds";
+"explore_error_adding_feed" = "Error Adding Feed";
+"explore_error_removing_feed" = "Error Removing Feed";
+
+// Explore localizations
+"explore_error_refreshing_feeds" = "Failed to refresh explore feeds";
+"explore_success_added_feed" = "Added %@";
+"explore_error_adding_feed_generic" = "Failed to add %@";
+"explore_invalid_feed_url" = "Invalid feed URL";
+"explore_success_removed_feed" = "Removed %@";
+"explore_error_removing_feed_generic" = "Failed to remove %@";
+
+// Add Feed
+"add_feed_title" = "Add Feed";
+"add_feed_url_placeholder" = "Feed URL";
+"add_feed_url_header" = "Enter RSS feed URL";
+"add_feed_examples_header" = "Examples (tap to use):";
+"add_feed_example_bbc" = "BBC News";
+"add_feed_example_nbc" = "NBC News";
+"add_feed_error_title" = "Error Adding Feed";
+"add_feed_empty_title" = "Adding Views not possible";
+"add_feed_empty_description" = "No feeds to add";
+"add_feed_suggested_feeds" = "Suggested Feeds";
+
+// Add Feed localizations
+"add_feed_success_from_link" = "Added feed from link %@";
+"add_feed_error_duplicate" = "Feed for this link is already added";
+"add_feed_success_from_explore" = "Added feed from link %@";
+"add_feed_error_loading_explore" = "Couldn't load explore feeds";
+
+// Explore Feed Row
+"explore_feed_add" = "Add";
+"explore_feed_remove" = "Remove";
+
+// Empty State
+"empty_state_default_title" = "No Items";
+"empty_state_default_description" = "Add items to get started";
+"empty_state_default_action" = "Add Item";
+
+// Error State
+"error_state_title" = "Failed to Load";
+"error_state_try_again" = "Try Again";
+
+// Feed View
+"feed_loading_details" = "Loading feed details...";
+"feed_unnamed" = "Unnamed Feed";
+"feed_failed_to_load" = "Failed to load feed: %@";
+"feed_no_data_available" = "No feed data available";
+
+// Feed List
+"feed_list_favorite_feeds" = "Favorite Feeds";
+"feed_list_rss_feeds" = "RSS Feeds";
+"feed_list_add_feed" = "Add Feed";
+"feed_list_edit" = "Edit";
+"feed_list_no_favorites_title" = "No Favorites";
+"feed_list_no_feeds_title" = "No Feeds";
+"feed_list_no_favorites_description" = "Add feeds to favorites from the Feeds tab";
+"feed_list_no_feeds_description" = "Add an RSS feed to get started";
+"feed_list_unnamed_feed" = "Unnamed feed";
+
+// Notification Debug Panel
+"notification_debug_title" = "Notification Debug";
+"notification_debug_status" = "Status";
+"notification_debug_notification_status" = "Notification Status:";
+"notification_debug_check" = "Check";
+"notification_debug_actions" = "Actions";
+"notification_debug_request_permissions" = "Request Notification Permissions";
+"notification_debug_send_delayed" = "Send Delayed (5 sec) Notification";
+"notification_debug_trigger_refresh" = "Trigger Manual Background Refresh";
+"notification_debug_test_parsing" = "Test Feed Parsing";
+"notification_debug_results" = "Results";
+"notification_debug_processing" = "Processing...";
+
+// General
+"general_ok" = "OK";
+"general_cancel" = "Cancel";
+"general_add" = "Add";
