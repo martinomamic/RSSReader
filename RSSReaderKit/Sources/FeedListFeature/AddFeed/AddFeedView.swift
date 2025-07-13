@@ -34,9 +34,9 @@ struct AddFeedView: View {
                 
             case .empty:
                 EmptyStateView(
-                    title: "Adding Views not possible",
+                    title: LocalizedStrings.AddFeed.emptyTitle,
                     systemImage: "tray.empty",
-                    description: "No feeds to add"
+                    description: LocalizedStrings.AddFeed.emptyDescription
                 )
                 .testId(AccessibilityIdentifier.AddFeed.addViewEmptyView)
             }
@@ -100,7 +100,7 @@ struct AddFeedView: View {
     
     private var exploreFeedsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Suggested Feeds")
+            Text(LocalizedStrings.AddFeed.suggestedFeeds)
                 .font(.headline)
             
             VStack(spacing: 12) {

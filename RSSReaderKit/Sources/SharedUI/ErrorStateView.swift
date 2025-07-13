@@ -19,11 +19,11 @@ public struct ErrorStateView: View {
     
     public var body: some View {
         ContentUnavailableView {
-            Label("Failed to Load", systemImage: Constants.Images.failedToLoadIcon)
+            Label(LocalizedStrings.ErrorState.title, systemImage: Constants.Images.failedToLoadIcon)
         } description: {
             Text(ErrorUtils.toAppError(error).errorDescription)
         } actions: {
-            Button("Try Again", action: retryAction)
+            Button(LocalizedStrings.ErrorState.tryAgain, action: retryAction)
                 .buttonStyle(.bordered)
         }
         .background(Color(.systemBackground))

@@ -73,7 +73,3 @@ public struct ExploreView: View {
         .toastOverlay(viewModel.toastService)
     }
 }
-
-extension AccessibilityIdentifier.Explore {
-    static let filterPicker = "explore_filter_picker"
-}

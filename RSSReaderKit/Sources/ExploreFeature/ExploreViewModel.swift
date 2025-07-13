@@ -66,7 +66,7 @@ class ExploreViewModel {
                     state = .error(ErrorUtils.toAppError(error))
                 } else {
                     // Refresh failed but we have cached data - show toast instead
-                    toastService.showError("Failed to refresh explore feeds")
+                    toastService.showError(LocalizedStrings.Explore.errorRefreshExplore)
                     filterFeeds()
                 }
             }
@@ -82,9 +82,9 @@ class ExploreViewModel {
                 addedFeedURLs.insert(exploreFeed.url)
                 filterFeeds()
                 
-                toastService.showSuccess("Added \(exploreFeed.name)")
+                toastService.showSuccess(String(format: LocalizedStrings.Explore.successAdd, exploreFeed.name))
             } catch {
-                toastService.showError("Failed to add \(exploreFeed.name)")
+                toastService.showError(String(format: LocalizedStrings.Explore.errorAdd, exploreFeed.name))
             }
         }
     }
@@ -94,7 +94,7 @@ class ExploreViewModel {
         removeTask = Task {
             do {
                 guard let feedURLToRemove = URL(string: exploreFeed.url) else {
-                    toastService.showError("Invalid feed URL")
+                    toastService.showError(LocalizedStrings.Explore.invalidFeedURL)
                     return
                 }
                 try await feedRepository.delete(feedURLToRemove)
@@ -104,9 +104,9 @@ class ExploreViewModel {
                 addedFeedURLs.remove(exploreFeed.url)
                 filterFeeds()
                 
-                toastService.showSuccess("Removed \(exploreFeed.name)")
+                toastService.showSuccess(String(format: LocalizedStrings.Explore.successRemove, exploreFeed.name))
             } catch {
-                toastService.showError("Failed to remove \(exploreFeed.name)")
+                toastService.showError(String(format: LocalizedStrings.Explore.errorRemove, exploreFeed.name))
             }
         }
     }

@@ -46,7 +46,7 @@ public struct NotificationDebugView: View {
 
 private extension NotificationDebugView {
     var header: some View {
-        Text("Notification Debug")
+        Text(LocalizedStrings.NotificationDebug.title)
             .font(.largeTitle)
             .fontWeight(.bold)
             .frame(maxWidth: .infinity, alignment: .center)
@@ -54,11 +54,11 @@ private extension NotificationDebugView {
 
     var statusSection: some View {
         VStack(alignment: .leading, spacing: Constants.UI.debugSectionSpacing) {
-            Text("Status")
+            Text(LocalizedStrings.NotificationDebug.status)
                 .font(.headline)
 
             HStack {
-                Text("Notification Status:")
+                Text(LocalizedStrings.NotificationDebug.notificationStatus)
                     .fontWeight(.medium)
 
                 Text(notificationStatus)
@@ -67,7 +67,7 @@ private extension NotificationDebugView {
 
                 Spacer()
 
-                Button("Check", action: checkNotificationStatus)
+                Button(LocalizedStrings.NotificationDebug.check, action: checkNotificationStatus)
                     .buttonStyle(.bordered)
                     .controlSize(.small)
             }
@@ -79,18 +79,18 @@ private extension NotificationDebugView {
 
     var actionsSection: some View {
         VStack(alignment: .leading, spacing: Constants.UI.debugActionSpacing) {
-            Text("Actions")
+            Text(LocalizedStrings.NotificationDebug.actions)
                 .font(.headline)
 
             Group {
                 actionButton(
-                    title: "Request Notification Permissions",
+                    title: LocalizedStrings.NotificationDebug.requestPermissions,
                     icon: "bell.badge",
                     action: requestPermissions
                 )
 
                 actionButton(
-                    title: "Send Delayed (5 sec) Notification",
+                    title: LocalizedStrings.NotificationDebug.sendDelayed,
                     icon: "clock",
                     action: sendDelayedNotification,
                     accentColor: .blue,
@@ -98,14 +98,14 @@ private extension NotificationDebugView {
                 )
 
                 actionButton(
-                    title: "Trigger Manual Background Refresh",
+                    title: LocalizedStrings.NotificationDebug.triggerRefresh,
                     icon: "arrow.clockwise",
                     action: triggerManualRefresh,
                     accentColor: .green
                 )
 
                 actionButton(
-                    title: "Test Feed Parsing",
+                    title: LocalizedStrings.NotificationDebug.testParsing,
                     icon: "doc.text.magnifyingglass",
                     action: testFeedParsing,
                     accentColor: .purple
@@ -117,14 +117,14 @@ private extension NotificationDebugView {
 
     var resultsSection: some View {
         VStack(alignment: .leading, spacing: Constants.UI.debugSectionSpacing) {
-            Text("Results")
+            Text(LocalizedStrings.NotificationDebug.results)
                 .font(.headline)
 
             Group {
                 if isRefreshing {
                     HStack {
                         ProgressView()
-                        Text("Processing...")
+                        Text(LocalizedStrings.NotificationDebug.processing)
                             .foregroundStyle(.secondary)
                     }
                     .frame(maxWidth: .infinity, alignment: .center)

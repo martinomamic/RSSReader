@@ -61,5 +61,6 @@ public enum AccessibilityIdentifier {
         public static let errorView = "exploreErrorView"
         public static let feedsList = "exploreFeedsList"
         public static let feedRow = "exploreFeedRow"
+        public static let filterPicker = "explore_filter_picker"
     }
 }
