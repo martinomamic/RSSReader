@@ -15,6 +15,8 @@ public struct ExploreFeedRow: View {
     public let isProcessing: Bool
     public let onTapped: () -> Void
     
+    @State private var showProgress = false
+    
     public init(
         feed: ExploreFeed,
         isAdded: Bool,
@@ -44,8 +46,9 @@ public struct ExploreFeedRow: View {
                 Spacer()
 
                 HStack(spacing: 6) {
-                    if isProcessing {
+                    if showProgress {
                         ProgressView()
+                            .tint(.white)
                             .scaleEffect(0.7)
                     }
                     
@@ -53,18 +56,26 @@ public struct ExploreFeedRow: View {
                         .font(.caption)
                         .fontWeight(.medium)
                 }
+                .onChange(of: isProcessing) { _, newValue in
+                    if newValue {
+                        Task {
+                            try? await Task.sleep(for: .seconds(0.5))
+                            showProgress = true
+                        }
+                    } else {
+                        showProgress = false
+                    }
+                }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
                 .background(isAdded ? .green : .blue)
                 .foregroundStyle(.white)
-                .opacity(isProcessing ? 0.6 : 1.0)
                 .clipShape(Capsule())
             }
             .padding(.vertical, Constants.UI.verticalPadding)
             .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
-        .disabled(isProcessing)
         .testId(AccessibilityIdentifier.Explore.feedRow)
     }
 }

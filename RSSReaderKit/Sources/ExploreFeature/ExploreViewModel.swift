@@ -41,7 +41,6 @@ class ExploreViewModel {
     var selectedFilter: ExploreFeedFilter = .notAdded
     var feeds: [ExploreFeed] = []
     
-    // Track feeds currently being processed
     var processingFeedURLs: Set<String> = []
     
     let toastService = ToastService()
@@ -74,10 +73,8 @@ class ExploreViewModel {
                 filterFeeds()
             } catch {
                 if feeds.isEmpty {
-                    // First time loading failed - show error state with retry
                     state = .error(ErrorUtils.toAppError(error))
                 } else {
-                    // Refresh failed but we have cached data - show toast instead
                     toastService.showError(LocalizedStrings.Explore.errorRefreshExplore)
                     filterFeeds()
                 }
@@ -90,7 +87,9 @@ class ExploreViewModel {
         processingFeedURLs.insert(exploreFeed.url)
         
         addTask = Task {
-            defer { processingFeedURLs.remove(exploreFeed.url) }
+            defer {
+                processingFeedURLs.remove(exploreFeed.url)
+            }
             
             do {
                 _ = try await feedRepository.addExploreFeed(exploreFeed)
@@ -110,7 +109,9 @@ class ExploreViewModel {
         processingFeedURLs.insert(exploreFeed.url)
         
         removeTask = Task {
-            defer { processingFeedURLs.remove(exploreFeed.url) }
+            defer {
+                processingFeedURLs.remove(exploreFeed.url)
+            }
             
             do {
                 guard let feedURLToRemove = URL(string: exploreFeed.url) else {
@@ -120,7 +121,6 @@ class ExploreViewModel {
                 try await feedRepository.delete(feedURLToRemove)
 
                 feeds = try await feedRepository.loadExploreFeeds()
-                
                 addedFeedURLs.remove(exploreFeed.url)
                 filterFeeds()
                 
@@ -140,8 +140,7 @@ class ExploreViewModel {
     }
     
     func handleFeed(_ feed: ExploreFeed) {
-        // Prevent multiple operations on the same feed
-        guard !isFeedProcessing(feed) else { return }
+        guard !processingFeedURLs.contains(feed.url) else { return }
         
         if isFeedAdded(feed) {
             removeFeed(feed)

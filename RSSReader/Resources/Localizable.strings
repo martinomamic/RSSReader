@@ -19,6 +19,8 @@
 "explore_no_added_feeds_description" = "No added feeds";
 "explore_error_adding_feed" = "Error Adding Feed";
 "explore_error_removing_feed" = "Error Removing Feed";
+"explore_filter_not_added" = "Not Added";
+"explore_filter_added" = "Added";
 
 // Explore localizations
 "explore_error_refreshing_feeds" = "Failed to refresh explore feeds";

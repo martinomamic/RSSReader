@@ -16,6 +16,8 @@ public final class ToastService {
     public init() {}
     
     public func show(_ toast: Toast) {
+        guard !toasts.contains(toast) else { return }
+      
         toasts.insert(toast, at: 0)
         Task {
             try? await Task.sleep(for: .seconds(2))
