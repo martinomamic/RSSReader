@@ -18,7 +18,7 @@ public struct ToastOverlayView: View {
         VStack {
             Spacer()
             ForEach(toastService.toasts) { toast in
-                ToastView(toast: toast)
+                ToastView(toast: toast, toastService: toastService)
             }
         }
         .animation(
