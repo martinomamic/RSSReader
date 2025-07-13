@@ -70,6 +70,7 @@ struct AddFeedView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(LocalizedStrings.AddFeed.urlHeader)
                 .font(.headline)
+                .padding(.vertical, 8)
             
             TextField(LocalizedStrings.AddFeed.urlPlaceholder, text: $viewModel.urlString)
                 .autocorrectionDisabled()
@@ -103,19 +104,32 @@ struct AddFeedView: View {
             Text(LocalizedStrings.AddFeed.suggestedFeeds)
                 .font(.headline)
             
-            VStack(spacing: 12) {
+            VStack(spacing: 0) {
                 ForEach(viewModel.exploreFeeds) { feed in
-                    ExploreFeedRow(
-                        feed: feed,
-                        isAdded: viewModel.isFeedAdded(feed),
-                        onTapped: {
-                            viewModel.addExploreFeed(feed)
+                    VStack(spacing: 0) {
+                        ExploreFeedRow(
+                            feed: feed,
+                            isAdded: viewModel.isFeedAdded(feed),
+                            isProcessing: viewModel.isProcessingFeed(feed),
+                            onTapped: {
+                                viewModel.addExploreFeed(feed)
+                            }
+                        )
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
+                        
+                        if feed.id != viewModel.exploreFeeds.last?.id {
+                            Divider()
+                                .padding(.leading)
                         }
-                    )
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
+                    }
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .top).combined(with: .opacity),
+                        removal: .move(edge: .bottom).combined(with: .opacity)
+                    ))
                 }
             }
+            .animation(.easeInOut(duration: 0.3), value: viewModel.exploreFeeds.map(\.url))
         }
     }
     

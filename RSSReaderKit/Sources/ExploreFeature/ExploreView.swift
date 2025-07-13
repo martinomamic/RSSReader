@@ -18,9 +18,9 @@ public struct ExploreView: View {
 
     public var body: some View {
         VStack {
-            Picker("Filter", selection: $viewModel.selectedFilter) {
+            Picker(LocalizedStrings.Explore.filter, selection: $viewModel.selectedFilter) {
                 ForEach(ExploreFeedFilter.allCases) { filter in
-                    Text(filter.rawValue).tag(filter)
+                    Text(filter.displayName).tag(filter)
                 }
             }
             .pickerStyle(.segmented)
@@ -42,12 +42,18 @@ public struct ExploreView: View {
                         ExploreFeedRow(
                             feed: feed,
                             isAdded: viewModel.isFeedAdded(feed),
+                            isProcessing: viewModel.isFeedProcessing(feed),
                             onTapped: {
                                 viewModel.handleFeed(feed)
                             }
                         )
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
                     }
                 }
+                .animation(.easeInOut(duration: 0.3), value: feeds.map(\.url))
                 .testId(AccessibilityIdentifier.Explore.feedsList)
 
             case .error(let error):

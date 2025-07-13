@@ -15,10 +15,19 @@ import SharedUI
 import ToastFeature
 
 enum ExploreFeedFilter: String, CaseIterable, Identifiable {
-    case notAdded = "Not Added"
-    case added = "Added"
+    case notAdded = "notAdded"
+    case added = "added"
 
     var id: String { self.rawValue }
+    
+    var displayName: String {
+        switch self {
+        case .notAdded:
+            return LocalizedStrings.Explore.filterNotAdded
+        case .added:
+            return LocalizedStrings.Explore.filterAdded
+        }
+    }
 }
 
 @MainActor @Observable
@@ -31,6 +40,8 @@ class ExploreViewModel {
     var addedFeedURLs: Set<String> = []
     var selectedFilter: ExploreFeedFilter = .notAdded
     var feeds: [ExploreFeed] = []
+    
+    var processingFeedURLs: Set<String> = []
     
     let toastService = ToastService()
 
@@ -62,10 +73,8 @@ class ExploreViewModel {
                 filterFeeds()
             } catch {
                 if feeds.isEmpty {
-                    // First time loading failed - show error state with retry
                     state = .error(ErrorUtils.toAppError(error))
                 } else {
-                    // Refresh failed but we have cached data - show toast instead
                     toastService.showError(LocalizedStrings.Explore.errorRefreshExplore)
                     filterFeeds()
                 }
@@ -75,7 +84,13 @@ class ExploreViewModel {
 
     func addFeed(_ exploreFeed: ExploreFeed) {
         addTask?.cancel()
+        processingFeedURLs.insert(exploreFeed.url)
+        
         addTask = Task {
+            defer {
+                processingFeedURLs.remove(exploreFeed.url)
+            }
+            
             do {
                 _ = try await feedRepository.addExploreFeed(exploreFeed)
                 feeds = try await feedRepository.loadExploreFeeds()
@@ -91,7 +106,13 @@ class ExploreViewModel {
 
     func removeFeed(_ exploreFeed: ExploreFeed) {
         removeTask?.cancel()
+        processingFeedURLs.insert(exploreFeed.url)
+        
         removeTask = Task {
+            defer {
+                processingFeedURLs.remove(exploreFeed.url)
+            }
+            
             do {
                 guard let feedURLToRemove = URL(string: exploreFeed.url) else {
                     toastService.showError(LocalizedStrings.Explore.invalidFeedURL)
@@ -100,7 +121,6 @@ class ExploreViewModel {
                 try await feedRepository.delete(feedURLToRemove)
 
                 feeds = try await feedRepository.loadExploreFeeds()
-                
                 addedFeedURLs.remove(exploreFeed.url)
                 filterFeeds()
                 
@@ -115,7 +135,13 @@ class ExploreViewModel {
         addedFeedURLs.contains(feed.url)
     }
     
+    func isFeedProcessing(_ feed: ExploreFeed) -> Bool {
+        processingFeedURLs.contains(feed.url)
+    }
+    
     func handleFeed(_ feed: ExploreFeed) {
+        guard !processingFeedURLs.contains(feed.url) else { return }
+        
         if isFeedAdded(feed) {
             removeFeed(feed)
         } else {

@@ -12,19 +12,36 @@ import SwiftUI
 @MainActor @Observable
 public final class ToastService {
     public var toasts: [Toast] = []
+    private var toastQueue: [Toast] = []
+    private var activeTasks: [String: Task<Void, Never>] = [:]
+    private let maxVisibleToasts = 3
     
     public init() {}
     
     public func show(_ toast: Toast) {
-        toasts.insert(toast, at: 0)
-        Task {
-            try? await Task.sleep(for: .seconds(2))
-            dismiss(toast)
+        toastQueue.append(toast)
+        processQueue()
+    }
+    
+    private func processQueue() {
+        while toasts.count < maxVisibleToasts && !toastQueue.isEmpty {
+            let toast = toastQueue.removeFirst()
+            toasts.append(toast)
+            
+            activeTasks[toast.id] = Task {
+                try? await Task.sleep(for: .seconds(2))
+                if !Task.isCancelled {
+                    dismiss(toast)
+                }
+            }
         }
     }
     
     public func dismiss(_ toast: Toast) {
+        activeTasks[toast.id]?.cancel()
+        activeTasks[toast.id] = nil
         toasts.removeAll { $0.id == toast.id }
+        processQueue()
     }
 }
 

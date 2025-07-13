@@ -24,6 +24,9 @@ public enum LocalizedStrings {
     
     public enum Explore {
         public static let title = String(localized: "explore_title")
+        public static let filter = String(localized: "explore_filter")
+        public static let filterNotAdded = String(localized: "explore_filter_not_added")
+        public static let filterAdded = String(localized: "explore_filter_added")
         public static let noFeedsTitle = String(localized: "explore_no_feeds_title")
         public static let noFeedsDescription = String(localized: "explore_no_feeds_description")
         public static let noAddedFeedsTitle = String(localized: "explore_no_added_feeds_title")
